@@ -1,0 +1,2727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From Skeptic to True Believer — Claire Vo on OpenClaw × Lenny's Podcast</title>
+
+<!-- "Operator's Manual" type stack:
+     DM Serif Display for display, Inter for body, JetBrains Mono for terminal/UI -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   THEME — "Operator's Manual"
+   Soft computer-paper canvas, dotted grid,
+   terminal-cyan + circuit-lime + warning amber.
+   =========================================== */
+:root {
+    --paper:        #f7f5f0;        /* computer paper */
+    --paper-deep:   #efebe1;        /* card surface */
+    --paper-dot:    rgba(28, 26, 23, 0.12);
+    --paper-rule:   rgba(28, 26, 23, 0.14);
+
+    --ink:          #1c1a17;        /* warm near-black */
+    --ink-soft:     #524d44;
+    --ink-faint:    #908a7d;
+    --ink-ghost:    #c2bdb1;
+
+    --cyan:         #0066b8;        /* terminal blue */
+    --cyan-soft:    rgba(0, 102, 184, 0.1);
+    --lime:         #7cb518;        /* circuit lime */
+    --lime-soft:    rgba(124, 181, 24, 0.14);
+    --amber:        #d97706;        /* warning amber */
+    --amber-soft:   rgba(217, 119, 6, 0.12);
+    --magenta:      #c026d3;        /* fun extra accent for agents */
+    --magenta-soft: rgba(192, 38, 211, 0.1);
+
+    --font-display: 'DM Serif Display', 'Georgia', serif;
+    --font-body:    'Inter', system-ui, sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+
+    --title-size:   clamp(2.5rem, 7vw, 6rem);
+    --huge-size:    clamp(3.5rem, 11vw, 9rem);
+    --mega-size:    clamp(5rem, 16vw, 14rem);
+    --h2-size:      clamp(1.8rem, 4.5vw, 3.6rem);
+    --body-size:    clamp(0.85rem, 1.25vw, 1.05rem);
+    --small-size:   clamp(0.72rem, 0.95vw, 0.85rem);
+    --label-size:   clamp(0.62rem, 0.8vw, 0.76rem);
+
+    --slide-padding: clamp(1.5rem, 5vw, 4.5rem);
+    --content-gap:   clamp(0.8rem, 1.8vw, 1.8rem);
+
+    --ease-soft: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --ease-snap: cubic-bezier(0.45, 0, 0.15, 1);
+    --duration: 0.85s;
+
+    --radius: 14px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* === VIEWPORT BASE === */
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+
+body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: var(--body-size);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+}
+
+.slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: var(--slide-padding);
+    background: var(--paper);
+}
+
+/* Dotted hardware-notebook grid (different from prior decks' graph paper / 12-col line grids) */
+.slide::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle, var(--paper-dot) 1px, transparent 1px);
+    background-size: clamp(24px, 2.6vw, 36px) clamp(24px, 2.6vw, 36px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.7;
+}
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+}
+
+img, .image-container {
+    max-width: 100%;
+    max-height: min(50vh, 400px);
+    object-fit: contain;
+}
+
+@media (max-height: 700px) {
+    :root {
+        --slide-padding: clamp(1rem, 3.5vw, 3rem);
+        --title-size: clamp(2rem, 5.5vw, 4rem);
+        --huge-size: clamp(2.5rem, 8vw, 6rem);
+        --mega-size: clamp(3.5rem, 12vw, 9rem);
+        --h2-size: clamp(1.4rem, 3.6vw, 2.6rem);
+    }
+}
+@media (max-height: 600px) {
+    :root {
+        --slide-padding: clamp(0.75rem, 2.5vw, 2rem);
+        --title-size: clamp(1.5rem, 4.5vw, 3rem);
+        --body-size: clamp(0.75rem, 1.1vw, 0.95rem);
+    }
+    .nav-dots, .keyboard-hint, .slide::before { display: none; }
+}
+@media (max-height: 500px) {
+    :root {
+        --title-size: clamp(1.2rem, 3.5vw, 2rem);
+        --h2-size: clamp(1rem, 2.5vw, 1.4rem);
+    }
+}
+@media (max-width: 600px) {
+    :root { --title-size: clamp(1.5rem, 8vw, 3rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+    html { scroll-behavior: auto; }
+}
+
+/* ===========================================
+   CHROME — "manual" header treatment.
+   Status bar feel.
+   =========================================== */
+.masthead {
+    position: absolute;
+    top: clamp(0.9rem, 2vh, 1.6rem);
+    left: var(--slide-padding);
+    right: var(--slide-padding);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--ink-faint);
+    z-index: 5;
+    padding-bottom: 0.7em;
+    border-bottom: 1px solid var(--paper-rule);
+}
+.masthead .led {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+}
+.masthead .led::before {
+    content: "";
+    width: 9px; height: 9px;
+    background: var(--lime);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--lime);
+    display: inline-block;
+    animation: ledBlink 2.4s ease-in-out infinite;
+}
+@keyframes ledBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+}
+
+.footer {
+    position: absolute;
+    bottom: clamp(0.8rem, 2vh, 1.5rem);
+    left: var(--slide-padding);
+    right: var(--slide-padding);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--ink-faint);
+    letter-spacing: 0.12em;
+    z-index: 5;
+    padding-top: 0.7em;
+    border-top: 1px solid var(--paper-rule);
+}
+
+.slide.bare .masthead,
+.slide.bare .footer { display: none; }
+
+/* ===========================================
+   PROGRESS BAR & NAV DOTS
+   =========================================== */
+.progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--cyan);
+    width: 0%;
+    z-index: 100;
+    transition: width 0.3s var(--ease-snap);
+}
+
+.nav-dots {
+    position: fixed;
+    right: clamp(0.8rem, 1.5vw, 1.2rem);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    z-index: 50;
+}
+.nav-dot {
+    width: 8px; height: 8px;
+    background: var(--ink-ghost);
+    cursor: pointer;
+    transition: all 0.3s var(--ease-snap);
+    border: none; padding: 0;
+    opacity: 0.7;
+    border-radius: 50%;
+}
+.nav-dot.active {
+    background: var(--cyan);
+    width: 12px;
+    height: 12px;
+    opacity: 1;
+    box-shadow: 0 0 8px var(--cyan);
+}
+.nav-dot:hover { opacity: 1; }
+
+/* ===========================================
+   ANIMATION PRIMITIVES
+   =========================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity var(--duration) var(--ease-snap),
+                transform var(--duration) var(--ease-snap);
+}
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+
+.reveal-blur {
+    opacity: 0;
+    filter: blur(12px);
+    transition: opacity 1s var(--ease-snap),
+                filter 1s var(--ease-snap);
+}
+.slide.visible .reveal-blur { opacity: 1; filter: blur(0); }
+
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-44px);
+    transition: opacity var(--duration) var(--ease-snap),
+                transform var(--duration) var(--ease-snap);
+}
+.slide.visible .reveal-left { opacity: 1; transform: translateX(0); }
+
+.reveal-pop {
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.6s var(--ease-snap),
+                transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.slide.visible .reveal-pop { opacity: 1; transform: scale(1); }
+
+.d-1 { transition-delay: 0.08s; }
+.d-2 { transition-delay: 0.2s; }
+.d-3 { transition-delay: 0.32s; }
+.d-4 { transition-delay: 0.44s; }
+.d-5 { transition-delay: 0.56s; }
+.d-6 { transition-delay: 0.68s; }
+.d-7 { transition-delay: 0.8s; }
+.d-8 { transition-delay: 0.92s; }
+.d-9 { transition-delay: 1.04s; }
+.d-10 { transition-delay: 1.16s; }
+
+/* ===========================================
+   SHARED COMPONENTS
+   =========================================== */
+.eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--cyan);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    margin-bottom: clamp(0.7rem, 1.6vh, 1.2rem);
+}
+.eyebrow::before {
+    content: "";
+    width: clamp(20px, 3vw, 36px);
+    height: 2px;
+    background: var(--cyan);
+}
+.eyebrow.lime { color: var(--lime); }
+.eyebrow.lime::before { background: var(--lime); }
+.eyebrow.amber { color: var(--amber); }
+.eyebrow.amber::before { background: var(--amber); }
+
+.slide-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--h2-size);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    max-width: 22ch;
+    margin-bottom: clamp(0.8rem, 1.6vh, 1.4rem);
+}
+.slide-title em {
+    font-style: italic;
+    color: var(--cyan);
+}
+.slide-title .lime { color: var(--lime); font-style: italic; }
+.slide-title .amber { color: var(--amber); font-style: italic; }
+
+.lede {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 58ch;
+    margin-bottom: clamp(0.8rem, 1.8vh, 1.6rem);
+}
+.lede strong { color: var(--ink); font-weight: 600; }
+
+.body-copy {
+    font-size: var(--body-size);
+    line-height: 1.6;
+    color: var(--ink-soft);
+    max-width: 62ch;
+}
+.body-copy strong { color: var(--ink); font-weight: 600; }
+
+/* Quote block */
+.quote-block {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.25rem, 2.4vw, 1.95rem);
+    line-height: 1.25;
+    color: var(--ink);
+    max-width: 38ch;
+    position: relative;
+    padding-left: clamp(1rem, 2vw, 1.6rem);
+    border-left: 3px solid var(--cyan);
+}
+.quote-block .attribution {
+    display: block;
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    margin-top: clamp(0.7rem, 1.4vh, 1rem);
+}
+
+/* ===========================================
+   COVER
+   =========================================== */
+.cover {
+    background: var(--paper);
+    justify-content: space-between;
+    padding-top: clamp(2rem, 5vh, 4rem);
+    padding-bottom: clamp(2rem, 5vh, 4rem);
+}
+.cover-top, .cover-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--ink-faint);
+    position: relative;
+    z-index: 3;
+}
+.cover-top { border-bottom: 1px solid var(--ink); padding-bottom: 1rem; }
+.cover-bottom { border-top: 1px solid var(--ink); padding-top: 1rem; }
+.cover-issue { color: var(--cyan); font-weight: 700; }
+
+.cover-content { position: relative; z-index: 3; }
+.cover-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--huge-size);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    max-width: 14ch;
+}
+.cover-title em {
+    font-style: italic;
+    color: var(--cyan);
+}
+.cover-title .lime { color: var(--lime); font-style: italic; }
+.cover-deck {
+    font-family: var(--font-body);
+    font-size: clamp(1rem, 1.4vw, 1.2rem);
+    color: var(--ink-soft);
+    max-width: 52ch;
+    margin-top: clamp(1rem, 2.2vh, 1.8rem);
+    line-height: 1.55;
+}
+.cover-byline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+}
+.cover-byline strong {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(1rem, 1.5vw, 1.3rem);
+    color: var(--ink);
+    text-transform: none;
+}
+
+/* Cover decoration: a "system status" badge */
+.cover-status {
+    position: absolute;
+    top: 50%;
+    right: var(--slide-padding);
+    transform: translateY(-50%) rotate(3deg);
+    background: var(--paper-deep);
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius);
+    padding: clamp(0.8rem, 1.5vw, 1.2rem) clamp(1rem, 2vw, 1.4rem);
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    line-height: 1.7;
+    box-shadow: 6px 6px 0 var(--cyan);
+    max-width: 320px;
+    z-index: 2;
+    animation: tilt 6s ease-in-out infinite;
+}
+@keyframes tilt {
+    0%, 100% { transform: translateY(-50%) rotate(3deg); }
+    50% { transform: translateY(-50%) rotate(-1deg); }
+}
+.cover-status .label {
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: var(--label-size);
+    display: block;
+    margin-bottom: 0.3em;
+}
+.cover-status .row {
+    display: flex;
+    justify-content: space-between;
+    color: var(--ink);
+}
+.cover-status .row .ok { color: var(--lime); }
+.cover-status .row .warn { color: var(--amber); }
+.cover-status .row .info { color: var(--cyan); }
+.cover-status hr {
+    border: none;
+    border-top: 1px dashed var(--paper-rule);
+    margin: 0.5em 0;
+}
+
+/* ===========================================
+   SLIDE 2 — ABOUT CLAIRE
+   =========================================== */
+.about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: stretch;
+    height: 100%;
+}
+.bio-card {
+    background: var(--paper-deep);
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius);
+    padding: clamp(1.2rem, 2.5vw, 2.2rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 6px 6px 0 var(--cyan);
+}
+.bio-monogram {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(7rem, 17vw, 13rem);
+    line-height: 0.85;
+    color: var(--cyan);
+    letter-spacing: -0.04em;
+}
+.bio-name {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+    color: var(--ink);
+    line-height: 1.05;
+    margin-bottom: 0.3em;
+}
+.bio-role {
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-faint);
+    line-height: 1.6;
+}
+.bio-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+    padding-top: clamp(0.8rem, 1.5vh, 1.2rem);
+    border-top: 1px dashed var(--paper-rule);
+}
+.bio-meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+}
+.bio-meta-row span:first-child { color: var(--ink-faint); }
+.bio-meta-row span:last-child { color: var(--ink); font-weight: 700; }
+
+.bio-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* ===========================================
+   SLIDE 3 — JOURNEY ARC (Skeptic → Believer)
+   =========================================== */
+.arc {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: clamp(1rem, 2vw, 2rem);
+    align-items: stretch;
+    margin-top: clamp(1rem, 2vh, 1.6rem);
+}
+.arc-card {
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius);
+    padding: clamp(1.2rem, 2.5vw, 2rem);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.6rem, 1.2vh, 1rem);
+    position: relative;
+}
+.arc-card.skeptic {
+    background: var(--amber-soft);
+    border-color: var(--amber);
+    box-shadow: -5px 5px 0 var(--amber);
+}
+.arc-card.believer {
+    background: var(--lime-soft);
+    border-color: var(--lime);
+    box-shadow: 5px 5px 0 var(--lime);
+}
+.arc-state {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--ink-faint);
+}
+.arc-card.skeptic .arc-state { color: var(--amber); }
+.arc-card.believer .arc-state { color: var(--lime); }
+.arc-headline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.3rem, 2.6vw, 2rem);
+    line-height: 1.05;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+}
+.arc-detail {
+    font-size: var(--body-size);
+    line-height: 1.55;
+    color: var(--ink-soft);
+}
+.arc-bridge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.4em;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink);
+    text-align: center;
+    padding: 0 0.6em;
+}
+.arc-bridge .arrow {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    color: var(--cyan);
+    font-weight: 700;
+}
+
+/* ===========================================
+   STAT SLABS
+   =========================================== */
+.stat-stack {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.6rem, 1.2vh, 1rem);
+}
+.stat-slab {
+    border-left: 3px solid var(--cyan);
+    padding: clamp(0.6rem, 1.2vh, 1rem) clamp(0.8rem, 1.5vw, 1.4rem);
+    display: flex;
+    align-items: baseline;
+    gap: clamp(0.8rem, 1.5vw, 1.5rem);
+    background: var(--cyan-soft);
+}
+.stat-slab.lime { border-left-color: var(--lime); background: var(--lime-soft); }
+.stat-slab.amber { border-left-color: var(--amber); background: var(--amber-soft); }
+.stat-num {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    line-height: 0.9;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+}
+.stat-slab .stat-num { color: var(--cyan); }
+.stat-slab.lime .stat-num { color: var(--lime); }
+.stat-slab.amber .stat-num { color: var(--amber); }
+.stat-label {
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-soft);
+    line-height: 1.4;
+}
+
+/* ===========================================
+   AGENT CARDS — the cast
+   =========================================== */
+.agent-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(0.7rem, 1.4vw, 1.1rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+}
+.agent-card {
+    background: var(--paper-deep);
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius);
+    padding: clamp(0.9rem, 1.8vw, 1.3rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s var(--ease-snap), box-shadow 0.4s var(--ease-snap);
+}
+.agent-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 4px 6px 0 var(--cyan);
+}
+.agent-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    margin-bottom: 0.3em;
+}
+.agent-avatar {
+    width: clamp(42px, 6vw, 56px);
+    height: clamp(42px, 6vw, 56px);
+    border-radius: 50%;
+    background: var(--cyan);
+    color: var(--paper);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.3rem, 2.4vw, 1.8rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1.5px solid var(--ink);
+}
+.agent-card:nth-child(1) .agent-avatar { background: var(--cyan); }
+.agent-card:nth-child(2) .agent-avatar { background: var(--lime); color: var(--ink); }
+.agent-card:nth-child(3) .agent-avatar { background: var(--amber); }
+.agent-card:nth-child(4) .agent-avatar { background: var(--magenta); }
+.agent-card:nth-child(5) .agent-avatar { background: var(--cyan); }
+.agent-card:nth-child(6) .agent-avatar { background: var(--lime); color: var(--ink); }
+.agent-card:nth-child(7) .agent-avatar { background: var(--amber); }
+.agent-card:nth-child(8) .agent-avatar { background: var(--magenta); }
+.agent-card:nth-child(9) .agent-avatar { background: var(--ink); color: var(--paper); }
+.agent-name {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.1rem, 1.9vw, 1.5rem);
+    color: var(--ink);
+    line-height: 1;
+}
+.agent-status {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--lime);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    margin-top: 0.1em;
+}
+.agent-status::before {
+    content: "";
+    width: 6px; height: 6px;
+    background: var(--lime);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--lime);
+    animation: ledBlink 1.8s ease-in-out infinite;
+}
+.agent-job {
+    font-size: var(--small-size);
+    color: var(--ink-soft);
+    line-height: 1.45;
+    margin-top: 0.4em;
+}
+.agent-tag {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-faint);
+    margin-top: auto;
+    padding-top: 0.5em;
+    border-top: 1px dashed var(--paper-rule);
+}
+
+/* ===========================================
+   TERMINAL BLOCKS
+   =========================================== */
+.terminal {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 8px;
+    padding: clamp(1rem, 2vw, 1.5rem);
+    font-family: var(--font-mono);
+    font-size: clamp(0.78rem, 1.1vw, 0.95rem);
+    line-height: 1.7;
+    max-width: 720px;
+    margin: clamp(0.8rem, 1.5vh, 1.2rem) 0;
+    box-shadow: 4px 4px 0 var(--cyan);
+    position: relative;
+    overflow: hidden;
+}
+.terminal::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 8px;
+    background:
+        radial-gradient(circle at 4px 4px, #ff6058 4px, transparent 4px),
+        radial-gradient(circle at 16px 4px, #ffbd2e 4px, transparent 4px),
+        radial-gradient(circle at 28px 4px, #28c93f 4px, transparent 4px);
+    background-repeat: no-repeat;
+    margin-bottom: 0.8em;
+    opacity: 0.7;
+}
+.terminal .prompt { color: var(--lime); }
+.terminal .you { color: var(--paper); }
+.terminal .ok { color: var(--lime); }
+.terminal .warn { color: var(--amber); }
+.terminal .info { color: #5cc8ff; }
+.terminal .comment { color: var(--ink-faint); font-style: italic; }
+.terminal .reply {
+    display: block;
+    color: #d8d4cb;
+    padding-left: 1em;
+    border-left: 2px solid var(--cyan);
+    margin: 0.5em 0;
+}
+
+/* ===========================================
+   TWO-COLUMN BODY
+   =========================================== */
+.body-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: center;
+    height: 100%;
+}
+.body-grid.flip { grid-template-columns: 1fr 1.2fr; }
+
+/* ===========================================
+   "GOTCHA" warning callouts
+   =========================================== */
+.warning-card {
+    border: 2px solid var(--amber);
+    background: var(--amber-soft);
+    border-radius: var(--radius);
+    padding: clamp(1.2rem, 2.5vw, 2rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+    position: relative;
+}
+.warning-tag {
+    position: absolute;
+    top: 0;
+    left: clamp(1.5rem, 3vw, 2.5rem);
+    transform: translateY(-50%);
+    background: var(--paper);
+    color: var(--amber);
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    padding: 0.3em 0.8em;
+    border: 1.5px solid var(--amber);
+    font-weight: 700;
+}
+.warning-headline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.4rem, 2.6vw, 2rem);
+    line-height: 1.1;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    max-width: 30ch;
+}
+.warning-detail {
+    margin-top: clamp(0.6rem, 1.2vh, 1rem);
+    font-size: var(--body-size);
+    color: var(--ink-soft);
+    line-height: 1.55;
+    max-width: 60ch;
+}
+
+/* ===========================================
+   HOME NETWORK DIAGRAM (Mac Minis)
+   =========================================== */
+.network {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1rem, 2vw, 2rem);
+    margin: clamp(1rem, 2vh, 1.6rem) 0;
+}
+.machine {
+    background: var(--paper-deep);
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius);
+    padding: clamp(1rem, 2vw, 1.5rem);
+    position: relative;
+    aspect-ratio: 4 / 3;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.4rem, 0.8vh, 0.6rem);
+    box-shadow: 4px 4px 0 var(--cyan);
+}
+.machine-tag {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--cyan);
+    font-weight: 700;
+}
+.machine-name {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+    color: var(--ink);
+    line-height: 1;
+}
+.machine-status {
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    color: var(--lime);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+}
+.machine-status::before {
+    content: "";
+    width: 6px; height: 6px;
+    background: var(--lime);
+    border-radius: 50%;
+    animation: ledBlink 2s ease-in-out infinite;
+    box-shadow: 0 0 5px var(--lime);
+}
+.machine-roster {
+    margin-top: auto;
+    display: flex;
+    gap: 0.3em;
+    flex-wrap: wrap;
+}
+.machine-roster .pill {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.2em 0.6em;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* ===========================================
+   MENTAL MODEL — three concentric rings
+   =========================================== */
+.mental-model {
+    position: relative;
+    width: clamp(260px, 36vw, 420px);
+    aspect-ratio: 1;
+    margin: 0 auto;
+}
+.ring {
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 1em;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    border: 1.5px solid;
+}
+.ring.outer {
+    inset: 0;
+    border-color: var(--cyan);
+    background: var(--cyan-soft);
+    color: var(--cyan);
+}
+.ring.middle {
+    inset: 18%;
+    border-color: var(--lime);
+    background: var(--lime-soft);
+    color: var(--lime);
+}
+.ring.inner {
+    inset: 36%;
+    border-color: var(--magenta);
+    background: var(--magenta-soft);
+    color: var(--magenta);
+    align-items: center;
+    padding-top: 0;
+}
+.ring-label {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--ink);
+    font-size: clamp(1rem, 1.8vw, 1.4rem);
+    text-transform: none;
+    letter-spacing: -0.01em;
+}
+
+/* ===========================================
+   USE-CASE GRID
+   =========================================== */
+.usecase-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(0.8rem, 1.6vw, 1.4rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+}
+.usecase {
+    background: var(--paper-deep);
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius);
+    padding: clamp(1rem, 2vw, 1.4rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    position: relative;
+    overflow: hidden;
+}
+.usecase::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--cyan);
+}
+.usecase:nth-child(2)::before { background: var(--lime); }
+.usecase:nth-child(3)::before { background: var(--amber); }
+.usecase:nth-child(4)::before { background: var(--magenta); }
+.usecase-tag {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--cyan);
+    margin-top: 0.4em;
+}
+.usecase:nth-child(2) .usecase-tag { color: var(--lime); }
+.usecase:nth-child(3) .usecase-tag { color: var(--amber); }
+.usecase:nth-child(4) .usecase-tag { color: var(--magenta); }
+.usecase-name {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+    color: var(--ink);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+}
+.usecase-detail {
+    font-size: var(--small-size);
+    color: var(--ink-soft);
+    line-height: 1.5;
+}
+
+/* ===========================================
+   STEP / PROCEDURE LIST (manual style)
+   =========================================== */
+.steps {
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+}
+.steps li {
+    counter-increment: step;
+    padding: clamp(0.7rem, 1.4vh, 1.1rem) 0;
+    border-bottom: 1px dashed var(--paper-rule);
+    display: grid;
+    grid-template-columns: clamp(40px, 6vw, 56px) 1fr;
+    gap: clamp(0.8rem, 1.5vw, 1.3rem);
+    align-items: baseline;
+}
+.steps li::before {
+    content: "0" counter(step);
+    font-family: var(--font-mono);
+    font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+    font-weight: 700;
+    color: var(--cyan);
+    letter-spacing: 0.1em;
+}
+.steps h4 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+    color: var(--ink);
+    line-height: 1.15;
+    margin-bottom: 0.3em;
+}
+.steps p {
+    font-size: var(--small-size);
+    color: var(--ink-soft);
+    line-height: 1.5;
+    max-width: 64ch;
+}
+
+/* ===========================================
+   SECURITY DIAGRAM
+   =========================================== */
+.security-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(0.8rem, 1.5vw, 1.2rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+}
+.sec-card {
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius);
+    padding: clamp(0.9rem, 1.8vw, 1.4rem);
+    background: var(--paper-deep);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+}
+.sec-card.warn { background: var(--amber-soft); border-color: var(--amber); }
+.sec-card.ok { background: var(--lime-soft); border-color: var(--lime); }
+.sec-icon {
+    font-family: var(--font-mono);
+    font-size: clamp(1.4rem, 2.6vw, 2rem);
+    color: var(--ink);
+    margin-bottom: 0.2em;
+}
+.sec-card.warn .sec-icon { color: var(--amber); }
+.sec-card.ok .sec-icon { color: var(--lime); }
+.sec-headline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1rem, 1.7vw, 1.3rem);
+    color: var(--ink);
+    line-height: 1.1;
+}
+.sec-detail {
+    font-size: var(--small-size);
+    color: var(--ink-soft);
+    line-height: 1.5;
+}
+
+/* ===========================================
+   COMPARISON CARDS (single agent vs many)
+   =========================================== */
+.compare-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1rem, 2vw, 1.6rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+}
+.compare-card {
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius);
+    padding: clamp(1.2rem, 2.4vw, 1.8rem);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.6rem, 1.2vh, 1rem);
+}
+.compare-card.miss {
+    background: var(--amber-soft);
+    border-color: var(--amber);
+}
+.compare-card.hit {
+    background: var(--lime-soft);
+    border-color: var(--lime);
+}
+.compare-tag {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--ink-faint);
+}
+.compare-card.miss .compare-tag { color: var(--amber); }
+.compare-card.hit .compare-tag { color: var(--lime); }
+.compare-headline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.4rem, 2.6vw, 2rem);
+    line-height: 1.05;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+}
+.compare-detail {
+    font-size: var(--body-size);
+    color: var(--ink-soft);
+    line-height: 1.55;
+}
+
+/* ===========================================
+   CLOSING / TAKEAWAYS
+   =========================================== */
+.closing-headline {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(2rem, 5vw, 4rem);
+    line-height: 1.0;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    max-width: 22ch;
+}
+.closing-headline em {
+    font-style: italic;
+    color: var(--cyan);
+}
+.takeaway-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1rem, 2vw, 2rem);
+    margin-top: clamp(1.5rem, 3vh, 2.5rem);
+}
+.takeaway {
+    border-top: 3px solid var(--cyan);
+    padding-top: clamp(0.6rem, 1.2vh, 1rem);
+}
+.takeaway:nth-child(2) { border-top-color: var(--lime); }
+.takeaway:nth-child(3) { border-top-color: var(--amber); }
+.takeaway-num {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--cyan);
+    letter-spacing: 0.25em;
+    margin-bottom: 0.5em;
+}
+.takeaway:nth-child(2) .takeaway-num { color: var(--lime); }
+.takeaway:nth-child(3) .takeaway-num { color: var(--amber); }
+.takeaway-text {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+    line-height: 1.2;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+/* Responsive collapse */
+@media (max-width: 800px) {
+    .about-grid,
+    .body-grid,
+    .body-grid.flip,
+    .arc,
+    .compare-pair,
+    .takeaway-grid {
+        grid-template-columns: 1fr;
+    }
+    .agent-grid { grid-template-columns: 1fr 1fr; }
+    .network { grid-template-columns: 1fr; }
+    .usecase-grid { grid-template-columns: 1fr; }
+    .security-grid { grid-template-columns: 1fr; }
+    .arc-bridge { transform: rotate(90deg); }
+    .cover-status { display: none; }
+}
+
+.keyboard-hint {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--ink-faint);
+    letter-spacing: 0.18em;
+    opacity: 0;
+    animation: fadeHint 0.6s ease 1.8s forwards;
+    pointer-events: none;
+    z-index: 50;
+    text-transform: uppercase;
+}
+@keyframes fadeHint { to { opacity: 0.6; } }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+<!-- ============================================================
+     SLIDE 1 — COVER
+     ============================================================ -->
+<section class="slide cover bare" data-title="Cover">
+    <div class="cover-status reveal d-4" aria-hidden="true">
+        <span class="label">// system status</span>
+        <div class="row"><span>3 × Mac Mini</span><span class="ok">ONLINE</span></div>
+        <div class="row"><span>9 agents running</span><span class="ok">OK</span></div>
+        <hr/>
+        <div class="row"><span>Family calendar</span><span class="warn">RESTORED</span></div>
+        <div class="row"><span>Skeptic flag</span><span class="info">CLEARED</span></div>
+        <div class="row"><span>Joy detected</span><span class="ok">YES</span></div>
+    </div>
+
+    <div class="cover-top reveal d-1">
+        <span>Lenny&rsquo;s Podcast &middot; Operator&rsquo;s Manual</span>
+        <span class="cover-issue">No. 250 &middot; AI Tools</span>
+        <span>2026</span>
+    </div>
+
+    <div class="cover-content">
+        <div class="eyebrow reveal d-2">A conversation with Claire Vo</div>
+        <h1 class="cover-title reveal-blur d-3">
+            From skeptic to <em>true believer.</em>
+        </h1>
+        <p class="cover-deck reveal d-5">
+            Nine AI agents, three Mac Minis, one family calendar (which got deleted on day one). A masterclass in actually living with personal AI agents &mdash; what works, what breaks, and why one agent is never enough.
+        </p>
+    </div>
+
+    <div class="cover-bottom reveal d-7">
+        <div class="cover-byline">
+            <span style="opacity: 0.55;">Guest</span>
+            <strong>Claire Vo</strong>
+        </div>
+        <div class="cover-byline" style="text-align: center;">
+            <span style="opacity: 0.55;">Host of</span>
+            <strong>How I AI</strong>
+        </div>
+        <div class="cover-byline" style="text-align: right;">
+            <span style="opacity: 0.55;">Hosted by</span>
+            <strong>Lenny Rachitsky</strong>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 2 — ABOUT CLAIRE
+     ============================================================ -->
+<section class="slide" data-title="About">
+    <header class="masthead">
+        <div class="led"><span>Operator&rsquo;s Manual</span></div>
+        <div>02 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="about-grid">
+            <div class="bio-card reveal-left d-1">
+                <div class="bio-monogram">CV</div>
+                <div>
+                    <div class="bio-name">Claire Vo</div>
+                    <div class="bio-role">3× CPO &middot; Engineer<br/>Founder, ChatPRD<br/>Host, How I AI</div>
+                    <div class="bio-meta">
+                        <div class="bio-meta-row"><span>Agents online</span><span>9</span></div>
+                        <div class="bio-meta-row"><span>Mac Minis</span><span>3</span></div>
+                        <div class="bio-meta-row"><span>Hours wasted day&nbsp;1</span><span>8</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bio-text">
+                <div class="eyebrow reveal d-2">The guest</div>
+                <h2 class="slide-title reveal d-3">An engineer-turned-CPO who tried OpenClaw, hated it, and then <em>quietly built a household around it.</em></h2>
+                <p class="lede reveal d-4">Claire isn&rsquo;t a hype account. She tries every new AI product, ships her own (ChatPRD), and was one of the loudest skeptics when OpenClaw first dropped. The conversion was earned, not enthusiastic-by-default.</p>
+                <p class="body-copy reveal d-5">She calls it her most mind-blowing AI experience since ChatGPT &mdash; and she&rsquo;s the kind of person who weighs that claim carefully.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual &middot; About</span>
+        <span>The guest</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 3 — JOURNEY ARC
+     ============================================================ -->
+<section class="slide" data-title="Arc">
+    <header class="masthead">
+        <div class="led"><span>The Arc</span></div>
+        <div>03 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow amber reveal d-1">The arc</div>
+        <h2 class="slide-title reveal d-2">Eight hours. One <em>deleted family calendar.</em> One <span class="lime">true believer.</span></h2>
+        <p class="lede reveal d-3">The framing of the episode in one sentence: she went in adversarial, the tool actively misbehaved, and she came out converted &mdash; not because it was easy but because the upside outweighed the pain.</p>
+
+        <div class="arc">
+            <div class="arc-card skeptic reveal-left d-4">
+                <span class="arc-state">Day 0 &middot; Skeptic</span>
+                <h3 class="arc-headline">&ldquo;It just deleted my whole calendar.&rdquo;</h3>
+                <p class="arc-detail">First install, eight hours sunk. Reward: family calendar gone. Public videos calling out the rough edges.</p>
+            </div>
+            <div class="arc-bridge reveal d-5">
+                <span class="arrow">→</span>
+                <span>Pull the<br/>thread</span>
+            </div>
+            <div class="arc-card believer reveal d-6">
+                <span class="arc-state">Today &middot; Believer</span>
+                <h3 class="arc-headline">&ldquo;Breathless OpenClaw bro.&rdquo;</h3>
+                <p class="arc-detail">Nine agents, three Mac Minis, real economic value. Replaced a 10-hr/wk human contractor with one agent named Sam.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>The arc</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 4 — THESIS
+     ============================================================ -->
+<section class="slide" data-title="Thesis">
+    <header class="masthead">
+        <div class="led"><span>The Thesis</span></div>
+        <div>04 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The thesis</div>
+        <h2 class="slide-title reveal d-2">You don&rsquo;t need <em>better AI.</em> You need <em>more agents</em> &mdash; with names.</h2>
+        <p class="lede reveal d-3">The biggest shift in Claire&rsquo;s setup wasn&rsquo;t a model upgrade. It was the realization that one general-purpose agent doesn&rsquo;t work &mdash; and a roster of specialized agents, each with a job and a persona, does.</p>
+
+        <div class="quote-block reveal d-4" style="margin-top: clamp(1rem, 2vh, 1.5rem);">
+            Where people stumbled with OpenClaw is they think they can throw any task at a single agent and get great results &mdash; and then they get really frustrated.
+            <span class="attribution">— Claire Vo</span>
+        </div>
+
+        <p class="body-copy reveal d-5" style="margin-top: clamp(1rem, 2vh, 1.5rem);">
+            Translation: stop building a butler. Start building a small staff.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>The thesis</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 5 — STATS / SCALE
+     ============================================================ -->
+<section class="slide" data-title="Stats">
+    <header class="masthead">
+        <div class="led"><span>The Setup</span></div>
+        <div>05 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid">
+            <div>
+                <div class="eyebrow reveal d-1">By the numbers</div>
+                <h2 class="slide-title reveal d-2">A <em>household</em> of agents, not a productivity app.</h2>
+                <p class="lede reveal d-3">The shape is closer to managing a small remote team than configuring a tool. Each agent has a name, a job, a memory, and a relationship with the humans in the house.</p>
+            </div>
+            <div class="stat-stack">
+                <div class="stat-slab reveal d-3">
+                    <div class="stat-num">9</div>
+                    <div class="stat-label">Specialized agents online &mdash; named, scoped, and assigned to a domain</div>
+                </div>
+                <div class="stat-slab lime reveal d-4">
+                    <div class="stat-num">3</div>
+                    <div class="stat-label">Mac Minis running them &mdash; cheap, quiet, always-on</div>
+                </div>
+                <div class="stat-slab amber reveal d-5">
+                    <div class="stat-num">8</div>
+                    <div class="stat-label">Hours wasted on first install (and one deleted calendar)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>By the numbers</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 6 — CAST OF AGENTS
+     ============================================================ -->
+<section class="slide" data-title="Cast">
+    <header class="masthead">
+        <div class="led"><span>The Cast</span></div>
+        <div>06 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The cast</div>
+        <h2 class="slide-title reveal d-2">Meet the <em>nine agents</em> running Claire&rsquo;s life.</h2>
+        <p class="lede reveal d-3">Each one is a specialist. They have names, personalities, and clearly-scoped jobs &mdash; just like a small team of contractors. The naming isn&rsquo;t whimsy; it&rsquo;s a memory aid for which one to talk to.</p>
+
+        <div class="agent-grid">
+            <div class="agent-card reveal-pop d-3">
+                <div class="agent-head">
+                    <div class="agent-avatar">F</div>
+                    <div>
+                        <div class="agent-name">Finn</div>
+                        <div class="agent-status">Online</div>
+                    </div>
+                </div>
+                <p class="agent-job">The family agent. Knows the household calendar, the kids&rsquo; schedules, the errands.</p>
+                <span class="agent-tag">// Family ops</span>
+            </div>
+
+            <div class="agent-card reveal-pop d-3">
+                <div class="agent-head">
+                    <div class="agent-avatar">P</div>
+                    <div>
+                        <div class="agent-name">Polly</div>
+                        <div class="agent-status">Online</div>
+                    </div>
+                </div>
+                <p class="agent-job">The personal-Claire agent. Knows her preferences, voice, and context for personal tasks.</p>
+                <span class="agent-tag">// Personal</span>
+            </div>
+
+            <div class="agent-card reveal-pop d-4">
+                <div class="agent-head">
+                    <div class="agent-avatar">M</div>
+                    <div>
+                        <div class="agent-name">Max</div>
+                        <div class="agent-status">Online</div>
+                    </div>
+                </div>
+                <p class="agent-job">A scoped specialist &mdash; one of the back-office crew handling defined recurring work.</p>
+                <span class="agent-tag">// Operations</span>
+            </div>
+
+            <div class="agent-card reveal-pop d-4">
+                <div class="agent-head">
+                    <div class="agent-avatar">H</div>
+                    <div>
+                        <div class="agent-name">Howie</div>
+                        <div class="agent-status">Online</div>
+                    </div>
+                </div>
+                <p class="agent-job">Handles a discrete production stream &mdash; podcast prep, content workflow, etc.</p>
+                <span class="agent-tag">// Production</span>
+            </div>
+
+            <div class="agent-card reveal-pop d-5">
+                <div class="agent-head">
+                    <div class="agent-avatar">K</div>
+                    <div>
+                        <div class="agent-name">Kelly</div>
+                        <div class="agent-status">Online</div>
+                    </div>
+                </div>
+                <p class="agent-job">Another named specialist on the bench &mdash; scoped tightly to one ongoing job.</p>
+                <span class="agent-tag">// Specialist</span>
+            </div>
+
+            <div class="agent-card reveal-pop d-5">
+                <div class="agent-head">
+                    <div class="agent-avatar">H</div>
+                    <div>
+                        <div class="agent-name">Holly</div>
+                        <div class="agent-status">Online</div>
+                    </div>
+                </div>
+                <p class="agent-job">A second &ldquo;H&rdquo; with a clearly different remit. Naming is how Claire keeps them straight.</p>
+                <span class="agent-tag">// Specialist</span>
+            </div>
+
+            <div class="agent-card reveal-pop d-6">
+                <div class="agent-head">
+                    <div class="agent-avatar">S</div>
+                    <div>
+                        <div class="agent-name">Sam</div>
+                        <div class="agent-status">Online</div>
+                    </div>
+                </div>
+                <p class="agent-job">The salesperson. Replaced a 10-hr/wk human contractor doing inbound. Real economic value.</p>
+                <span class="agent-tag">// Sales</span>
+            </div>
+
+            <div class="agent-card reveal-pop d-6">
+                <div class="agent-head">
+                    <div class="agent-avatar">Q</div>
+                    <div>
+                        <div class="agent-name">Q</div>
+                        <div class="agent-status">Online</div>
+                    </div>
+                </div>
+                <p class="agent-job">The kids&rsquo; homework helper. Patient, age-appropriate, designed for a different audience.</p>
+                <span class="agent-tag">// Family / kids</span>
+            </div>
+
+            <div class="agent-card reveal-pop d-7">
+                <div class="agent-head">
+                    <div class="agent-avatar">S</div>
+                    <div>
+                        <div class="agent-name">Sage</div>
+                        <div class="agent-status">Online</div>
+                    </div>
+                </div>
+                <p class="agent-job">The course bot. Manages her Maven course community &mdash; answers, prompts, follow-ups.</p>
+                <span class="agent-tag">// Course ops</span>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>The cast &middot; 9 agents</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 7 — WHY MULTIPLE AGENTS
+     ============================================================ -->
+<section class="slide" data-title="WhyMultiple">
+    <header class="masthead">
+        <div class="led"><span>The Unlock</span></div>
+        <div>07 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow lime reveal d-1">The unlock</div>
+        <h2 class="slide-title reveal d-2">Why <span class="lime">multiple specialists</span> beat one generalist.</h2>
+        <p class="lede reveal d-3">A single agent trying to be your everything ends up being adequate at nothing. Specialized agents with focused memory, clear scope, and a single voice produce work that&rsquo;s actually useful.</p>
+
+        <div class="compare-pair">
+            <div class="compare-card miss reveal-left d-4">
+                <span class="compare-tag">// What people try</span>
+                <h3 class="compare-headline">One agent. Anything you throw at it.</h3>
+                <p class="compare-detail">Bloated context. Confused identity. Mediocre work that requires babysitting. Frustration sets in around hour two.</p>
+            </div>
+            <div class="compare-card hit reveal d-5">
+                <span class="compare-tag">// What works</span>
+                <h3 class="compare-headline">Many agents. Each with one job.</h3>
+                <p class="compare-detail">Tight context. Distinct &ldquo;soul.&rdquo; Trustworthy on its slice. Compound leverage as the roster grows.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>The unlock</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 8 — SOUL / IDENTITY / MEMORY
+     ============================================================ -->
+<section class="slide" data-title="MentalModel">
+    <header class="masthead">
+        <div class="led"><span>The Mental Model</span></div>
+        <div>08 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid">
+            <div>
+                <div class="eyebrow reveal d-1">Mental model</div>
+                <h2 class="slide-title reveal d-2">Three layers: <em>soul, identity, memory.</em></h2>
+                <p class="lede reveal d-3">Claire&rsquo;s framework for thinking about each agent. Once you separate these, the &ldquo;why is it acting weird&rdquo; debugging becomes tractable.</p>
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.6em;" class="reveal d-4">
+                    <li><strong style="color: var(--cyan);">Soul</strong> &mdash; the deep identity. The version of itself it would be without any context.</li>
+                    <li><strong style="color: var(--lime);">Identity</strong> &mdash; the role you&rsquo;ve cast it in. Tone, voice, scope.</li>
+                    <li><strong style="color: var(--magenta);">Memory</strong> &mdash; what it remembers about you, your work, the world.</li>
+                </ul>
+            </div>
+
+            <div class="mental-model reveal-pop d-3" aria-hidden="true">
+                <div class="ring outer">Soul</div>
+                <div class="ring middle">Identity</div>
+                <div class="ring inner"><span class="ring-label">Memory</span></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Soul &middot; identity &middot; memory</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 9 — HOME NETWORK DIAGRAM
+     ============================================================ -->
+<section class="slide" data-title="Network">
+    <header class="masthead">
+        <div class="led"><span>The Hardware</span></div>
+        <div>09 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The hardware</div>
+        <h2 class="slide-title reveal d-2">Three quiet boxes in a closet, doing the work of <em>a small staff.</em></h2>
+        <p class="lede reveal d-3">Claire runs her roster across three Mac Minis, with multiple agents on each. They&rsquo;re cheap, silent, always-on, and don&rsquo;t need a screen. You can also start with an old laptop &mdash; the Mac Mini is the upgrade, not the entry fee.</p>
+
+        <div class="network">
+            <div class="machine reveal-pop d-3">
+                <span class="machine-tag">// Box 01</span>
+                <h3 class="machine-name">Personal &amp; family</h3>
+                <span class="machine-status">Running</span>
+                <div class="machine-roster">
+                    <span class="pill">Polly</span>
+                    <span class="pill">Finn</span>
+                    <span class="pill">Q</span>
+                </div>
+            </div>
+            <div class="machine reveal-pop d-4">
+                <span class="machine-tag">// Box 02</span>
+                <h3 class="machine-name">Work &amp; sales</h3>
+                <span class="machine-status">Running</span>
+                <div class="machine-roster">
+                    <span class="pill">Sam</span>
+                    <span class="pill">Sage</span>
+                    <span class="pill">Howie</span>
+                </div>
+            </div>
+            <div class="machine reveal-pop d-5">
+                <span class="machine-tag">// Box 03</span>
+                <h3 class="machine-name">Specialists</h3>
+                <span class="machine-status">Running</span>
+                <div class="machine-roster">
+                    <span class="pill">Max</span>
+                    <span class="pill">Kelly</span>
+                    <span class="pill">Holly</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>The hardware</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 10 — INSTALL: THE BASICS
+     ============================================================ -->
+<section class="slide" data-title="Install">
+    <header class="masthead">
+        <div class="led"><span>Install</span></div>
+        <div>10 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Install: the basics</div>
+        <h2 class="slide-title reveal d-2">It&rsquo;s easier than you think &mdash; <em>but don&rsquo;t install it on your main computer.</em></h2>
+        <p class="lede reveal d-3">The single biggest mistake newcomers make. The agent operates on your machine: it can move files, send messages, hit your calendar. You don&rsquo;t want that on the laptop your work, banking, and family photos live on.</p>
+
+        <div class="terminal reveal d-4">
+            <span class="comment"># a clean machine — old laptop or Mac Mini, anything you can spare</span>
+            <br/><span class="prompt">$ </span><span class="you">curl -sSL openclaw.ai/install | sh</span>
+            <br/><span class="info">→ fetching latest...</span>
+            <br/><span class="ok">✓ installed</span>
+            <br/><span class="prompt">$ </span><span class="you">openclaw start --agent finn</span>
+            <br/><span class="ok">✓ Finn online</span>
+            <br/><span class="info">listening on iMessage, calendar, mail</span>
+            <br/><span class="comment"># onboard like a real assistant: tell it who you are, what it owns, what it doesn&rsquo;t</span>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Install: basics</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 11 — ONBOARDING THE AGENT
+     ============================================================ -->
+<section class="slide" data-title="Onboard">
+    <header class="masthead">
+        <div class="led"><span>Onboarding</span></div>
+        <div>11 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Onboarding</div>
+        <h2 class="slide-title reveal d-2">Set it up like you&rsquo;re onboarding a <em>real assistant.</em></h2>
+        <p class="lede reveal d-3">The framing change that made everything work. You wouldn&rsquo;t hand a new hire your laptop and say &ldquo;figure it out.&rdquo; You&rsquo;d give them a job description, an intro doc, access to specific systems, and feedback for the first month.</p>
+
+        <ol class="steps">
+            <li class="reveal d-3">
+                <div>
+                    <h4>Write the job description.</h4>
+                    <p>What does this agent own? What does it explicitly not own? What&rsquo;s its tone? The one-pager you&rsquo;d give a new hire.</p>
+                </div>
+            </li>
+            <li class="reveal d-4">
+                <div>
+                    <h4>Give it a name.</h4>
+                    <p>Polly, Finn, Sam &mdash; not because it&rsquo;s cute. Because you&rsquo;ll remember which one to talk to about which thing.</p>
+                </div>
+            </li>
+            <li class="reveal d-5">
+                <div>
+                    <h4>Give it scoped access.</h4>
+                    <p>One calendar, one inbox, one folder. Not all of them. The principle of least privilege isn&rsquo;t paranoia &mdash; it&rsquo;s how trust is built.</p>
+                </div>
+            </li>
+            <li class="reveal d-6">
+                <div>
+                    <h4>Give it feedback for the first week.</h4>
+                    <p>Tell it when it gets the tone wrong. When it makes the wrong call. When it should&rsquo;ve asked. Like any new hire.</p>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Onboarding</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 12 — SECURITY & PRIVACY
+     ============================================================ -->
+<section class="slide" data-title="Security">
+    <header class="masthead">
+        <div class="led"><span>Security</span></div>
+        <div>12 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow amber reveal d-1">Security &amp; privacy</div>
+        <h2 class="slide-title reveal d-2">The risks are real. The mitigations are <em>boring and sufficient.</em></h2>
+        <p class="lede reveal d-3">Most concerns Claire hears are valid in theory and fully addressable in practice. The pattern: scope tightly, separate machines, don&rsquo;t mix domains.</p>
+
+        <div class="security-grid">
+            <div class="sec-card warn reveal d-4">
+                <span class="sec-icon">⚠</span>
+                <h3 class="sec-headline">The risk</h3>
+                <p class="sec-detail">Agent has access to a lot. Wrong action on the wrong system can blow up real things &mdash; calendars, emails, money.</p>
+            </div>
+            <div class="sec-card reveal d-5">
+                <span class="sec-icon">▣</span>
+                <h3 class="sec-headline">The principle</h3>
+                <p class="sec-detail">Least privilege. Each agent gets the smallest scope that lets it do its job &mdash; and nothing else.</p>
+            </div>
+            <div class="sec-card ok reveal d-6">
+                <span class="sec-icon">✓</span>
+                <h3 class="sec-headline">The practice</h3>
+                <p class="sec-detail">Dedicated machine. Sandboxed accounts. Test on toy data first. Never the main laptop. Never &ldquo;just for now.&rdquo;</p>
+            </div>
+        </div>
+
+        <p class="body-copy reveal d-7" style="margin-top: clamp(0.8rem, 1.5vh, 1.2rem); max-width: 64ch;">
+            None of this is glamorous. All of it is what separates the people who are using AI agents from the people who tweet about them.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Security</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 13 — THE CALENDAR INCIDENT
+     ============================================================ -->
+<section class="slide" data-title="CalendarIncident">
+    <header class="masthead">
+        <div class="led"><span>Lessons Learned</span></div>
+        <div>13 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid flip">
+            <div>
+                <div class="warning-card reveal-pop d-2">
+                    <span class="warning-tag">incident report</span>
+                    <h3 class="warning-headline">Day one: agent given keys to family calendar. Family calendar deleted within hours.</h3>
+                    <p class="warning-detail">Recovered from backup, but the lesson was bigger than the data: agents are not consumer apps. They are operators with their hands on real systems. Treat them accordingly from minute one.</p>
+                </div>
+            </div>
+
+            <div>
+                <div class="eyebrow amber reveal d-1">Lessons learned the hard way</div>
+                <h2 class="slide-title reveal d-2">The first install will <em>break something.</em> Plan for it.</h2>
+                <p class="lede reveal d-3">Backups before, sandboxes during, scoped access throughout. The expectation that the first run will go cleanly is what makes it go badly.</p>
+                <p class="body-copy reveal d-4">Claire&rsquo;s framing: this is closer to setting up a home server than installing an app. Treat it like sysadmin work, because it is.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Incident report</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 14 — Q THE HOMEWORK AGENT
+     ============================================================ -->
+<section class="slide" data-title="Q">
+    <header class="masthead">
+        <div class="led"><span>Use Case &middot; Q</span></div>
+        <div>14 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid">
+            <div>
+                <div class="eyebrow reveal d-1">Q &mdash; the homework agent</div>
+                <h2 class="slide-title reveal d-2">A patient elementary-school tutor that <em>doesn&rsquo;t get tired.</em></h2>
+                <p class="lede reveal d-3">Q is configured for a different audience entirely &mdash; Claire&rsquo;s kids. Different identity, different tone, different scope. The same OpenClaw substrate, cast in a completely different role.</p>
+                <p class="body-copy reveal d-4">The lesson isn&rsquo;t about kids&rsquo; homework. It&rsquo;s that one substrate can produce wildly different agents if you take the casting seriously.</p>
+            </div>
+            <div>
+                <div class="terminal reveal d-3">
+                    <span class="comment"># Q&rsquo;s job description (paraphrased)</span>
+                    <br/><span class="info">name:</span> <span class="you">Q</span>
+                    <br/><span class="info">role:</span> <span class="you">elementary tutor</span>
+                    <br/><span class="info">audience:</span> <span class="you">two kids, ages 7 and 10</span>
+                    <br/><span class="info">tone:</span> <span class="you">patient, warm, never condescending</span>
+                    <br/><span class="info">scope:</span> <span class="you">homework + reading + curiosity Qs</span>
+                    <br/><span class="info">forbidden:</span> <span class="warn">never just give the answer</span>
+                    <br/><span class="info">style:</span> <span class="you">questions back, scaffolding, praise effort</span>
+                    <br/><span class="ok">✓ Q ready</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Q &middot; the tutor</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 15 — FINN THE FAMILY AGENT
+     ============================================================ -->
+<section class="slide" data-title="Finn">
+    <header class="masthead">
+        <div class="led"><span>Use Case &middot; Finn</span></div>
+        <div>15 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Finn &mdash; the family agent</div>
+        <h2 class="slide-title reveal d-2">The household&rsquo;s <em>operations layer.</em></h2>
+        <p class="lede reveal d-3">Finn knows the family&rsquo;s calendar, the kids&rsquo; activities, the recurring errands, the &ldquo;please remind me when&rdquo; ledger. The thing a really good house manager would handle &mdash; sized to a household, not a corporation.</p>
+
+        <div class="usecase-grid">
+            <div class="usecase reveal d-4">
+                <span class="usecase-tag">// Calendar</span>
+                <h3 class="usecase-name">Owns the family calendar.</h3>
+                <p class="usecase-detail">Adds, moves, removes events. Deconflicts. Asks before destructive moves. Notifies the right humans.</p>
+            </div>
+            <div class="usecase reveal d-4">
+                <span class="usecase-tag">// Communication</span>
+                <h3 class="usecase-name">Connected via iMessage.</h3>
+                <p class="usecase-detail">You can text Finn the way you&rsquo;d text a partner. &ldquo;Move soccer to Thursday&rdquo; just works.</p>
+            </div>
+            <div class="usecase reveal d-5">
+                <span class="usecase-tag">// Memory</span>
+                <h3 class="usecase-name">Knows the household.</h3>
+                <p class="usecase-detail">Birthdays. Allergies. Which sitter on which night. The stuff a paper notebook used to hold.</p>
+            </div>
+            <div class="usecase reveal d-5">
+                <span class="usecase-tag">// Boundaries</span>
+                <h3 class="usecase-name">Doesn&rsquo;t do work email.</h3>
+                <p class="usecase-detail">That&rsquo;s a different agent. Scope is the safety mechanism &mdash; and the quality mechanism.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Finn &middot; the household</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 16 — SAM THE SALESPERSON
+     ============================================================ -->
+<section class="slide" data-title="Sam">
+    <header class="masthead">
+        <div class="led"><span>Use Case &middot; Sam</span></div>
+        <div>16 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid">
+            <div>
+                <div class="eyebrow lime reveal d-1">Sam &mdash; the salesperson</div>
+                <h2 class="slide-title reveal d-2">Replaced a <em>10-hour-a-week contractor.</em></h2>
+                <p class="lede reveal d-3">The clearest economic story in the deck. Sam handles inbound sales for Claire&rsquo;s business &mdash; the qualifying, the scheduling, the first-touch conversation &mdash; work that previously cost a paycheck.</p>
+                <p class="body-copy reveal d-4">It&rsquo;s not that Sam is better than the human was. It&rsquo;s that Sam is good enough at the boring 80% to free human time for the meaningful 20%.</p>
+            </div>
+            <div>
+                <div class="quote-block reveal d-5" style="border-color: var(--lime);">
+                    What Sam does has real economic value. Last year, before the beginning of the year, I was paying somebody 10 hours a week to do this.
+                    <span class="attribution">— Claire Vo</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Sam &middot; sales</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 17 — SAGE THE COURSE BOT
+     ============================================================ -->
+<section class="slide" data-title="Sage">
+    <header class="masthead">
+        <div class="led"><span>Use Case &middot; Sage</span></div>
+        <div>17 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Sage &mdash; the course bot</div>
+        <h2 class="slide-title reveal d-2">Runs the <em>course community</em> at the speed students learn.</h2>
+        <p class="lede reveal d-3">Sage manages Claire&rsquo;s Maven course: answering recurring questions, prompting students who&rsquo;ve gone quiet, summarizing the week, surfacing what needs a real human reply. The role a course-ops person plays at scale &mdash; without the scale.</p>
+
+        <div class="terminal reveal d-4">
+            <span class="comment"># Sage&rsquo;s typical day, condensed</span>
+            <br/><span class="info">[09:00]</span> <span class="you">cohort check-in posted</span>
+            <br/><span class="info">[09:14]</span> <span class="ok">42 student questions auto-answered (boilerplate)</span>
+            <br/><span class="info">[09:42]</span> <span class="warn">3 questions flagged for Claire (nuance / 1:1)</span>
+            <br/><span class="info">[14:00]</span> <span class="you">drip prompt sent to 6 quiet students</span>
+            <br/><span class="info">[18:00]</span> <span class="ok">end-of-day digest delivered to Claire</span>
+            <br/><span class="comment"># Claire reviews, course community feels alive</span>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Sage &middot; courses</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 18 — RUNNING MULTIPLE ON ONE MACHINE
+     ============================================================ -->
+<section class="slide" data-title="MultiRun">
+    <header class="masthead">
+        <div class="led"><span>Tactic</span></div>
+        <div>18 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Tactic</div>
+        <h2 class="slide-title reveal d-2">You can run <em>several agents</em> on a single machine.</h2>
+        <p class="lede reveal d-3">You don&rsquo;t need one box per agent. A modest Mac Mini comfortably hosts three or four well-scoped agents. The split is more about <strong>domain isolation</strong> than CPU.</p>
+
+        <ol class="steps">
+            <li class="reveal d-3">
+                <div>
+                    <h4>Group by domain, not by load.</h4>
+                    <p>Family agents on one box. Work agents on another. Specialists on a third. Why? Blast radius if something goes wrong.</p>
+                </div>
+            </li>
+            <li class="reveal d-4">
+                <div>
+                    <h4>Give each its own user / scope.</h4>
+                    <p>Separate macOS user accounts where it matters. Separate API keys, separate calendars, separate inboxes.</p>
+                </div>
+            </li>
+            <li class="reveal d-5">
+                <div>
+                    <h4>Don&rsquo;t cross the streams.</h4>
+                    <p>Sam (sales) shouldn&rsquo;t see family iMessage. Finn (family) shouldn&rsquo;t see customer email. Easier on day one than retroactively.</p>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Multi-agent on one machine</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 19 — COMMON ISSUES
+     ============================================================ -->
+<section class="slide" data-title="CommonIssues">
+    <header class="masthead">
+        <div class="led"><span>Troubleshooting</span></div>
+        <div>19 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow amber reveal d-1">Troubleshooting</div>
+        <h2 class="slide-title reveal d-2">Three problems you&rsquo;ll hit. <em>All have workarounds.</em></h2>
+
+        <div class="security-grid">
+            <div class="sec-card warn reveal d-3">
+                <span class="sec-icon">▢</span>
+                <h3 class="sec-headline">Browser limitations</h3>
+                <p class="sec-detail">Built-in browsing is rough. Workaround: pair OpenClaw with Exa or Perplexity for real web search.</p>
+            </div>
+            <div class="sec-card warn reveal d-4">
+                <span class="sec-icon">▢</span>
+                <h3 class="sec-headline">Memory overload</h3>
+                <p class="sec-detail">Context fills up. Agent gets foggy. Workaround: prune memory deliberately. Reset weekly. Smaller context = sharper agent.</p>
+            </div>
+            <div class="sec-card warn reveal d-5">
+                <span class="sec-icon">▢</span>
+                <h3 class="sec-headline">Headless management</h3>
+                <p class="sec-detail">Mac Minis run without a screen. Workaround: screen-share into them from your laptop. Not glamorous; works.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Troubleshooting</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 20 — EXA / PERPLEXITY WORKAROUND
+     ============================================================ -->
+<section class="slide" data-title="WebSearch">
+    <header class="masthead">
+        <div class="led"><span>Workaround</span></div>
+        <div>20 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Workaround &middot; web search</div>
+        <h2 class="slide-title reveal d-2">For real web access: <em>plug in a specialist.</em></h2>
+        <p class="lede reveal d-3">OpenClaw&rsquo;s built-in browser isn&rsquo;t up to heavy research. Claire wires in Exa or Perplexity for the actual searching, then lets the agent reason over the results. The agent is the brain; the search engine is the eyes.</p>
+
+        <div class="terminal reveal d-4">
+            <span class="comment"># typical research pattern</span>
+            <br/><span class="prompt">user &raquo;</span> <span class="you">research X for tomorrow&rsquo;s call</span>
+            <br/><span class="info">→ agent dispatches search to Exa</span>
+            <br/><span class="info">→ Exa returns 8 high-signal sources</span>
+            <br/><span class="info">→ agent synthesizes, summarizes, links back</span>
+            <br/><span class="ok">✓ briefing in your inbox &mdash; 3 minutes total</span>
+        </div>
+
+        <p class="body-copy reveal d-5">
+            The pattern generalizes: when a built-in tool is weak, pair the agent with a specialist. The agent&rsquo;s job is judgment, not every primitive.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Web search</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 21 — MEMORY MANAGEMENT
+     ============================================================ -->
+<section class="slide" data-title="Memory">
+    <header class="masthead">
+        <div class="led"><span>Memory</span></div>
+        <div>21 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid flip">
+            <div>
+                <div class="quote-block reveal-left d-2">
+                    You really have to pull the thread on these tools and you have to spend enough time with them to see not where they are today, but where they are in a week and where they are in a month.
+                    <span class="attribution">— Claire Vo</span>
+                </div>
+            </div>
+            <div>
+                <div class="eyebrow reveal d-1">Memory hygiene</div>
+                <h2 class="slide-title reveal d-2">Managing memory is <em>50% of the job.</em></h2>
+                <p class="lede reveal d-3">Agents that &ldquo;get worse&rdquo; over time mostly haven&rsquo;t. Their memory got bloated. Once you treat memory hygiene as a recurring task &mdash; like cleaning a kitchen &mdash; the quality stops decaying.</p>
+                <p class="body-copy reveal d-4">Practical rule: weekly memory review. What does the agent &ldquo;remember&rdquo; that&rsquo;s no longer true? What facts have rotated? What patterns has it picked up that you don&rsquo;t want?</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Memory hygiene</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 22 — SCREEN SHARING TIP
+     ============================================================ -->
+<section class="slide" data-title="ScreenShare">
+    <header class="masthead">
+        <div class="led"><span>Pro Tip</span></div>
+        <div>22 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow lime reveal d-1">Pro tip</div>
+        <h2 class="slide-title reveal d-2">Manage the Mac Minis by <em>screen-sharing into them.</em></h2>
+        <p class="lede reveal d-3">The boxes don&rsquo;t need monitors. macOS Screen Sharing turns any of them into a remote desktop you can pop into from your laptop. Open it, talk to the agent, close it, walk away.</p>
+        <p class="body-copy reveal d-4">It&rsquo;s mundane. It&rsquo;s the kind of detail that turns &ldquo;cool idea&rdquo; into &ldquo;daily-driver setup.&rdquo; Most of the polish in this stack is mundane.</p>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Pro tip &middot; screen share</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 23 — GOOGLE WORKSPACE
+     ============================================================ -->
+<section class="slide" data-title="GoogleWorkspace">
+    <header class="masthead">
+        <div class="led"><span>Collaboration</span></div>
+        <div>23 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Agent collaboration</div>
+        <h2 class="slide-title reveal d-2">Google Workspace is the <em>shared filing cabinet.</em></h2>
+        <p class="lede reveal d-3">Multiple agents that need to share state? Don&rsquo;t invent a protocol. Give them a shared Google Drive folder and treat it like the filing cabinet a small office uses. Files for context. Docs for hand-offs. Calendars for time.</p>
+        <p class="body-copy reveal d-4">It&rsquo;s deeply un-fancy. It works because everyone (including the agents) already knows how to read a Google Doc.</p>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Agent collaboration</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 24 — WHAT MAKES OPENCLAW SPECIAL
+     ============================================================ -->
+<section class="slide" data-title="WhySpecial">
+    <header class="masthead">
+        <div class="led"><span>The Distinction</span></div>
+        <div>24 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">What makes OpenClaw different from other agent products</div>
+        <h2 class="slide-title reveal d-2">It feels less like an <em>app</em> and more like a <em>presence.</em></h2>
+        <p class="lede reveal d-3">Claire&rsquo;s thesis: the breakthrough isn&rsquo;t any single capability &mdash; it&rsquo;s the persistence. Most AI products are sessions. OpenClaw is a thing that lives somewhere, has memory, and can be addressed by name. That changes the relationship.</p>
+
+        <div class="quote-block reveal d-4" style="margin-top: clamp(1rem, 2vh, 1.5rem); border-color: var(--magenta);">
+            It hit me with enough joy and enough utility &mdash; when it wasn&rsquo;t deleting my calendar &mdash; that I knew something was there.
+            <span class="attribution">— Claire Vo</span>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>What makes it special</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 25 — THE YAPPERS API / RAMBLE MODE
+     ============================================================ -->
+<section class="slide" data-title="Yappers">
+    <header class="masthead">
+        <div class="led"><span>Quirk</span></div>
+        <div>25 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">A delightful quirk</div>
+        <h2 class="slide-title reveal d-2">The &ldquo;<em>yappers API</em>&rdquo; &mdash; ramble mode.</h2>
+        <p class="lede reveal d-3">A small, surprisingly useful primitive: instead of typing a structured request, you talk to the agent the way you talk to a colleague while pacing. Ramble. Stream-of-consciousness. The agent extracts the actual ask.</p>
+        <p class="body-copy reveal d-4">It maps to how humans actually plan &mdash; messily, out loud, with backtracks. The fact that it works is what makes the substrate feel like a presence rather than a form.</p>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Ramble mode</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 26 — CLAUDE CODE AS BRAIN SURGEON
+     ============================================================ -->
+<section class="slide" data-title="BrainSurgeon">
+    <header class="masthead">
+        <div class="led"><span>Tactic</span></div>
+        <div>26 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Tactic</div>
+        <h2 class="slide-title reveal d-2">Use Claude Code as your agent&rsquo;s <em>brain surgeon.</em></h2>
+        <p class="lede reveal d-3">When an agent goes off &mdash; bad memory, drifted identity, weird behaviour &mdash; Claire pops Claude Code onto the agent&rsquo;s config and prompts directly. Read the system prompt. Inspect the memory store. Edit. Restart.</p>
+        <p class="body-copy reveal d-4">It&rsquo;s the &ldquo;debug the agent with another agent&rdquo; pattern. The fact that it works is one of the leading indicators that this stack is past prototype.</p>
+
+        <div class="terminal reveal d-5">
+            <span class="comment"># brain surgery pattern</span>
+            <br/><span class="prompt">$ </span><span class="you">cd ~/openclaw/agents/finn</span>
+            <br/><span class="prompt">$ </span><span class="you">claude</span>
+            <br/><span class="info">→ Claude Code reading Finn&rsquo;s prompt + memory</span>
+            <br/><span class="prompt">claude &raquo;</span> <span class="you">why is Finn double-booking Tuesdays?</span>
+            <br/><span class="ok">→ found stale rule from week 3 &mdash; removing</span>
+            <br/><span class="ok">✓ Finn restored</span>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Brain surgery</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 27 — MANAGEMENT SKILLS
+     ============================================================ -->
+<section class="slide" data-title="ManagementSkills">
+    <header class="masthead">
+        <div class="led"><span>The Meta-Skill</span></div>
+        <div>27 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid">
+            <div>
+                <div class="eyebrow reveal d-1">The meta-skill</div>
+                <h2 class="slide-title reveal d-2">The most useful skill for AI agents is <em>management.</em></h2>
+                <p class="lede reveal d-3">Not prompt engineering. Not prompt-engineering school. The actual skill is the same one that makes someone good at running a small team: writing the JD, scoping the role, giving feedback, knowing when to fire and re-cast.</p>
+                <p class="body-copy reveal d-4">If you&rsquo;ve ever managed a team, you already know 80% of what makes agents work well. If you haven&rsquo;t, this is a surprisingly good entry point to learning it.</p>
+            </div>
+            <div>
+                <div class="quote-block reveal d-5">
+                    You delegate your calendar with them. You give them feedback the way you would any other assistant.
+                    <span class="attribution">— Claire Vo</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Management is the skill</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 28 — DOWNSIDES / HONEST ACCOUNT
+     ============================================================ -->
+<section class="slide" data-title="Honest">
+    <header class="masthead">
+        <div class="led"><span>The Honest Account</span></div>
+        <div>28 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow amber reveal d-1">The honest account</div>
+        <h2 class="slide-title reveal d-2">It is <em>not hands-off.</em> It is <em>still painful.</em> The value is high enough to do it anyway.</h2>
+        <p class="lede reveal d-3">Claire is unsentimental about what the experience actually feels like. The narrative arc &mdash; skeptic to believer &mdash; doesn&rsquo;t mean &ldquo;easy now.&rdquo; It means &ldquo;worth it now.&rdquo;</p>
+
+        <div class="quote-block reveal d-4" style="margin-top: clamp(0.8rem, 1.5vh, 1.2rem);">
+            I won&rsquo;t sugarcoat it. It&rsquo;s a pain to set up. It is not hands-off. But the value is so high I am willing to go through the pain.
+            <span class="attribution">— Claire Vo</span>
+        </div>
+
+        <p class="body-copy reveal d-5" style="margin-top: clamp(1rem, 2vh, 1.5rem);">
+            The honest expectation: 6&ndash;12 months of friction before the household routine forms around the agents. That&rsquo;s about how long onboarding a new family member would take, too.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>The honest account</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 29 — JESSE GENET HOMESCHOOLING
+     ============================================================ -->
+<section class="slide" data-title="Jesse">
+    <header class="masthead">
+        <div class="led"><span>External example</span></div>
+        <div>29 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">An external proof point</div>
+        <h2 class="slide-title reveal d-2">Jesse Genet runs a <em>5-agent household</em> &mdash; including a homeschooling agent.</h2>
+        <p class="lede reveal d-3">Claire&rsquo;s setup isn&rsquo;t a one-off. Jesse Genet is running a parallel configuration: five named agents covering home, finances, code, and a homeschooling tutor for her kids. Two independent power-users converging on the same shape.</p>
+        <p class="body-copy reveal d-4">When two people who&rsquo;ve never coordinated independently arrive at &ldquo;multiple named specialists, scoped tightly, persistent memory, dedicated hardware,&rdquo; that&rsquo;s a pattern, not a personal preference.</p>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>External example</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 30 — WHO SHOULD TRY THIS
+     ============================================================ -->
+<section class="slide" data-title="WhoTry">
+    <header class="masthead">
+        <div class="led"><span>Audience</span></div>
+        <div>30 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Who should try this now</div>
+        <h2 class="slide-title reveal d-2">If three of these are true, <em>start this weekend.</em></h2>
+
+        <ol class="steps">
+            <li class="reveal d-3">
+                <div>
+                    <h4>You have repetitive work that&rsquo;s describable.</h4>
+                    <p>Inbound qualifying. Calendar wrangling. Course community moderation. Anything you could write a 1-page SOP for.</p>
+                </div>
+            </li>
+            <li class="reveal d-3">
+                <div>
+                    <h4>You&rsquo;ve managed people before.</h4>
+                    <p>You know how to write a job description, set scope, give feedback. That&rsquo;s 80% of the skill.</p>
+                </div>
+            </li>
+            <li class="reveal d-4">
+                <div>
+                    <h4>You have a spare machine.</h4>
+                    <p>An old laptop, a Mac Mini, anything that&rsquo;s not your daily driver. Critical, not optional.</p>
+                </div>
+            </li>
+            <li class="reveal d-4">
+                <div>
+                    <h4>You can stomach a rough first weekend.</h4>
+                    <p>Eight hours, possibly a small disaster. The threshold is short. The value on the other side is real.</p>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Who should try this</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 31 — WHO SHOULDN'T
+     ============================================================ -->
+<section class="slide" data-title="WhoNot">
+    <header class="masthead">
+        <div class="led"><span>Audience</span></div>
+        <div>31 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow amber reveal d-1">Who should wait</div>
+        <h2 class="slide-title reveal d-2">If your need is &ldquo;<em>one tool that does everything,</em>&rdquo; this isn&rsquo;t it &mdash; yet.</h2>
+        <p class="lede reveal d-3">Claire is direct about the people for whom this is the wrong call right now. The substrate works for someone who wants to <strong>build a small staff</strong>. It doesn&rsquo;t work for someone who wants &ldquo;the AI&rdquo; to handle their life with no setup.</p>
+
+        <div class="warning-card reveal d-4">
+            <span class="warning-tag">not yet</span>
+            <h3 class="warning-headline">If you want a single, polished consumer app, give this another year.</h3>
+            <p class="warning-detail">The rough edges are real. The setup is real. The reward is real but doesn&rsquo;t arrive in fifteen minutes. People who try OpenClaw expecting a polished consumer experience walk away rightly disappointed.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>Who should wait</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 32 — WHY THIS MATTERS
+     ============================================================ -->
+<section class="slide" data-title="WhyMatters">
+    <header class="masthead">
+        <div class="led"><span>The Bigger Picture</span></div>
+        <div>32 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Why this matters past Claire&rsquo;s house</div>
+        <h2 class="slide-title reveal d-2">A lot of <em>real life</em> is going to live on substrates that look like this.</h2>
+        <p class="lede reveal d-3">The setup Claire describes &mdash; named persistent agents, scoped roles, dedicated hardware in the home, family-level use &mdash; is plausibly what the next ten years of personal computing converge toward. Not chatbots in a tab. Presences in a household.</p>
+        <p class="body-copy reveal d-4">The skeptic-to-believer arc isn&rsquo;t about OpenClaw specifically. It&rsquo;s about the moment someone realizes the model &mdash; one tool, one tab, one session &mdash; is the wrong shape entirely.</p>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>The bigger picture</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 33 — WHAT TO DO MONDAY
+     ============================================================ -->
+<section class="slide" data-title="MondayList">
+    <header class="masthead">
+        <div class="led"><span>Action List</span></div>
+        <div>33 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow lime reveal d-1">Action list &middot; what to do Monday</div>
+        <h2 class="slide-title reveal d-2"><span class="lime">Six steps</span> to your first useful agent.</h2>
+
+        <ol class="steps">
+            <li class="reveal d-3">
+                <div>
+                    <h4>Find a spare machine.</h4>
+                    <p>Old laptop, Mac Mini, anything. Not your daily driver. This is non-negotiable.</p>
+                </div>
+            </li>
+            <li class="reveal d-3">
+                <div>
+                    <h4>Pick one job, write the JD.</h4>
+                    <p>One page. Title, scope, tone, what it owns, what it doesn&rsquo;t. Specific.</p>
+                </div>
+            </li>
+            <li class="reveal d-4">
+                <div>
+                    <h4>Install. Onboard. Name.</h4>
+                    <p>Treat it like a new hire&rsquo;s first day. Slow, deliberate, written down.</p>
+                </div>
+            </li>
+            <li class="reveal d-4">
+                <div>
+                    <h4>Connect to one channel.</h4>
+                    <p>iMessage. One inbox. One calendar. Resist scope creep for the first month.</p>
+                </div>
+            </li>
+            <li class="reveal d-5">
+                <div>
+                    <h4>Live with it for two weeks.</h4>
+                    <p>Note what it does well. Note what breaks. Tweak the JD weekly.</p>
+                </div>
+            </li>
+            <li class="reveal d-5">
+                <div>
+                    <h4>Then &mdash; and only then &mdash; add a second agent.</h4>
+                    <p>Different job. Different name. Same discipline. The household builds slowly on purpose.</p>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>What to do Monday</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 34 — A DIAGNOSTIC QUESTION
+     ============================================================ -->
+<section class="slide" data-title="DiagnosticQuestion">
+    <header class="masthead">
+        <div class="led"><span>For the listener</span></div>
+        <div>34 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">A question to sit with</div>
+        <h2 class="slide-title reveal-blur d-2" style="max-width: 26ch; font-size: clamp(2rem, 5vw, 4.2rem);">
+            What&rsquo;s the <em>10-hour-a-week job</em> in your life that nobody&rsquo;s doing?
+        </h2>
+        <p class="lede reveal d-4" style="max-width: 56ch; margin-top: clamp(1rem, 2vh, 1.5rem);">
+            For Claire, it was inbound sales &mdash; a job that previously cost a paycheck. For Jesse, it was homeschool support. For most listeners, there&rsquo;s a similarly specific role hiding in plain sight: enough work to matter, too small to hire for.
+        </p>
+        <p class="body-copy reveal d-5" style="max-width: 56ch; font-style: italic; color: var(--lime);">
+            That&rsquo;s your first agent. Don&rsquo;t pick anything else.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>Operator&rsquo;s Manual</span>
+        <span>A diagnostic question</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 35 — TAKEAWAYS
+     ============================================================ -->
+<section class="slide bare" data-title="Takeaways" style="background: var(--paper); justify-content: space-between; padding-top: clamp(2rem, 5vh, 4rem); padding-bottom: clamp(2rem, 5vh, 4rem);">
+    <div class="cover-top reveal d-1">
+        <span>Operator&rsquo;s Manual &middot; Closing</span>
+        <span class="cover-issue">35 / 35</span>
+        <span>2026</span>
+    </div>
+
+    <div>
+        <div class="eyebrow reveal d-2">If you remember nothing else</div>
+        <h2 class="closing-headline reveal-blur d-3">
+            Don&rsquo;t build a butler. <em>Build a small staff.</em>
+        </h2>
+
+        <div class="takeaway-grid">
+            <div class="takeaway reveal d-4">
+                <div class="takeaway-num">// 01</div>
+                <p class="takeaway-text">One agent fails. Many specialists, scoped tightly, compound.</p>
+            </div>
+            <div class="takeaway reveal d-5">
+                <div class="takeaway-num">// 02</div>
+                <p class="takeaway-text">Onboard them like new hires. Names, JDs, scoped access, weekly feedback.</p>
+            </div>
+            <div class="takeaway reveal d-6">
+                <div class="takeaway-num">// 03</div>
+                <p class="takeaway-text">Spare machine. Backups. Patience. The first weekend will hurt; the rest of the year won&rsquo;t.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="cover-bottom reveal d-7">
+        <div class="cover-byline">
+            <span style="opacity: 0.55;">Source</span>
+            <strong>Lenny&rsquo;s Podcast &middot; Claire Vo</strong>
+        </div>
+        <div class="cover-byline" style="text-align: right;">
+            <span style="opacity: 0.55;">End</span>
+            <strong>Now go name your first agent.</strong>
+        </div>
+    </div>
+</section>
+
+<div class="keyboard-hint">← → or SPACE to navigate</div>
+
+<script>
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   =========================================== */
+class SlidePresentation {
+    constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.currentSlide = 0;
+        this.isScrolling = false;
+
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupTouchNav();
+        this.setupWheelNav();
+        this.setupProgressBar();
+        this.setupNavDots();
+
+        this.slides[0].classList.add('visible');
+    }
+
+    setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+                    entry.target.classList.add('visible');
+                    this.currentSlide = this.slides.indexOf(entry.target);
+                    this.updateNavDots();
+                    this.updateProgressBar();
+                }
+            });
+        }, { threshold: [0.5] });
+        this.slides.forEach(s => observer.observe(s));
+    }
+
+    setupKeyboardNav() {
+        document.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                case 'ArrowDown':
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    this.goTo(this.currentSlide + 1);
+                    break;
+                case 'ArrowUp':
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    this.goTo(this.currentSlide - 1);
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    this.goTo(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    this.goTo(this.slides.length - 1);
+                    break;
+            }
+        });
+    }
+
+    setupTouchNav() {
+        let touchStartY = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+        document.addEventListener('touchend', (e) => {
+            const touchEndY = e.changedTouches[0].screenY;
+            const dy = touchStartY - touchEndY;
+            if (Math.abs(dy) > 60) {
+                this.goTo(this.currentSlide + (dy > 0 ? 1 : -1));
+            }
+        }, { passive: true });
+    }
+
+    setupWheelNav() {
+        let wheelTimer = null;
+        document.addEventListener('wheel', (e) => {
+            if (this.isScrolling) return;
+            if (Math.abs(e.deltaY) < 30) return;
+            this.isScrolling = true;
+            this.goTo(this.currentSlide + (e.deltaY > 0 ? 1 : -1));
+            clearTimeout(wheelTimer);
+            wheelTimer = setTimeout(() => { this.isScrolling = false; }, 800);
+        }, { passive: true });
+    }
+
+    setupProgressBar() {
+        this.progressBar = document.getElementById('progressBar');
+        this.updateProgressBar();
+    }
+
+    updateProgressBar() {
+        const pct = (this.currentSlide / (this.slides.length - 1)) * 100;
+        if (this.progressBar) this.progressBar.style.width = pct + '%';
+    }
+
+    setupNavDots() {
+        this.dotsContainer = document.getElementById('navDots');
+        this.slides.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+            dot.addEventListener('click', () => this.goTo(i));
+            this.dotsContainer.appendChild(dot);
+        });
+    }
+
+    updateNavDots() {
+        if (!this.dotsContainer) return;
+        Array.from(this.dotsContainer.children).forEach((d, i) => {
+            d.classList.toggle('active', i === this.currentSlide);
+        });
+    }
+
+    goTo(index) {
+        const target = Math.max(0, Math.min(this.slides.length - 1, index));
+        this.slides[target].scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new SlidePresentation());
+} else {
+    new SlidePresentation();
+}
+</script>
+</body>
+</html>

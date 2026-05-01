@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Anthropic's Product Team Moves Faster Than Anyone Else — Cat Wu</title>
+
+<!-- Editorial type pairing: Fraunces (display serif) + Inter Tight (body) + JetBrains Mono (accent) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   THEME — Editorial / Anthropic-warm
+   Cream paper, ink black, coral accent
+   =========================================== */
+:root {
+    --bg-primary: #f4ede2;        /* warm cream */
+    --bg-paper: #ebe3d4;          /* deeper paper */
+    --ink: #1a1814;               /* near-black ink */
+    --ink-soft: #4a423a;          /* secondary text */
+    --ink-faint: #8a7f70;         /* meta/labels */
+    --rule: #1a181433;            /* hairline rules */
+    --accent: #d8553e;            /* coral / brick */
+    --accent-soft: #e8a08f;       /* faded coral */
+    --gold: #c4923a;              /* mustard accent */
+
+    --font-display: 'Fraunces', 'Times New Roman', serif;
+    --font-body: 'Inter Tight', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Type scale — all clamp() */
+    --title-size: clamp(2.5rem, 7vw, 6rem);
+    --huge-size: clamp(3.5rem, 11vw, 9rem);
+    --h2-size: clamp(1.6rem, 4vw, 3.25rem);
+    --h3-size: clamp(1.1rem, 2.2vw, 1.6rem);
+    --body-size: clamp(0.85rem, 1.3vw, 1.1rem);
+    --small-size: clamp(0.7rem, 0.95vw, 0.85rem);
+    --label-size: clamp(0.65rem, 0.85vw, 0.78rem);
+
+    --slide-padding: clamp(1.5rem, 5vw, 5rem);
+    --content-gap: clamp(1rem, 2vw, 2rem);
+    --element-gap: clamp(0.4rem, 1vw, 1rem);
+
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+    --duration: 0.9s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* === VIEWPORT BASE (mandatory) ===
+   These rules guarantee every slide fits exactly within 100vh
+   without scrolling. Do not modify.
+   =========================================== */
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+
+body {
+    background: var(--bg-primary);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: var(--body-size);
+    line-height: 1.55;
+    font-feature-settings: "ss01", "ss02";
+    -webkit-font-smoothing: antialiased;
+}
+
+.slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: var(--slide-padding);
+    background: var(--bg-primary);
+}
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+}
+
+img, .image-container {
+    max-width: 100%;
+    max-height: min(50vh, 400px);
+    object-fit: contain;
+}
+
+/* Responsive scaling */
+@media (max-height: 700px) {
+    :root {
+        --slide-padding: clamp(1rem, 3.5vw, 3rem);
+        --title-size: clamp(2rem, 5.5vw, 4rem);
+        --huge-size: clamp(2.5rem, 8vw, 6rem);
+        --h2-size: clamp(1.3rem, 3.2vw, 2.4rem);
+    }
+}
+@media (max-height: 600px) {
+    :root {
+        --slide-padding: clamp(0.75rem, 2.5vw, 2rem);
+        --title-size: clamp(1.5rem, 4.5vw, 3rem);
+        --huge-size: clamp(2rem, 6vw, 4.5rem);
+        --body-size: clamp(0.75rem, 1.1vw, 0.95rem);
+    }
+    .nav-dots, .keyboard-hint, .decorative { display: none; }
+}
+@media (max-height: 500px) {
+    :root {
+        --title-size: clamp(1.2rem, 3.5vw, 2rem);
+        --h2-size: clamp(1rem, 2.5vw, 1.4rem);
+    }
+}
+@media (max-width: 600px) {
+    :root { --title-size: clamp(1.5rem, 8vw, 3rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+    html { scroll-behavior: auto; }
+}
+
+/* ===========================================
+   GLOBAL CHROME — masthead, page numbers, rule
+   The thin masthead identifies every slide as
+   part of the same editorial set.
+   =========================================== */
+.masthead {
+    position: absolute;
+    top: clamp(1rem, 2.5vh, 2rem);
+    left: var(--slide-padding);
+    right: var(--slide-padding);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    z-index: 5;
+}
+.masthead::before {
+    content: "";
+    position: absolute;
+    top: 1.6em;
+    left: 0; right: 0;
+    height: 1px;
+    background: var(--rule);
+}
+.masthead .left { display: flex; gap: 1.2em; align-items: baseline; }
+.masthead .dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+    transform: translateY(-1px);
+}
+
+.footer {
+    position: absolute;
+    bottom: clamp(0.8rem, 2vh, 1.5rem);
+    left: var(--slide-padding);
+    right: var(--slide-padding);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--ink-faint);
+    letter-spacing: 0.12em;
+    z-index: 5;
+}
+
+/* Hide chrome on title + closing */
+.slide.bare .masthead,
+.slide.bare .footer { display: none; }
+
+/* ===========================================
+   PROGRESS BAR & NAV DOTS
+   =========================================== */
+.progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--accent);
+    width: 0%;
+    z-index: 100;
+    transition: width 0.3s var(--ease-soft);
+}
+
+.nav-dots {
+    position: fixed;
+    right: clamp(1rem, 2vw, 1.5rem);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    z-index: 50;
+}
+.nav-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--ink);
+    opacity: 0.2;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-soft);
+    border: none; padding: 0;
+}
+.nav-dot.active {
+    opacity: 1;
+    background: var(--accent);
+    transform: scale(1.6);
+}
+.nav-dot:hover { opacity: 0.6; }
+
+/* ===========================================
+   ENTRANCE ANIMATIONS — staggered editorial reveals
+   =========================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity var(--duration) var(--ease-out-expo),
+                transform var(--duration) var(--ease-out-expo);
+}
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+
+.reveal-blur {
+    opacity: 0;
+    filter: blur(14px);
+    transition: opacity 1.1s var(--ease-out-expo),
+                filter 1.1s var(--ease-out-expo);
+}
+.slide.visible .reveal-blur { opacity: 1; filter: blur(0); }
+
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: opacity var(--duration) var(--ease-out-expo),
+                transform var(--duration) var(--ease-out-expo);
+}
+.slide.visible .reveal-left { opacity: 1; transform: translateX(0); }
+
+.reveal-rule {
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 1.1s var(--ease-out-expo);
+}
+.slide.visible .reveal-rule { transform: scaleX(1); }
+
+/* Stagger delays */
+.d-1 { transition-delay: 0.1s; }
+.d-2 { transition-delay: 0.25s; }
+.d-3 { transition-delay: 0.4s; }
+.d-4 { transition-delay: 0.55s; }
+.d-5 { transition-delay: 0.7s; }
+.d-6 { transition-delay: 0.85s; }
+.d-7 { transition-delay: 1.0s; }
+
+/* ===========================================
+   SLIDE 1 — TITLE / COVER
+   Magazine cover treatment: oversized serif, rules,
+   issue-style metadata.
+   =========================================== */
+.cover {
+    background:
+        radial-gradient(ellipse at 85% 15%, rgba(216, 85, 62, 0.08) 0%, transparent 55%),
+        radial-gradient(ellipse at 10% 90%, rgba(196, 146, 58, 0.06) 0%, transparent 55%),
+        var(--bg-primary);
+    justify-content: space-between;
+    padding-top: clamp(2rem, 5vh, 4rem);
+    padding-bottom: clamp(2rem, 5vh, 4rem);
+}
+.cover-top, .cover-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--ink-faint);
+}
+.cover-top { border-bottom: 1px solid var(--rule); padding-bottom: 1rem; }
+.cover-bottom { border-top: 1px solid var(--rule); padding-top: 1rem; }
+.cover-issue { color: var(--accent); }
+
+.cover-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--huge-size);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+    max-width: 14ch;
+}
+.cover-title em {
+    font-style: italic;
+    color: var(--accent);
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+}
+.cover-deck {
+    font-family: var(--font-body);
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    color: var(--ink-soft);
+    max-width: 48ch;
+    margin-top: clamp(1rem, 2vh, 2rem);
+    line-height: 1.5;
+}
+.cover-byline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+}
+.cover-byline strong {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-transform: none;
+    font-variation-settings: "opsz" 36;
+}
+
+/* ===========================================
+   STANDARD CONTENT SLIDE
+   =========================================== */
+.eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    margin-bottom: clamp(0.8rem, 1.8vh, 1.5rem);
+}
+.eyebrow::before {
+    content: "";
+    width: clamp(20px, 3vw, 36px);
+    height: 1px;
+    background: var(--accent);
+}
+
+.slide-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--h2-size);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    font-variation-settings: "opsz" 96, "SOFT" 30;
+    max-width: 22ch;
+    margin-bottom: clamp(0.8rem, 1.8vh, 1.5rem);
+}
+.slide-title em {
+    font-style: italic;
+    color: var(--accent);
+    font-variation-settings: "opsz" 96, "SOFT" 80, "WONK" 1;
+}
+
+.lede {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.05rem, 1.7vw, 1.4rem);
+    line-height: 1.4;
+    color: var(--ink-soft);
+    max-width: 56ch;
+    font-variation-settings: "opsz" 24;
+    margin-bottom: clamp(1rem, 2vh, 1.8rem);
+}
+
+.body-copy {
+    font-size: var(--body-size);
+    line-height: 1.6;
+    color: var(--ink-soft);
+    max-width: 60ch;
+}
+
+.rule {
+    height: 1px;
+    background: var(--ink);
+    margin: clamp(0.8rem, 1.5vh, 1.2rem) 0;
+    width: 100%;
+}
+
+/* Two-column editorial layout */
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    align-items: center;
+    height: 100%;
+}
+@media (max-width: 800px) {
+    .two-col { grid-template-columns: 1fr; gap: 1rem; }
+}
+
+/* ===========================================
+   SLIDE 2 — ABOUT CAT WU (portrait card)
+   =========================================== */
+.bio-card {
+    border: 1px solid var(--rule);
+    background: var(--bg-paper);
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    position: relative;
+    aspect-ratio: 3 / 4;
+    max-height: min(70vh, 560px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+.bio-card::before {
+    content: "01";
+    position: absolute;
+    top: clamp(0.8rem, 1.5vw, 1.2rem);
+    right: clamp(0.8rem, 1.5vw, 1.2rem);
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--accent);
+    letter-spacing: 0.15em;
+}
+.bio-monogram {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(7rem, 18vw, 14rem);
+    line-height: 0.85;
+    color: var(--accent);
+    letter-spacing: -0.06em;
+    font-variation-settings: "opsz" 144, "WONK" 1;
+}
+.bio-name {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.3em;
+}
+.bio-role {
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-faint);
+    line-height: 1.6;
+}
+.bio-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+    padding-top: clamp(0.8rem, 1.5vh, 1.2rem);
+    border-top: 1px solid var(--rule);
+}
+.bio-meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+}
+.bio-meta-row span:first-child { color: var(--ink-faint); }
+.bio-meta-row span:last-child { color: var(--ink); }
+
+.bio-text h3 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.4rem, 2.4vw, 2rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: clamp(0.8rem, 1.5vh, 1.2rem);
+    font-variation-settings: "opsz" 60, "SOFT" 50;
+}
+.bio-text h3 em { color: var(--accent); font-style: italic; }
+.bio-text p {
+    font-size: var(--body-size);
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-bottom: 0.8em;
+    max-width: 42ch;
+}
+
+/* ===========================================
+   SLIDE 3 — CADENCE TIMELINE
+   Shows months → weeks → days as horizontal scale
+   =========================================== */
+.cadence-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1rem, 2vw, 2rem);
+    align-items: stretch;
+    margin-top: clamp(1.5rem, 3vh, 2.5rem);
+}
+.cadence-cell {
+    border-top: 2px solid var(--ink);
+    padding-top: clamp(0.8rem, 1.5vh, 1.2rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    position: relative;
+}
+.cadence-cell.now {
+    border-top-color: var(--accent);
+    border-top-width: 4px;
+}
+.cadence-era {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+}
+.cadence-cell.now .cadence-era { color: var(--accent); }
+.cadence-num {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -0.04em;
+    font-variation-settings: "opsz" 144;
+    margin: 0.1em 0;
+}
+.cadence-cell.now .cadence-num {
+    font-style: italic;
+    color: var(--accent);
+    font-variation-settings: "opsz" 144, "WONK" 1;
+}
+.cadence-unit {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+    color: var(--ink-soft);
+}
+.cadence-note {
+    font-size: var(--small-size);
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin-top: 0.4em;
+    max-width: 28ch;
+}
+
+/* Arrow connectors */
+.cadence-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-faint);
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+}
+
+/* ===========================================
+   SLIDE 4 — MERGE (PM + ENG)
+   Visual: two intersecting circles or columns
+   =========================================== */
+.merge-viz {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(-1.5rem, -2vw, -3rem);
+    margin: clamp(1rem, 2vh, 2rem) 0;
+}
+.merge-circle {
+    width: clamp(140px, 22vw, 220px);
+    height: clamp(140px, 22vw, 220px);
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    color: var(--ink);
+    background: rgba(244, 237, 226, 0.7);
+    backdrop-filter: blur(2px);
+}
+.merge-circle.left {
+    margin-right: clamp(-2.5rem, -4vw, -5rem);
+    background: rgba(216, 85, 62, 0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.merge-circle.right {
+    background: rgba(196, 146, 58, 0.1);
+    border-color: var(--gold);
+    color: var(--gold);
+}
+.merge-center-label {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink);
+    background: var(--bg-primary);
+    padding: 0.3em 0.8em;
+    border: 1px solid var(--ink);
+}
+
+.merge-text {
+    text-align: center;
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+}
+
+/* ===========================================
+   SLIDE 5 — MODEL GAP (chart-style)
+   =========================================== */
+.gap-chart {
+    position: relative;
+    height: clamp(180px, 30vh, 280px);
+    border-bottom: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+    margin: clamp(1rem, 2vh, 2rem) 0;
+}
+.gap-axis-label {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-faint);
+}
+.gap-axis-label.x { bottom: -1.8em; right: 0; }
+.gap-axis-label.y { top: 0; left: -3em; transform: rotate(-90deg); transform-origin: left top; }
+
+.gap-curve {
+    position: absolute;
+    inset: 0;
+}
+.gap-curve svg { width: 100%; height: 100%; overflow: visible; }
+.gap-line { fill: none; stroke-width: 2.5; }
+.gap-line.model { stroke: var(--ink); stroke-dasharray: 6 4; }
+.gap-line.product { stroke: var(--accent); }
+
+.gap-zone {
+    fill: rgba(216, 85, 62, 0.08);
+    stroke: none;
+}
+
+.gap-callout {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+.gap-callout.product { color: var(--accent); top: 8%; right: 4%; }
+.gap-callout.model { color: var(--ink); top: 35%; right: 4%; }
+
+.gap-takeaway {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+    color: var(--ink);
+    line-height: 1.4;
+    max-width: 60ch;
+    margin-top: clamp(0.8rem, 1.5vh, 1.2rem);
+    font-variation-settings: "opsz" 36;
+}
+.gap-takeaway em { color: var(--accent); }
+
+/* ===========================================
+   SLIDE 6 — INTROSPECTION (terminal/quote)
+   =========================================== */
+.terminal {
+    background: var(--ink);
+    color: var(--bg-primary);
+    border-radius: 6px;
+    padding: clamp(1.2rem, 2.5vw, 2rem);
+    font-family: var(--font-mono);
+    font-size: clamp(0.8rem, 1.2vw, 1rem);
+    line-height: 1.7;
+    max-width: 65ch;
+    margin: clamp(1rem, 2vh, 1.5rem) 0;
+    box-shadow: 0 20px 60px -20px rgba(26, 24, 20, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+.terminal::before {
+    content: "● ● ●";
+    color: var(--ink-faint);
+    font-size: 0.7em;
+    letter-spacing: 0.3em;
+    display: block;
+    margin-bottom: 1em;
+    opacity: 0.5;
+}
+.terminal .prompt { color: var(--accent-soft); }
+.terminal .you { color: #c4923a; }
+.terminal .reply { color: var(--bg-paper); display: block; margin-top: 0.4em; padding-left: 1em; border-left: 2px solid var(--accent); }
+
+/* ===========================================
+   SLIDE 7 — PERSONALITY (quote treatment)
+   =========================================== */
+.pull-quote {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2rem, 5vw, 4rem);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    max-width: 22ch;
+    font-variation-settings: "opsz" 144, "SOFT" 40;
+    position: relative;
+}
+.pull-quote em {
+    color: var(--accent);
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+}
+.pull-quote::before {
+    content: "\201C";
+    position: absolute;
+    top: -0.3em;
+    left: -0.4em;
+    font-size: 2.5em;
+    color: var(--accent-soft);
+    line-height: 1;
+    font-weight: 300;
+}
+
+/* ===========================================
+   SLIDE 8 — MISSION ALIGNMENT (diagram)
+   =========================================== */
+.mission-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.8rem, 1.5vh, 1.2rem);
+    margin: clamp(1rem, 2vh, 1.5rem) 0;
+}
+.mission-row {
+    display: flex;
+    gap: clamp(0.5rem, 1vw, 1rem);
+    align-items: center;
+}
+.mission-pill {
+    border: 1px solid var(--ink);
+    padding: 0.4em 1.2em;
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    background: var(--bg-paper);
+    border-radius: 100px;
+    white-space: nowrap;
+}
+.mission-pill.center {
+    background: var(--accent);
+    color: var(--bg-primary);
+    border-color: var(--accent);
+}
+.mission-arrow {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 1.2em;
+}
+
+/* ===========================================
+   SLIDE 9 — JUST DO THINGS (manifesto-style)
+   =========================================== */
+.manifesto {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: start;
+}
+.manifesto-num {
+    font-family: var(--font-display);
+    font-weight: 200;
+    font-size: clamp(8rem, 18vw, 16rem);
+    line-height: 0.85;
+    color: var(--accent);
+    letter-spacing: -0.06em;
+    font-variation-settings: "opsz" 144, "WONK" 1;
+    font-style: italic;
+}
+.manifesto-content {
+    padding-top: clamp(1rem, 2vh, 1.5rem);
+}
+.manifesto-list {
+    list-style: none;
+    margin-top: clamp(0.8rem, 1.5vh, 1.2rem);
+}
+.manifesto-list li {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+    line-height: 1.45;
+    color: var(--ink-soft);
+    padding: 0.5em 0;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    gap: 1em;
+    font-variation-settings: "opsz" 36;
+}
+.manifesto-list li::before {
+    content: counter(manifesto, decimal-leading-zero);
+    counter-increment: manifesto;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--accent);
+    flex-shrink: 0;
+    padding-top: 0.5em;
+    letter-spacing: 0.15em;
+}
+.manifesto-list { counter-reset: manifesto; }
+
+/* ===========================================
+   SLIDE 10 — EVALS (numbered insight)
+   =========================================== */
+.insight-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: center;
+    height: 100%;
+}
+.insight-stat {
+    border-left: 3px solid var(--accent);
+    padding-left: clamp(1rem, 2vw, 1.5rem);
+}
+.insight-stat-num {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-style: italic;
+    font-size: clamp(4rem, 10vw, 8rem);
+    line-height: 0.9;
+    color: var(--ink);
+    letter-spacing: -0.04em;
+    font-variation-settings: "opsz" 144, "WONK" 1;
+}
+.insight-stat-num em {
+    color: var(--accent);
+}
+.insight-stat-label {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    margin-top: 0.6em;
+}
+
+/* ===========================================
+   SLIDE 11 — 95% PROBLEM (gauge)
+   =========================================== */
+.gauge {
+    width: clamp(180px, 28vw, 280px);
+    height: clamp(180px, 28vw, 280px);
+    position: relative;
+    margin: 0 auto;
+}
+.gauge svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+.gauge-track {
+    fill: none;
+    stroke: var(--rule);
+    stroke-width: 8;
+}
+.gauge-fill {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 0 1000;
+    transition: stroke-dasharray 1.5s var(--ease-out-expo);
+}
+.gauge-gap {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 0 1000;
+    transition: stroke-dasharray 1.5s var(--ease-out-expo);
+    transition-delay: 0.6s;
+}
+.slide.visible .gauge-fill { stroke-dasharray: 660 1000; }
+.slide.visible .gauge-gap { stroke-dasharray: 35 1000; stroke-dashoffset: -660; }
+
+.gauge-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.gauge-num {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-style: italic;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: var(--ink);
+    line-height: 1;
+    font-variation-settings: "opsz" 144, "WONK" 1;
+}
+.gauge-num em { color: var(--accent); }
+.gauge-label {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    margin-top: 0.5em;
+}
+
+/* ===========================================
+   SLIDE 12 — DOGFOOD (split layout)
+   =========================================== */
+.contrast-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1rem, 2vw, 2rem);
+    margin-top: clamp(1.5rem, 3vh, 2.5rem);
+    height: clamp(220px, 35vh, 320px);
+}
+.contrast-card {
+    padding: clamp(1.2rem, 2.5vw, 2rem);
+    border: 1px solid var(--rule);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+.contrast-card.bad {
+    background: var(--bg-paper);
+    text-decoration: line-through;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+    color: var(--ink-faint);
+}
+.contrast-card.bad .contrast-label { color: var(--ink-faint); text-decoration: none; }
+.contrast-card.good {
+    background: var(--ink);
+    color: var(--bg-primary);
+    border-color: var(--ink);
+}
+.contrast-card.good .contrast-label { color: var(--accent-soft); }
+.contrast-label {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+}
+.contrast-headline {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(1.5rem, 3vw, 2.4rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-variation-settings: "opsz" 96, "WONK" 1;
+}
+.contrast-detail {
+    font-size: var(--small-size);
+    line-height: 1.5;
+    text-decoration: none;
+    opacity: 0.85;
+}
+
+/* ===========================================
+   SLIDE 13 — CLOSING / TAKEAWAYS
+   =========================================== */
+.closing {
+    background:
+        radial-gradient(ellipse at 20% 110%, rgba(216, 85, 62, 0.12) 0%, transparent 60%),
+        var(--bg-primary);
+    justify-content: space-between;
+    padding-top: clamp(2rem, 5vh, 4rem);
+    padding-bottom: clamp(2rem, 5vh, 4rem);
+}
+.closing-headline {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2rem, 5.5vw, 4.5rem);
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    max-width: 18ch;
+    font-variation-settings: "opsz" 144, "SOFT" 40;
+}
+.closing-headline em {
+    font-style: italic;
+    color: var(--accent);
+    font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+}
+.takeaway-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1rem, 2vw, 2rem);
+    margin-top: clamp(1.5rem, 3vh, 2.5rem);
+}
+.takeaway {
+    border-top: 2px solid var(--ink);
+    padding-top: clamp(0.6rem, 1.2vh, 1rem);
+}
+.takeaway-num {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    margin-bottom: 0.4em;
+}
+.takeaway-text {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+    line-height: 1.35;
+    color: var(--ink);
+    font-variation-settings: "opsz" 36;
+}
+
+@media (max-width: 800px) {
+    .takeaway-grid { grid-template-columns: 1fr; }
+    .insight-grid { grid-template-columns: 1fr; }
+    .cadence-grid { grid-template-columns: 1fr; }
+    .contrast-pair { grid-template-columns: 1fr; height: auto; }
+    .manifesto { grid-template-columns: 1fr; }
+}
+
+/* Keyboard hint */
+.keyboard-hint {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--ink-faint);
+    letter-spacing: 0.15em;
+    opacity: 0;
+    animation: fadeHint 0.6s ease 1.5s forwards;
+    pointer-events: none;
+    z-index: 50;
+}
+@keyframes fadeHint {
+    to { opacity: 0.7; }
+}
+</style>
+</head>
+<body>
+
+<!-- Top progress bar — fills as user scrolls through deck -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Right-side dot navigation, generated by JS -->
+<nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+<!-- ===========================================
+     SLIDE 1 — COVER
+     Magazine-cover treatment for the deck
+     =========================================== -->
+<section class="slide cover bare" data-title="Cover">
+    <div class="cover-top reveal d-1">
+        <span>Lenny&rsquo;s Podcast &nbsp;&middot;&nbsp; Field Notes</span>
+        <span class="cover-issue">No. 247 / Product</span>
+        <span>2026</span>
+    </div>
+
+    <div>
+        <div class="eyebrow reveal d-2" style="margin-bottom: clamp(1rem, 2.5vh, 2rem);">A conversation with Cat Wu</div>
+        <h1 class="cover-title reveal-blur d-3">
+            How Anthropic&rsquo;s product team moves <em>faster</em> than anyone else.
+        </h1>
+        <p class="cover-deck reveal d-5">
+            Inside the operating model of the company shipping the most consequential AI tools of the moment &mdash; from PRDs that fit in a Slack message to the skills that separate the PMs who thrive from those who don&rsquo;t.
+        </p>
+    </div>
+
+    <div class="cover-bottom reveal d-7">
+        <div class="cover-byline">
+            <span style="opacity: 0.6;">Guest</span>
+            <strong>Cat Wu &mdash; Head of Product, Claude Code &amp; Cowork</strong>
+        </div>
+        <div class="cover-byline" style="text-align: right;">
+            <span style="opacity: 0.6;">Hosted by</span>
+            <strong>Lenny Rachitsky</strong>
+        </div>
+    </div>
+</section>
+
+<!-- ===========================================
+     SLIDE 2 — ABOUT CAT WU
+     =========================================== -->
+<section class="slide" data-title="About">
+    <header class="masthead">
+        <div class="left"><span class="dot"></span><span>Field Notes</span><span>&middot;</span><span>Cat Wu</span></div>
+        <div>02 / 13</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="two-col">
+            <div class="bio-card reveal-left d-1">
+                <div class="bio-monogram">CW</div>
+                <div>
+                    <div class="bio-name">Cat Wu</div>
+                    <div class="bio-role">Head of Product<br/>Claude Code &amp; Cowork</div>
+                    <div class="bio-meta">
+                        <div class="bio-meta-row"><span>Org</span><span>Anthropic</span></div>
+                        <div class="bio-meta-row"><span>Prior</span><span>Engineering, VC</span></div>
+                        <div class="bio-meta-row"><span>Beat</span><span>AI Product</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bio-text">
+                <div class="eyebrow reveal d-2">The guest</div>
+                <h3 class="reveal d-3">An <em>engineer-turned-PM</em> running point on two of Anthropic&rsquo;s flagship surfaces.</h3>
+                <p class="reveal d-4">She leads product for Claude Code and Cowork, and spends much of her week interviewing PMs trying to break into AI &mdash; which gives her an unusually clear view of who&rsquo;s adapting and who isn&rsquo;t.</p>
+                <p class="reveal d-5">Her thesis: the bar for product instinct is rising as fast as the models, and most playbooks from the last decade are quietly expiring.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Anthropic / Product</span>
+        <span>2026</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 3 — SHIPPING CADENCE
+     =========================================== -->
+<section class="slide" data-title="Cadence">
+    <header class="masthead">
+        <div class="left"><span class="dot"></span><span>Field Notes</span><span>&middot;</span><span>Velocity</span></div>
+        <div>03 / 13</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Shipping cadence</div>
+        <h2 class="slide-title reveal d-2">From quarterly plans to <em>shipping by Friday.</em></h2>
+        <p class="lede reveal d-3">The release rhythm at Anthropic compressed three times in two years. Each compression demanded a different operating model &mdash; not just faster execution of the old one.</p>
+
+        <div class="cadence-grid">
+            <div class="cadence-cell reveal d-4">
+                <span class="cadence-era">Then</span>
+                <div class="cadence-num">Months</div>
+                <span class="cadence-unit">long planning loops</span>
+                <p class="cadence-note">Quarterly roadmaps. PRDs as documents. Ship dates as commitments.</p>
+            </div>
+            <div class="cadence-cell reveal d-5">
+                <span class="cadence-era">Recent</span>
+                <div class="cadence-num">Weeks</div>
+                <span class="cadence-unit">sprint-shaped releases</span>
+                <p class="cadence-note">Specs lived in tickets. Roadmaps refreshed in real time. Demos replaced reviews.</p>
+            </div>
+            <div class="cadence-cell now reveal d-6">
+                <span class="cadence-era">Now</span>
+                <div class="cadence-num">Days</div>
+                <span class="cadence-unit">continuous delivery</span>
+                <p class="cadence-note">A PRD is a Slack thread. Decisions happen in the loop. Cycle time approaches the speed of conversation.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Anthropic / Product</span>
+        <span>Shipping velocity</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 4 — PM + ENG MERGER / TASTE
+     =========================================== -->
+<section class="slide" data-title="Merge">
+    <header class="masthead">
+        <div class="left"><span class="dot"></span><span>Field Notes</span><span>&middot;</span><span>The Role</span></div>
+        <div>04 / 13</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The role is changing</div>
+        <h2 class="slide-title reveal d-2">PM and engineer are <em>collapsing into one job.</em></h2>
+
+        <div style="display: flex; align-items: center; justify-content: center; flex-direction: column; flex: 1; gap: clamp(1.5rem, 3vh, 2.5rem); margin-top: clamp(0.5rem, 1vh, 1rem);">
+            <div class="merge-viz reveal-blur d-3" style="position: relative;">
+                <div class="merge-circle left">Engineer</div>
+                <div class="merge-circle right">PM</div>
+            </div>
+
+            <p class="lede reveal d-4" style="text-align: center; max-width: 56ch; margin: 0 auto;">
+                When models do the typing, the leverage moves to <strong style="color: var(--ink);">judgment</strong>: what to build, what to cut, when it&rsquo;s actually good. <em style="font-family: var(--font-display); font-style: italic; color: var(--accent);">Taste</em> is the new bottleneck.
+            </p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Anthropic / Product</span>
+        <span>Skills that compound</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 5 — BUILD FOR THE GAP
+     =========================================== -->
+<section class="slide" data-title="Gap">
+    <header class="masthead">
+        <div class="left"><span class="dot"></span><span>Field Notes</span><span>&middot;</span><span>Strategy</span></div>
+        <div>05 / 13</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Build ahead of the model</div>
+        <h2 class="slide-title reveal d-2">Ship the product that <em>doesn&rsquo;t quite work yet.</em></h2>
+        <p class="lede reveal d-3">Models improve in jumps. The teams that win build for the next jump &mdash; so when the capability lands, the surface is already shaped to receive it.</p>
+
+        <div class="gap-chart reveal d-4">
+            <span class="gap-axis-label y">Capability</span>
+            <span class="gap-axis-label x">Time &rarr;</span>
+
+            <div class="gap-curve">
+                <svg viewBox="0 0 600 240" preserveAspectRatio="none">
+                    <!-- Gap zone between product ambition and current model -->
+                    <path class="gap-zone" d="M 0 200 Q 150 130 300 90 T 600 30 L 600 90 Q 450 140 300 165 T 0 220 Z"/>
+                    <!-- Current model line — dashed, climbing in steps -->
+                    <path class="gap-line model" d="M 0 220 L 100 220 L 100 180 L 220 180 L 220 140 L 360 140 L 360 100 L 500 100 L 500 70 L 600 70"/>
+                    <!-- Product ambition — smooth curve ahead of model -->
+                    <path class="gap-line product" d="M 0 200 Q 150 130 300 90 T 600 30"/>
+                </svg>
+            </div>
+            <span class="gap-callout product">Product ambition</span>
+            <span class="gap-callout model">Today&rsquo;s model</span>
+        </div>
+
+        <p class="gap-takeaway reveal d-5">
+            Live in the gap. Build for what the model <em>will</em> be able to do &mdash; not what it can do today.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>Anthropic / Product</span>
+        <span>Build ahead</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 6 — INTROSPECTION
+     =========================================== -->
+<section class="slide" data-title="Introspection">
+    <header class="masthead">
+        <div class="left"><span class="dot"></span><span>Field Notes</span><span>&middot;</span><span>Craft</span></div>
+        <div>06 / 13</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The underrated AI skill</div>
+        <h2 class="slide-title reveal d-2">Ask the model to <em>diagnose itself.</em></h2>
+        <p class="lede reveal d-3">When a run goes sideways, most people retry. The leverage move is to hand the failure back to the model and ask why it failed &mdash; the introspection often produces the next prompt.</p>
+
+        <div class="terminal reveal d-4">
+            <span class="prompt">you &raquo;</span> <span class="you">What went wrong on the last attempt? Where did your reasoning break down, and what would you do differently next time?</span>
+            <span class="reply">&raquo; I misread the schema in step 2 and assumed a join key that didn&rsquo;t exist. Next time I should verify the column names before generating the query &mdash; do you want me to retry with that check?</span>
+        </div>
+
+        <p class="body-copy reveal d-5" style="font-style: italic; color: var(--ink);">
+            The model is often a better critic of its own work than you are. Use it.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>Anthropic / Product</span>
+        <span>Working with models</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 7 — PERSONALITY
+     =========================================== -->
+<section class="slide" data-title="Personality">
+    <header class="masthead">
+        <div class="left"><span class="dot"></span><span>Field Notes</span><span>&middot;</span><span>Product</span></div>
+        <div>07 / 13</div>
+    </header>
+
+    <div class="slide-content" style="justify-content: center;">
+        <div class="eyebrow reveal d-1">Why personality matters</div>
+        <p class="pull-quote reveal-blur d-2">
+            Capability gets you used. <em>Character</em> gets you trusted.
+        </p>
+        <p class="lede reveal d-4" style="margin-top: clamp(1.5rem, 3vh, 2.5rem); max-width: 52ch;">
+            Claude&rsquo;s tone, restraint, and willingness to disagree aren&rsquo;t cosmetic &mdash; they&rsquo;re the product. The features users describe most often have nothing to do with benchmarks.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>Anthropic / Product</span>
+        <span>Character is product</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 8 — MISSION ALIGNMENT
+     =========================================== -->
+<section class="slide" data-title="Mission">
+    <header class="masthead">
+        <div class="left"><span class="dot"></span><span>Field Notes</span><span>&middot;</span><span>Org</span></div>
+        <div>08 / 13</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Velocity unlock</div>
+        <h2 class="slide-title reveal d-2">Mission alignment <em>removes the meetings.</em></h2>
+        <p class="lede reveal d-3">Most large companies burn their velocity on alignment &mdash; reconciling teams that disagree about why the work matters. When everyone genuinely shares a north star, that overhead disappears.</p>
+
+        <div class="mission-diagram reveal d-4">
+            <div class="mission-row">
+                <div class="mission-pill">Research</div>
+                <span class="mission-arrow">&rarr;</span>
+                <div class="mission-pill center">Shared mission</div>
+                <span class="mission-arrow">&larr;</span>
+                <div class="mission-pill">Product</div>
+            </div>
+            <div class="mission-row">
+                <div class="mission-pill">Sales</div>
+                <span class="mission-arrow">&rarr;</span>
+                <div class="mission-pill" style="opacity: 0;">spacer</div>
+                <span class="mission-arrow">&larr;</span>
+                <div class="mission-pill">Safety</div>
+            </div>
+        </div>
+
+        <p class="body-copy reveal d-5" style="text-align: center; max-width: 56ch; margin: 0 auto; font-style: italic;">
+            Less time defending the work. More time doing it.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>Anthropic / Product</span>
+        <span>Operating model</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 9 — JUST DO THINGS
+     =========================================== -->
+<section class="slide" data-title="JustDoThings">
+    <header class="masthead">
+        <div class="left"><span class="dot"></span><span>Field Notes</span><span>&middot;</span><span>Operating Principle</span></div>
+        <div>09 / 13</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="manifesto">
+            <div class="manifesto-num reveal-left d-1">&ldquo;</div>
+            <div class="manifesto-content">
+                <div class="eyebrow reveal d-2">The operating principle</div>
+                <h2 class="slide-title reveal d-3" style="margin-bottom: 0.5rem;">Just <em>do</em> things.</h2>
+                <p class="lede reveal d-4">Three words that quietly explain how AI-native companies outpace incumbents.</p>
+
+                <ul class="manifesto-list">
+                    <li class="reveal d-5">Skip the kickoff. Make the prototype.</li>
+                    <li class="reveal d-6">Don&rsquo;t ask for permission to try the obvious thing.</li>
+                    <li class="reveal d-7">If you can build it in an afternoon, you should have built it yesterday.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Anthropic / Product</span>
+        <span>Operating principle</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 10 — EVALS
+     =========================================== -->
+<section class="slide" data-title="Evals">
+    <header class="masthead">
+        <div class="left"><span class="dot"></span><span>Field Notes</span><span>&middot;</span><span>Craft</span></div>
+        <div>10 / 13</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="insight-grid">
+            <div>
+                <div class="eyebrow reveal d-1">The underrated discipline</div>
+                <h2 class="slide-title reveal d-2">Evals are the <em>new specs.</em></h2>
+                <p class="lede reveal d-3">If you can&rsquo;t measure what &ldquo;good&rdquo; looks like, you can&rsquo;t ship it. The teams that take evals seriously compound &mdash; everyone else just argues about vibes.</p>
+                <p class="body-copy reveal d-4">Writing evals forces a team to define the product before they build it. That alone is worth it. The fact that they also catch regressions is a bonus.</p>
+            </div>
+            <div class="insight-stat reveal-left d-3">
+                <div class="insight-stat-num">A <em>good eval</em></div>
+                <div class="insight-stat-label">is worth a thousand demos</div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Anthropic / Product</span>
+        <span>Evaluation</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 11 — 95% PROBLEM
+     =========================================== -->
+<section class="slide" data-title="LastFive">
+    <header class="masthead">
+        <div class="left"><span class="dot"></span><span>Field Notes</span><span>&middot;</span><span>Reliability</span></div>
+        <div>11 / 13</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="two-col">
+            <div>
+                <div class="eyebrow reveal d-1">Reliability is the product</div>
+                <h2 class="slide-title reveal d-2">95&thinsp;% automation isn&rsquo;t <em>good enough.</em></h2>
+                <p class="lede reveal d-3">Demoware lives at 95. Real products live at 99. The last few percent is where the value &mdash; and most of the engineering &mdash; actually lives.</p>
+                <p class="body-copy reveal d-4">If users have to babysit, they don&rsquo;t trust it. If they don&rsquo;t trust it, they don&rsquo;t hand over the work that justifies the price.</p>
+            </div>
+
+            <div class="reveal d-3" style="display: flex; flex-direction: column; align-items: center; gap: clamp(0.8rem, 1.5vh, 1.2rem);">
+                <div class="gauge">
+                    <svg viewBox="0 0 240 240">
+                        <circle class="gauge-track" cx="120" cy="120" r="105"/>
+                        <circle class="gauge-fill" cx="120" cy="120" r="105"/>
+                        <circle class="gauge-gap" cx="120" cy="120" r="105"/>
+                    </svg>
+                    <div class="gauge-center">
+                        <div class="gauge-num">95<em>%</em></div>
+                        <div class="gauge-label">demoware</div>
+                    </div>
+                </div>
+                <p class="body-copy" style="text-align: center; max-width: 28ch; font-style: italic;">
+                    The <span style="color: var(--accent); font-weight: 600;">red sliver</span> is where the trust is earned.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Anthropic / Product</span>
+        <span>The last 5%</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 12 — DOGFOOD
+     =========================================== -->
+<section class="slide" data-title="Dogfood">
+    <header class="masthead">
+        <div class="left"><span class="dot"></span><span>Field Notes</span><span>&middot;</span><span>Practice</span></div>
+        <div>12 / 13</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">For PMs trying to break in</div>
+        <h2 class="slide-title reveal d-2">Build apps you actually <em>use</em> &mdash; not prototypes you abandon.</h2>
+        <p class="lede reveal d-3">A demo proves you can prompt. A daily-driver app proves you understand the loop, the failure modes, and the edges. Hiring managers can tell the difference in five minutes.</p>
+
+        <div class="contrast-pair">
+            <div class="contrast-card bad reveal-left d-4">
+                <div class="contrast-label">The portfolio trap</div>
+                <div>
+                    <div class="contrast-headline">A folder of half-finished prototypes.</div>
+                </div>
+                <div class="contrast-detail">Built for the screenshot. Never opened again.</div>
+            </div>
+            <div class="contrast-card good reveal d-5">
+                <div class="contrast-label">What actually signals</div>
+                <div>
+                    <div class="contrast-headline">One tool you use every day.</div>
+                </div>
+                <div class="contrast-detail">Fixed the bugs. Smoothed the edges. Knows where the model still falls down.</div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Anthropic / Product</span>
+        <span>Dogfood</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 13 — CLOSING TAKEAWAYS
+     =========================================== -->
+<section class="slide closing bare" data-title="Takeaways">
+    <div class="cover-top reveal d-1">
+        <span>Field Notes &nbsp;&middot;&nbsp; Closing</span>
+        <span class="cover-issue">13 / 13</span>
+        <span>2026</span>
+    </div>
+
+    <div>
+        <div class="eyebrow reveal d-2">If you remember nothing else</div>
+        <h2 class="closing-headline reveal-blur d-3">
+            The PMs who thrive will be the ones who <em>just do things.</em>
+        </h2>
+
+        <div class="takeaway-grid">
+            <div class="takeaway reveal d-4">
+                <div class="takeaway-num">01</div>
+                <p class="takeaway-text">Build for the model that doesn&rsquo;t exist yet.</p>
+            </div>
+            <div class="takeaway reveal d-5">
+                <div class="takeaway-num">02</div>
+                <p class="takeaway-text">Replace specs with evals. Replace demos with daily use.</p>
+            </div>
+            <div class="takeaway reveal d-6">
+                <div class="takeaway-num">03</div>
+                <p class="takeaway-text">Sharpen taste. The bottleneck is no longer execution &mdash; it&rsquo;s judgment.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="cover-bottom reveal d-7">
+        <div class="cover-byline">
+            <span style="opacity: 0.6;">Source</span>
+            <strong>Lenny&rsquo;s Podcast &mdash; Cat Wu, Anthropic</strong>
+        </div>
+        <div class="cover-byline" style="text-align: right;">
+            <span style="opacity: 0.6;">End</span>
+            <strong>Thank you.</strong>
+        </div>
+    </div>
+</section>
+
+<div class="keyboard-hint">&larr; &rarr; &nbsp;or&nbsp; SPACE &nbsp;to navigate</div>
+
+<script>
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   - IntersectionObserver for entrance animations
+   - Keyboard navigation (arrows, space, page up/down, home/end)
+   - Touch / swipe support
+   - Wheel-debounced navigation
+   - Progress bar + nav dots
+   =========================================== */
+class SlidePresentation {
+    constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.currentSlide = 0;
+        this.isScrolling = false;
+
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupTouchNav();
+        this.setupWheelNav();
+        this.setupProgressBar();
+        this.setupNavDots();
+
+        // Mark first slide visible immediately so its animations run on load
+        this.slides[0].classList.add('visible');
+    }
+
+    /* Add .visible when a slide enters the viewport — triggers CSS reveals */
+    setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+                    entry.target.classList.add('visible');
+                    this.currentSlide = this.slides.indexOf(entry.target);
+                    this.updateNavDots();
+                    this.updateProgressBar();
+                }
+            });
+        }, { threshold: [0.5] });
+
+        this.slides.forEach(s => observer.observe(s));
+    }
+
+    setupKeyboardNav() {
+        document.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                case 'ArrowDown':
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    this.goTo(this.currentSlide + 1);
+                    break;
+                case 'ArrowUp':
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    this.goTo(this.currentSlide - 1);
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    this.goTo(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    this.goTo(this.slides.length - 1);
+                    break;
+            }
+        });
+    }
+
+    /* Touch swipe (mobile / trackpad) */
+    setupTouchNav() {
+        let touchStartY = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            const touchEndY = e.changedTouches[0].screenY;
+            const dy = touchStartY - touchEndY;
+            if (Math.abs(dy) > 60) {
+                this.goTo(this.currentSlide + (dy > 0 ? 1 : -1));
+            }
+        }, { passive: true });
+    }
+
+    /* Wheel navigation with debounce — one slide per scroll gesture */
+    setupWheelNav() {
+        let wheelTimer = null;
+        document.addEventListener('wheel', (e) => {
+            if (this.isScrolling) return;
+            if (Math.abs(e.deltaY) < 30) return;
+            this.isScrolling = true;
+            this.goTo(this.currentSlide + (e.deltaY > 0 ? 1 : -1));
+            clearTimeout(wheelTimer);
+            wheelTimer = setTimeout(() => { this.isScrolling = false; }, 800);
+        }, { passive: true });
+    }
+
+    setupProgressBar() {
+        this.progressBar = document.getElementById('progressBar');
+        this.updateProgressBar();
+    }
+
+    updateProgressBar() {
+        const pct = (this.currentSlide / (this.slides.length - 1)) * 100;
+        if (this.progressBar) this.progressBar.style.width = pct + '%';
+    }
+
+    /* Build dots and wire click navigation */
+    setupNavDots() {
+        this.dotsContainer = document.getElementById('navDots');
+        this.slides.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+            dot.addEventListener('click', () => this.goTo(i));
+            this.dotsContainer.appendChild(dot);
+        });
+    }
+
+    updateNavDots() {
+        if (!this.dotsContainer) return;
+        Array.from(this.dotsContainer.children).forEach((d, i) => {
+            d.classList.toggle('active', i === this.currentSlide);
+        });
+    }
+
+    goTo(index) {
+        const target = Math.max(0, Math.min(this.slides.length - 1, index));
+        this.slides[target].scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// Initialize on DOM ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new SlidePresentation());
+} else {
+    new SlidePresentation();
+}
+</script>
+</body>
+</html>

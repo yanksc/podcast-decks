@@ -1,0 +1,2474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Distribution Is The New Moat — Evan Spiegel × Lenny's Podcast</title>
+
+<!-- Bold Signal × Swiss Modern type stack:
+     Archivo Black for display, Space Grotesk for body, Space Mono for chrome -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   THEME — Bold Signal × Swiss Modern hybrid
+   Dark canvas. One bold pop card per pivot.
+   12-col grid faint in the background.
+   =========================================== */
+:root {
+    --bg-primary:   #0a0a0a;        /* near-black canvas */
+    --bg-elevated:  #141414;        /* card surface */
+    --bg-deeper:    #060606;
+    --text-primary: #fafafa;
+    --text-soft:    #9a9a9a;
+    --text-faint:   #5a5a5a;
+    --rule:         rgba(255, 255, 255, 0.12);
+    --rule-soft:    rgba(255, 255, 255, 0.06);
+    --grid-line:    rgba(255, 255, 255, 0.04);
+
+    --accent:       #ffd400;        /* electric saffron */
+    --accent-on:    #0a0a0a;
+    --accent-2:     #ff3b30;        /* Swiss red sharp */
+    --accent-soft:  rgba(255, 212, 0, 0.12);
+
+    --font-display: 'Archivo Black', 'Helvetica Neue', sans-serif;
+    --font-body:    'Space Grotesk', system-ui, sans-serif;
+    --font-mono:    'Space Mono', 'JetBrains Mono', monospace;
+
+    /* Type scale */
+    --title-size:   clamp(2.5rem, 7vw, 6rem);
+    --huge-size:    clamp(3.5rem, 11vw, 9rem);
+    --mega-size:    clamp(5rem, 16vw, 14rem);
+    --h2-size:      clamp(1.8rem, 4.2vw, 3.5rem);
+    --h3-size:      clamp(1.1rem, 2.2vw, 1.6rem);
+    --body-size:    clamp(0.85rem, 1.3vw, 1.1rem);
+    --small-size:   clamp(0.7rem, 0.95vw, 0.85rem);
+    --label-size:   clamp(0.62rem, 0.82vw, 0.78rem);
+
+    --slide-padding: clamp(1.5rem, 5vw, 5rem);
+    --content-gap:   clamp(1rem, 2vw, 2rem);
+
+    /* Sharper, design-house easing — distinct from Cat Wu deck */
+    --ease-sharp: cubic-bezier(0.7, 0, 0.3, 1);
+    --ease-snap:  cubic-bezier(0.5, 0, 0, 1);
+    --duration:   0.7s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* === VIEWPORT BASE — mandatory, do not modify === */
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: var(--body-size);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+}
+
+.slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: var(--slide-padding);
+    background: var(--bg-primary);
+}
+
+/* Faint 12-col grid on every content slide — Swiss-Modern register */
+.slide:not(.bare)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        repeating-linear-gradient(90deg,
+            var(--grid-line) 0,
+            var(--grid-line) 1px,
+            transparent 1px,
+            transparent 8.333%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+}
+
+img, .image-container {
+    max-width: 100%;
+    max-height: min(50vh, 400px);
+    object-fit: contain;
+}
+
+/* Responsive scaling */
+@media (max-height: 700px) {
+    :root {
+        --slide-padding: clamp(1rem, 3.5vw, 3rem);
+        --title-size: clamp(2rem, 5.5vw, 4rem);
+        --huge-size: clamp(2.5rem, 8vw, 6rem);
+        --mega-size: clamp(3.5rem, 12vw, 9rem);
+        --h2-size: clamp(1.4rem, 3.4vw, 2.6rem);
+    }
+}
+@media (max-height: 600px) {
+    :root {
+        --slide-padding: clamp(0.75rem, 2.5vw, 2rem);
+        --title-size: clamp(1.5rem, 4.5vw, 3rem);
+        --huge-size: clamp(2rem, 6vw, 4.5rem);
+        --body-size: clamp(0.75rem, 1.1vw, 0.95rem);
+    }
+    .nav-dots, .keyboard-hint, .decorative, .slide:not(.bare)::before { display: none; }
+}
+@media (max-height: 500px) {
+    :root {
+        --title-size: clamp(1.2rem, 3.5vw, 2rem);
+        --h2-size: clamp(1rem, 2.5vw, 1.4rem);
+    }
+}
+@media (max-width: 600px) {
+    :root { --title-size: clamp(1.5rem, 8vw, 3rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+    html { scroll-behavior: auto; }
+}
+
+/* ===========================================
+   CHROME — masthead + footer (mono on dark)
+   =========================================== */
+.masthead {
+    position: absolute;
+    top: clamp(1rem, 2.5vh, 1.8rem);
+    left: var(--slide-padding);
+    right: var(--slide-padding);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-faint);
+    z-index: 5;
+}
+.masthead .left { display: flex; gap: 1.2em; align-items: baseline; }
+.masthead .square {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    display: inline-block;
+    transform: translateY(-1px);
+}
+
+.footer {
+    position: absolute;
+    bottom: clamp(0.8rem, 2vh, 1.5rem);
+    left: var(--slide-padding);
+    right: var(--slide-padding);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--text-faint);
+    letter-spacing: 0.12em;
+    z-index: 5;
+}
+
+.slide.bare .masthead,
+.slide.bare .footer { display: none; }
+
+/* ===========================================
+   PROGRESS BAR & NAV DOTS
+   =========================================== */
+.progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--accent);
+    width: 0%;
+    z-index: 100;
+    transition: width 0.3s var(--ease-snap);
+}
+
+.nav-dots {
+    position: fixed;
+    right: clamp(1rem, 2vw, 1.5rem);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    z-index: 50;
+}
+.nav-dot {
+    width: 10px; height: 2px;
+    background: var(--text-faint);
+    cursor: pointer;
+    transition: all 0.3s var(--ease-snap);
+    border: none; padding: 0;
+    opacity: 0.5;
+}
+.nav-dot.active {
+    width: 22px;
+    opacity: 1;
+    background: var(--accent);
+}
+.nav-dot:hover { opacity: 0.85; }
+
+/* ===========================================
+   ANIMATION PRIMITIVES
+   Sharper easing than the editorial deck
+   =========================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity var(--duration) var(--ease-sharp),
+                transform var(--duration) var(--ease-sharp);
+}
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+
+.reveal-blur {
+    opacity: 0;
+    filter: blur(14px);
+    transition: opacity 0.95s var(--ease-sharp),
+                filter 0.95s var(--ease-sharp);
+}
+.slide.visible .reveal-blur { opacity: 1; filter: blur(0); }
+
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: opacity var(--duration) var(--ease-sharp),
+                transform var(--duration) var(--ease-sharp);
+}
+.slide.visible .reveal-left { opacity: 1; transform: translateX(0); }
+
+.reveal-swipe {
+    opacity: 0;
+    transform: translateX(80px);
+    transition: opacity 0.85s var(--ease-snap),
+                transform 0.85s var(--ease-snap);
+}
+.slide.visible .reveal-swipe { opacity: 1; transform: translateX(0); }
+
+.reveal-rule {
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 1s var(--ease-sharp);
+}
+.slide.visible .reveal-rule { transform: scaleX(1); }
+
+.d-1 { transition-delay: 0.08s; }
+.d-2 { transition-delay: 0.2s; }
+.d-3 { transition-delay: 0.32s; }
+.d-4 { transition-delay: 0.44s; }
+.d-5 { transition-delay: 0.56s; }
+.d-6 { transition-delay: 0.68s; }
+.d-7 { transition-delay: 0.8s; }
+
+/* ===========================================
+   SHARED COMPONENTS
+   =========================================== */
+.eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    margin-bottom: clamp(0.8rem, 1.8vh, 1.5rem);
+}
+.eyebrow::before {
+    content: "";
+    width: clamp(20px, 3vw, 36px);
+    height: 2px;
+    background: var(--accent);
+}
+
+.slide-title {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: var(--h2-size);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    max-width: 22ch;
+    margin-bottom: clamp(0.8rem, 1.8vh, 1.5rem);
+    text-transform: uppercase;
+}
+.slide-title em {
+    font-style: normal;
+    color: var(--accent);
+}
+
+.lede {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: clamp(1.05rem, 1.7vw, 1.4rem);
+    line-height: 1.45;
+    color: var(--text-soft);
+    max-width: 56ch;
+    margin-bottom: clamp(1rem, 2vh, 1.8rem);
+}
+.lede strong { color: var(--text-primary); font-weight: 600; }
+
+.body-copy {
+    font-size: var(--body-size);
+    line-height: 1.6;
+    color: var(--text-soft);
+    max-width: 60ch;
+}
+.body-copy strong { color: var(--text-primary); font-weight: 600; }
+
+/* ===========================================
+   SLIDE 1 — COVER
+   =========================================== */
+.cover {
+    background: var(--bg-primary);
+    justify-content: space-between;
+    padding-top: clamp(2rem, 5vh, 4rem);
+    padding-bottom: clamp(2rem, 5vh, 4rem);
+}
+.cover-bg-shape {
+    position: absolute;
+    width: clamp(300px, 55vw, 720px);
+    height: clamp(300px, 55vw, 720px);
+    background: var(--accent);
+    right: calc(-1 * clamp(80px, 12vw, 180px));
+    top: 50%;
+    transform: translateY(-50%) rotate(-8deg);
+    z-index: 1;
+    transform-origin: center;
+    animation: coverShape 1.4s var(--ease-snap) 0.2s both;
+}
+@keyframes coverShape {
+    from { transform: translateY(-50%) translateX(120%) rotate(-8deg); }
+    to   { transform: translateY(-50%) translateX(0) rotate(-8deg); }
+}
+.cover-bg-shape::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(0,0,0,0.08) 100%);
+}
+
+.cover-top, .cover-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--text-faint);
+    position: relative;
+    z-index: 3;
+}
+.cover-top { border-bottom: 1px solid var(--rule); padding-bottom: 1rem; }
+.cover-bottom { border-top: 1px solid var(--rule); padding-top: 1rem; }
+.cover-issue { color: var(--accent); }
+
+.cover-content {
+    position: relative;
+    z-index: 3;
+    max-width: 70%;
+}
+.cover-title {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: var(--huge-size);
+    line-height: 0.88;
+    letter-spacing: -0.035em;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    max-width: 14ch;
+}
+.cover-title em {
+    font-style: normal;
+    color: var(--accent);
+    display: block;
+    transform: translateX(0.05em);
+}
+.cover-deck {
+    font-family: var(--font-body);
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    color: var(--text-soft);
+    max-width: 46ch;
+    margin-top: clamp(1.2rem, 2.5vh, 2rem);
+    line-height: 1.5;
+}
+.cover-byline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+}
+.cover-byline strong {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+    letter-spacing: 0;
+    color: var(--text-primary);
+    text-transform: uppercase;
+}
+
+/* ===========================================
+   SLIDE 2 — ABOUT EVAN (stat slabs + bio)
+   =========================================== */
+.about-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: stretch;
+    height: 100%;
+}
+
+.stat-stack {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.6rem, 1.2vh, 1rem);
+    justify-content: center;
+}
+.stat-slab {
+    border-left: 3px solid var(--accent);
+    padding: clamp(0.6rem, 1.2vh, 1rem) clamp(0.8rem, 1.5vw, 1.4rem);
+    display: flex;
+    align-items: baseline;
+    gap: clamp(0.8rem, 1.5vw, 1.5rem);
+    background: linear-gradient(90deg, rgba(255, 212, 0, 0.04) 0%, transparent 100%);
+}
+.stat-num {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    line-height: 0.9;
+    color: var(--text-primary);
+    letter-spacing: -0.03em;
+    flex-shrink: 0;
+}
+.stat-num em { font-style: normal; color: var(--accent); }
+.stat-label {
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-soft);
+    line-height: 1.4;
+}
+
+.bio-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--rule);
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+.bio-card::after {
+    content: "02";
+    position: absolute;
+    top: clamp(0.8rem, 1.5vw, 1.2rem);
+    right: clamp(0.8rem, 1.5vw, 1.2rem);
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--accent);
+    letter-spacing: 0.15em;
+}
+.bio-monogram {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(5rem, 13vw, 9rem);
+    line-height: 0.85;
+    color: var(--accent);
+    letter-spacing: -0.06em;
+}
+.bio-name {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+    color: var(--text-primary);
+    letter-spacing: 0;
+    text-transform: uppercase;
+    margin-bottom: 0.3em;
+}
+.bio-role {
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-soft);
+    line-height: 1.6;
+}
+.bio-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+    padding-top: clamp(0.8rem, 1.5vh, 1.2rem);
+    border-top: 1px solid var(--rule);
+}
+.bio-meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+}
+.bio-meta-row span:first-child { color: var(--text-faint); }
+.bio-meta-row span:last-child { color: var(--text-primary); }
+
+/* ===========================================
+   SLIDE 3 — TOMBSTONE GRID
+   =========================================== */
+.tombstones {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(0.5rem, 1vw, 1rem);
+    margin-top: clamp(1rem, 2vh, 1.8rem);
+    margin-bottom: clamp(1rem, 2vh, 1.5rem);
+}
+.tomb {
+    border: 1px solid var(--rule);
+    padding: clamp(1rem, 2vw, 1.5rem) clamp(0.8rem, 1.5vw, 1.2rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    aspect-ratio: 4 / 3;
+    color: var(--text-faint);
+    position: relative;
+}
+.tomb-name {
+    font-family: var(--font-display);
+    font-size: clamp(0.95rem, 1.6vw, 1.3rem);
+    text-transform: uppercase;
+    text-decoration: line-through;
+    text-decoration-color: var(--accent-2);
+    text-decoration-thickness: 2px;
+    line-height: 1;
+}
+.tomb-fate {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-faint);
+}
+.tomb.alive {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-on);
+}
+.tomb.alive .tomb-name {
+    text-decoration: none;
+    color: var(--accent-on);
+}
+.tomb.alive .tomb-fate { color: var(--accent-on); }
+.tomb.asterisk {
+    border-style: dashed;
+    border-color: var(--text-faint);
+}
+.tomb.asterisk .tomb-name {
+    text-decoration: none;
+    color: var(--text-soft);
+}
+.tomb.asterisk::after {
+    content: "*";
+    position: absolute;
+    top: 0.5em;
+    right: 0.6em;
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 1.4em;
+}
+
+.tomb-footnote {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-faint);
+    margin-top: 0.5em;
+}
+.tomb-footnote span { color: var(--accent); }
+
+/* ===========================================
+   SLIDE 4 — HERO CARD (yellow pivot)
+   =========================================== */
+.hero-card-slide {
+    padding: 0;
+}
+.hero-card-slide .slide-content {
+    flex-direction: row;
+    padding: 0;
+}
+.hero-side {
+    flex: 1;
+    background: var(--bg-primary);
+    padding: var(--slide-padding);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+}
+.hero-side .eyebrow { color: var(--text-soft); }
+.hero-side .eyebrow::before { background: var(--text-soft); }
+
+.hero-card {
+    flex: 1.4;
+    background: var(--accent);
+    color: var(--accent-on);
+    padding: var(--slide-padding);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+.hero-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        repeating-linear-gradient(90deg,
+            rgba(0,0,0,0.04) 0,
+            rgba(0,0,0,0.04) 1px,
+            transparent 1px,
+            transparent 8.333%);
+}
+.hero-card-num {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--accent-on);
+    margin-bottom: clamp(0.8rem, 1.5vh, 1.2rem);
+    position: relative;
+    z-index: 2;
+}
+.hero-headline {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(2.5rem, 7vw, 6rem);
+    line-height: 0.92;
+    letter-spacing: -0.035em;
+    color: var(--accent-on);
+    text-transform: uppercase;
+    max-width: 14ch;
+    position: relative;
+    z-index: 2;
+}
+.hero-sub {
+    font-family: var(--font-body);
+    font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+    color: rgba(10, 10, 10, 0.75);
+    max-width: 42ch;
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+    line-height: 1.5;
+    position: relative;
+    z-index: 2;
+}
+
+/* ===========================================
+   SLIDE 5 — THEN / NOW SPLIT
+   =========================================== */
+.then-now {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    margin-top: clamp(1rem, 2vh, 1.8rem);
+}
+.tn-divider {
+    background: var(--rule);
+    width: 1px;
+}
+.tn-col h4 {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    margin-bottom: clamp(0.8rem, 1.5vh, 1.2rem);
+    color: var(--text-faint);
+}
+.tn-col.now h4 { color: var(--accent); }
+.tn-headline {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(1.4rem, 2.8vw, 2.2rem);
+    line-height: 1.05;
+    text-transform: uppercase;
+    margin-bottom: clamp(0.8rem, 1.5vh, 1.2rem);
+    letter-spacing: -0.02em;
+}
+.tn-col.now .tn-headline { color: var(--accent); }
+.tn-col.then .tn-headline { color: var(--text-soft); }
+.tn-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7em;
+}
+.tn-list li {
+    font-size: var(--body-size);
+    line-height: 1.45;
+    color: var(--text-soft);
+    padding-left: 1.4em;
+    position: relative;
+}
+.tn-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-family: var(--font-mono);
+}
+
+/* ===========================================
+   SLIDE 6 — DIFFICULTY DIAGRAM
+   =========================================== */
+.difficulty {
+    position: relative;
+    height: clamp(220px, 38vh, 380px);
+    margin: clamp(1rem, 2vh, 2rem) 0;
+}
+.diff-rect {
+    position: absolute;
+    border: 2px solid;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: clamp(0.8rem, 1.5vw, 1.2rem);
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+}
+.diff-social {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+    width: 56%;
+    height: 70%;
+    top: 5%;
+    left: 5%;
+}
+.diff-hardware {
+    border-color: var(--accent-2);
+    color: var(--accent-2);
+    background: rgba(255, 59, 48, 0.08);
+    width: 56%;
+    height: 70%;
+    top: 25%;
+    right: 5%;
+}
+.diff-overlap {
+    position: absolute;
+    top: 36%;
+    left: 47%;
+    transform: translate(-50%, 0);
+    background: var(--bg-primary);
+    border: 1px solid var(--text-primary);
+    color: var(--text-primary);
+    padding: 0.5em 1em;
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    white-space: nowrap;
+    z-index: 3;
+}
+
+/* ===========================================
+   SLIDE 7 — SPECS
+   =========================================== */
+.specs-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: center;
+    height: 100%;
+}
+.specs-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1rem, 2vh, 1.5rem);
+}
+.specs-frame {
+    width: 100%;
+    max-width: clamp(260px, 35vw, 420px);
+    aspect-ratio: 16 / 9;
+    border: 2px solid var(--accent);
+    background:
+        radial-gradient(ellipse at 30% 50%, rgba(255, 212, 0, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 50%, rgba(255, 212, 0, 0.15) 0%, transparent 60%),
+        var(--bg-elevated);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.specs-frame::before, .specs-frame::after {
+    content: "";
+    position: absolute;
+    width: 30%;
+    height: 65%;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    background: rgba(255, 212, 0, 0.06);
+}
+.specs-frame::before { left: 12%; }
+.specs-frame::after  { right: 12%; }
+.specs-bridge {
+    width: 14%;
+    height: 4px;
+    background: var(--accent);
+    z-index: 2;
+}
+.specs-caption {
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--text-faint);
+}
+
+.specs-quote {
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+    line-height: 1.25;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    margin-top: clamp(0.8rem, 1.5vh, 1.2rem);
+    max-width: 30ch;
+}
+.specs-quote em { color: var(--accent); font-style: normal; }
+
+/* ===========================================
+   SLIDE 8 — 9-12 STAT
+   =========================================== */
+.team-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: center;
+    height: 100%;
+}
+.team-stat-num {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: var(--mega-size);
+    line-height: 0.85;
+    color: var(--accent);
+    letter-spacing: -0.05em;
+}
+.team-stat-label {
+    font-family: var(--font-mono);
+    font-size: clamp(0.85rem, 1.2vw, 1rem);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-soft);
+    margin-top: 0.6em;
+    line-height: 1.5;
+    max-width: 28ch;
+}
+
+.flat-org {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 1vh, 0.8rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+}
+.flat-org-row {
+    display: flex;
+    gap: clamp(0.4rem, 0.8vw, 0.6rem);
+    flex-wrap: wrap;
+}
+.flat-node {
+    flex: 1;
+    min-width: clamp(40px, 6vw, 60px);
+    height: clamp(28px, 4vh, 40px);
+    border: 1px solid var(--rule);
+    background: var(--bg-elevated);
+}
+.flat-node.lead {
+    border-color: var(--accent);
+    background: var(--accent);
+}
+
+/* ===========================================
+   SLIDE 9 — RITUAL QUOTE
+   =========================================== */
+.ritual {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: center;
+    height: 100%;
+}
+.ritual-num {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(7rem, 18vw, 16rem);
+    line-height: 0.85;
+    color: var(--accent);
+    letter-spacing: -0.06em;
+}
+.ritual-quote {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3.2vw, 2.6rem);
+    line-height: 1.05;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: -0.025em;
+    max-width: 22ch;
+}
+.ritual-quote em {
+    color: var(--accent);
+    font-style: normal;
+}
+.ritual-attr {
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--text-faint);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+}
+
+/* ===========================================
+   SLIDE 10 — VELOCITY (numbered list)
+   =========================================== */
+.velocity-list {
+    list-style: none;
+    counter-reset: velocity;
+    display: flex;
+    flex-direction: column;
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+}
+.velocity-list li {
+    counter-increment: velocity;
+    border-top: 1px solid var(--rule);
+    padding: clamp(0.8rem, 1.5vh, 1.2rem) 0;
+    display: grid;
+    grid-template-columns: clamp(60px, 8vw, 100px) 1fr;
+    gap: clamp(1rem, 2vw, 2rem);
+    align-items: baseline;
+}
+.velocity-list li:last-child { border-bottom: 1px solid var(--rule); }
+.velocity-list li::before {
+    content: counter(velocity, decimal-leading-zero);
+    font-family: var(--font-mono);
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    color: var(--accent);
+    letter-spacing: 0.1em;
+}
+.velocity-list h4 {
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 2vw, 1.6rem);
+    text-transform: uppercase;
+    color: var(--text-primary);
+    line-height: 1.05;
+    margin-bottom: 0.3em;
+    letter-spacing: -0.015em;
+}
+.velocity-list p {
+    font-size: var(--body-size);
+    color: var(--text-soft);
+    line-height: 1.5;
+    max-width: 60ch;
+}
+
+/* ===========================================
+   SLIDE 11 — CUSTOMERS
+   =========================================== */
+.customer-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+}
+.customer-card {
+    border: 1px solid var(--rule);
+    padding: clamp(1.2rem, 2.5vw, 2rem);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.6rem, 1.2vh, 1rem);
+}
+.customer-card h4 {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--text-faint);
+}
+.customer-card.dashboard h4 { color: var(--text-faint); }
+.customer-card.field h4 { color: var(--accent); }
+.customer-card .quote {
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 1.9vw, 1.5rem);
+    line-height: 1.15;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: -0.015em;
+}
+.customer-card.dashboard .quote {
+    color: var(--text-soft);
+    text-decoration: line-through;
+    text-decoration-color: var(--accent-2);
+    text-decoration-thickness: 2px;
+}
+.customer-card .detail {
+    font-size: var(--small-size);
+    color: var(--text-soft);
+    line-height: 1.5;
+}
+
+/* ===========================================
+   SLIDE 12 — STORIES ORIGIN (timeline)
+   =========================================== */
+.timeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: clamp(1.5rem, 3vh, 2rem);
+    position: relative;
+}
+.timeline::before {
+    content: "";
+    position: absolute;
+    top: 1.4em;
+    left: 0; right: 0;
+    height: 2px;
+    background: var(--rule);
+}
+.timeline-step {
+    padding-right: clamp(0.5rem, 1vw, 1rem);
+    position: relative;
+}
+.timeline-dot {
+    width: 12px; height: 12px;
+    background: var(--text-faint);
+    margin-bottom: clamp(0.8rem, 1.5vh, 1.2rem);
+    position: relative;
+    z-index: 2;
+}
+.timeline-step.active .timeline-dot { background: var(--accent); }
+.timeline-step.active .timeline-dot::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border: 1px solid var(--accent);
+}
+.timeline-label {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-faint);
+    margin-bottom: 0.4em;
+}
+.timeline-step.active .timeline-label { color: var(--accent); }
+.timeline-text {
+    font-family: var(--font-display);
+    font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+    color: var(--text-primary);
+    line-height: 1.15;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    max-width: 18ch;
+}
+.timeline-detail {
+    font-size: var(--small-size);
+    color: var(--text-soft);
+    line-height: 1.45;
+    margin-top: 0.6em;
+}
+
+/* ===========================================
+   SLIDE 13 — SCREENSHOT MICRO-FEATURE
+   =========================================== */
+.screenshot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: center;
+    height: 100%;
+}
+.phone-mock {
+    width: 100%;
+    max-width: clamp(180px, 26vw, 300px);
+    aspect-ratio: 9 / 16;
+    border: 2px solid var(--rule);
+    border-radius: clamp(16px, 2.5vw, 28px);
+    background: var(--bg-elevated);
+    margin: 0 auto;
+    padding: clamp(0.8rem, 1.5vw, 1.2rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(0.6rem, 1.2vh, 1rem);
+    position: relative;
+    overflow: hidden;
+}
+.phone-icon {
+    width: clamp(60px, 10vw, 100px);
+    height: clamp(60px, 10vw, 100px);
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: clamp(1.4rem, 3vw, 2.4rem);
+    color: var(--accent);
+    background: rgba(255, 212, 0, 0.06);
+}
+.phone-alert {
+    background: var(--accent-2);
+    color: var(--text-primary);
+    padding: 0.5em 1em;
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    text-align: center;
+    line-height: 1.3;
+    width: 100%;
+}
+.phone-detail {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-faint);
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* ===========================================
+   SLIDE 14 — PMs (chart-like)
+   =========================================== */
+.pm-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 4vw, 4rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+    align-items: stretch;
+}
+.pm-col h4 {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--text-faint);
+    margin-bottom: clamp(0.6rem, 1.2vh, 1rem);
+}
+.pm-col.now h4 { color: var(--accent); }
+.pm-headline {
+    font-family: var(--font-display);
+    font-size: clamp(1.3rem, 2.4vw, 1.9rem);
+    text-transform: uppercase;
+    color: var(--text-primary);
+    line-height: 1.05;
+    margin-bottom: clamp(0.8rem, 1.5vh, 1.2rem);
+    letter-spacing: -0.02em;
+}
+.pm-col.now .pm-headline { color: var(--accent); }
+.pm-bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+}
+.pm-bullets li {
+    font-size: var(--body-size);
+    line-height: 1.5;
+    color: var(--text-soft);
+    padding-left: 1.4em;
+    position: relative;
+}
+.pm-bullets li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-family: var(--font-mono);
+}
+
+/* ===========================================
+   SLIDE 15 — TRIAD VENN
+   =========================================== */
+.triad {
+    position: relative;
+    height: clamp(220px, 36vh, 360px);
+    margin: clamp(1rem, 2vh, 1.5rem) auto;
+    width: 100%;
+    max-width: clamp(320px, 50vw, 560px);
+}
+.triad-circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid;
+    width: 50%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: clamp(0.9rem, 1.4vw, 1.15rem);
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    background: var(--bg-primary);
+}
+.triad-circle.designer {
+    border-color: var(--accent);
+    color: var(--accent);
+    top: 0;
+    left: 25%;
+    background: rgba(255, 212, 0, 0.08);
+}
+.triad-circle.pm {
+    border-color: var(--text-primary);
+    color: var(--text-primary);
+    bottom: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.04);
+}
+.triad-circle.eng {
+    border-color: var(--accent-2);
+    color: var(--accent-2);
+    bottom: 0;
+    right: 0;
+    background: rgba(255, 59, 48, 0.06);
+}
+.triad-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--bg-primary);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 0.5em 1em;
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    white-space: nowrap;
+    z-index: 4;
+}
+
+/* ===========================================
+   SLIDE 16 — DESIGN BOTTLENECK
+   =========================================== */
+.bottleneck-viz {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.6rem, 1.2vh, 1rem);
+    margin: clamp(1rem, 2vh, 1.5rem) 0;
+    max-width: 720px;
+}
+.bn-row {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    align-items: center;
+    gap: clamp(0.8rem, 1.5vw, 1.2rem);
+}
+.bn-label {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-faint);
+    text-align: right;
+}
+.bn-bar {
+    height: clamp(20px, 3vh, 28px);
+    background: var(--bg-elevated);
+    border: 1px solid var(--rule);
+    position: relative;
+    overflow: hidden;
+}
+.bn-bar-fill {
+    position: absolute;
+    inset: 0;
+    background: var(--text-soft);
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 1.4s var(--ease-snap);
+}
+.bn-row.choke .bn-bar-fill {
+    background: var(--accent);
+    transition-delay: 0.6s;
+}
+.slide.visible .bn-bar-fill { transform: scaleX(1); }
+.bn-row.row-1 .bn-bar-fill { transform-origin: left; }
+.bn-row.choke .bn-bar-fill { transform: scaleX(1); width: 18%; }
+.slide.visible .bn-row.choke .bn-bar-fill { width: 18%; }
+.bn-row.choke .bn-bar { display: flex; align-items: center; }
+.bn-row.choke .bn-tag {
+    position: absolute;
+    left: 22%;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    z-index: 2;
+}
+
+/* ===========================================
+   SLIDE 17 — HIRING DESIGNERS
+   =========================================== */
+.hiring-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(0.8rem, 1.5vw, 1.5rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+}
+.hire-card {
+    border-top: 3px solid var(--accent);
+    padding: clamp(1rem, 2vw, 1.5rem) 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.4rem, 1vh, 0.8rem);
+}
+.hire-num {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+}
+.hire-trait {
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 2.2vw, 1.7rem);
+    line-height: 1.05;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+.hire-detail {
+    font-size: var(--body-size);
+    color: var(--text-soft);
+    line-height: 1.5;
+}
+
+/* ===========================================
+   SLIDE 18 — CONTRARIAN HERO CARD
+   =========================================== */
+.contrarian .hero-card {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+}
+.contrarian .hero-card .hero-headline { color: var(--bg-primary); }
+.contrarian .hero-card .hero-card-num { color: var(--accent-2); }
+.contrarian .hero-card .hero-sub { color: rgba(10,10,10,0.7); }
+.contrarian .hero-card::before {
+    background-image:
+        repeating-linear-gradient(90deg,
+            rgba(0,0,0,0.05) 0,
+            rgba(0,0,0,0.05) 1px,
+            transparent 1px,
+            transparent 8.333%);
+}
+
+/* ===========================================
+   SLIDE 19 — CRUCIBLE
+   =========================================== */
+.crucible-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: clamp(1rem, 2vw, 2rem);
+    margin-top: clamp(1.5rem, 3vh, 2rem);
+}
+.crucible-card {
+    border: 1px solid var(--rule);
+    background: var(--bg-elevated);
+    padding: clamp(1rem, 2vw, 1.6rem);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 1vh, 0.8rem);
+    aspect-ratio: 4 / 5;
+    position: relative;
+    overflow: hidden;
+}
+.crucible-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--accent);
+}
+.crucible-num {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+    line-height: 0.9;
+    color: var(--accent);
+    letter-spacing: -0.04em;
+}
+.crucible-headline {
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.7vw, 1.3rem);
+    text-transform: uppercase;
+    color: var(--text-primary);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin-top: auto;
+}
+.crucible-detail {
+    font-size: var(--small-size);
+    color: var(--text-soft);
+    line-height: 1.5;
+}
+
+/* ===========================================
+   SLIDE 20 — CLOSING
+   =========================================== */
+.closing {
+    background:
+        linear-gradient(180deg, var(--bg-primary) 0%, #050505 100%);
+    justify-content: space-between;
+    padding-top: clamp(2rem, 5vh, 4rem);
+    padding-bottom: clamp(2rem, 5vh, 4rem);
+}
+.closing-headline {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(2.2rem, 6vw, 5rem);
+    line-height: 0.95;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    letter-spacing: -0.03em;
+    max-width: 18ch;
+}
+.closing-headline em {
+    font-style: normal;
+    color: var(--accent);
+}
+.takeaway-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1rem, 2vw, 2rem);
+    margin-top: clamp(1.5rem, 3vh, 2.5rem);
+}
+.takeaway {
+    border-top: 3px solid var(--accent);
+    padding-top: clamp(0.6rem, 1.2vh, 1rem);
+}
+.takeaway-num {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    margin-bottom: 0.6em;
+}
+.takeaway-text {
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    line-height: 1.15;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: -0.015em;
+}
+
+/* Responsive: collapse all multi-col grids on narrow viewports */
+@media (max-width: 800px) {
+    .about-grid,
+    .specs-grid,
+    .ritual,
+    .pm-cols,
+    .customer-cols,
+    .screenshot-grid,
+    .team-grid,
+    .then-now,
+    .hiring-grid,
+    .crucible-grid,
+    .takeaway-grid {
+        grid-template-columns: 1fr;
+    }
+    .then-now { grid-template-columns: 1fr; }
+    .tn-divider { display: none; }
+    .timeline { grid-template-columns: 1fr 1fr; }
+    .tombstones { grid-template-columns: 1fr 1fr; }
+    .hero-card-slide .slide-content { flex-direction: column; }
+}
+
+.keyboard-hint {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--text-faint);
+    letter-spacing: 0.18em;
+    opacity: 0;
+    animation: fadeHint 0.6s ease 1.8s forwards;
+    pointer-events: none;
+    z-index: 50;
+    text-transform: uppercase;
+}
+@keyframes fadeHint { to { opacity: 0.6; } }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+<!-- ===========================================
+     SLIDE 1 — COVER
+     Bold yellow shape sweeps in from the right.
+     Title sits over the dark canvas, asymmetrically.
+     =========================================== -->
+<section class="slide cover bare" data-title="Cover">
+    <div class="cover-bg-shape"></div>
+
+    <div class="cover-top reveal d-1">
+        <span>Lenny&rsquo;s Podcast &nbsp;//&nbsp; Transcript brief</span>
+        <span class="cover-issue">No. 248 / Consumer</span>
+        <span>2026</span>
+    </div>
+
+    <div class="cover-content">
+        <div class="eyebrow reveal d-2">A conversation with Evan Spiegel</div>
+        <h1 class="cover-title reveal-blur d-3">
+            Distribution<br/>is the<br/><em>new moat.</em>
+        </h1>
+        <p class="cover-deck reveal d-5">
+            Inside Snap&rsquo;s playbook for surviving 15 years of being copied &mdash; and why the CEO who invented Stories thinks the AI era will be won not by capability, but by the company that figures out how to put a product in front of a billion people.
+        </p>
+    </div>
+
+    <div class="cover-bottom reveal d-7">
+        <div class="cover-byline">
+            <span style="opacity: 0.5;">Guest</span>
+            <strong>Evan Spiegel &nbsp;//&nbsp; CEO, Snap Inc.</strong>
+        </div>
+        <div class="cover-byline" style="text-align: right;">
+            <span style="opacity: 0.5;">Hosted by</span>
+            <strong>Lenny Rachitsky</strong>
+        </div>
+    </div>
+</section>
+
+<!-- ===========================================
+     SLIDE 2 — ABOUT EVAN
+     =========================================== -->
+<section class="slide" data-title="About">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>Evan Spiegel</span></div>
+        <div>02 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="about-grid">
+            <div>
+                <div class="eyebrow reveal d-1">The guest, by the numbers</div>
+                <h2 class="slide-title reveal d-2">Built one of the only <em>lasting</em> consumer social products of the last 15 years.</h2>
+
+                <div class="stat-stack">
+                    <div class="stat-slab reveal d-3">
+                        <div class="stat-num"><em>~1B</em></div>
+                        <div class="stat-label">Monthly active users<br/>across Snapchat</div>
+                    </div>
+                    <div class="stat-slab reveal d-4">
+                        <div class="stat-num">$<em>6B</em></div>
+                        <div class="stat-label">Annual revenue<br/>(and climbing)</div>
+                    </div>
+                    <div class="stat-slab reveal d-5">
+                        <div class="stat-num"><em>8B</em></div>
+                        <div class="stat-label">AR lens photos posted daily<br/>by Snapchat users</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bio-card reveal-swipe d-3">
+                <div class="bio-monogram">ES</div>
+                <div>
+                    <div class="bio-name">Evan Spiegel</div>
+                    <div class="bio-role">Co-founder &amp; CEO<br/>Snap Inc.</div>
+                    <div class="bio-meta">
+                        <div class="bio-meta-row"><span>Founded</span><span>2011</span></div>
+                        <div class="bio-meta-row"><span>Invented</span><span>Stories &middot; AR Lenses &middot; Camera UX</span></div>
+                        <div class="bio-meta-row"><span>Now Building</span><span>Specs (AR glasses)</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>By the numbers</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 3 — THE GRAVEYARD
+     =========================================== -->
+<section class="slide" data-title="Graveyard">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>The Set-Up</span></div>
+        <div>03 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The set-up</div>
+        <h2 class="slide-title reveal d-2">In 15 years, almost <em>nothing</em> stuck.</h2>
+        <p class="lede reveal d-3">Every founder wants to build a consumer social product. Almost none survive contact with distribution. Look at the field after a decade and a half:</p>
+
+        <div class="tombstones">
+            <div class="tomb reveal d-3"><span class="tomb-name">Vine</span><span class="tomb-fate">Acq. → shut</span></div>
+            <div class="tomb reveal d-3"><span class="tomb-name">Path</span><span class="tomb-fate">Closed</span></div>
+            <div class="tomb reveal d-3"><span class="tomb-name">Peach</span><span class="tomb-fate">Faded</span></div>
+            <div class="tomb reveal d-3"><span class="tomb-name">Yik Yak</span><span class="tomb-fate">Twice closed</span></div>
+
+            <div class="tomb reveal d-4"><span class="tomb-name">Meerkat</span><span class="tomb-fate">Pivoted away</span></div>
+            <div class="tomb reveal d-4"><span class="tomb-name">Google+</span><span class="tomb-fate">Closed</span></div>
+            <div class="tomb reveal d-4"><span class="tomb-name">Clubhouse</span><span class="tomb-fate">Stalled</span></div>
+            <div class="tomb reveal d-4"><span class="tomb-name">BeReal</span><span class="tomb-fate">Acq.</span></div>
+
+            <div class="tomb asterisk reveal d-5"><span class="tomb-name">TikTok</span><span class="tomb-fate">Media, not social</span></div>
+            <div class="tomb asterisk reveal d-5"><span class="tomb-name">Threads</span><span class="tomb-fate">Rides on Instagram</span></div>
+            <div class="tomb reveal d-5"><span class="tomb-name">Ello</span><span class="tomb-fate">Closed</span></div>
+            <div class="tomb alive reveal d-6"><span class="tomb-name">Snapchat</span><span class="tomb-fate">Still standing</span></div>
+        </div>
+
+        <p class="tomb-footnote reveal d-7"><span>*</span> Asterisks denote products that solved distribution by leveraging another network &mdash; not by cracking the consumer-social problem from zero.</p>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>The graveyard</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 4 — THESIS HERO
+     =========================================== -->
+<section class="slide hero-card-slide" data-title="Thesis">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>The Thesis</span></div>
+        <div>04 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="hero-side">
+            <div class="eyebrow">The thesis</div>
+            <p class="lede" style="margin-bottom: 0;">
+                The product is the table stakes. The thing that&rsquo;s hard &mdash; the thing that <strong>actually decides who wins</strong> in the AI era &mdash; is putting it in front of people who haven&rsquo;t already downloaded six other versions of it.
+            </p>
+        </div>
+
+        <div class="hero-card reveal-swipe d-1">
+            <div class="hero-card-num">// 04 — The thesis</div>
+            <h2 class="hero-headline">Distribution is the new moat.</h2>
+            <p class="hero-sub">
+                Software stopped being a moat 15 years ago. AI didn&rsquo;t change that &mdash; it just made everyone else realize it. Whoever owns the channel wins the category.
+            </p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>04 / 20</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 5 — SOFTWARE ISN'T A MOAT
+     =========================================== -->
+<section class="slide" data-title="NotAMoat">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>Lessons</span></div>
+        <div>05 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">A lesson Snap learned the hard way</div>
+        <h2 class="slide-title reveal d-2">Every feature gets <em>copied.</em> Software alone has never been a moat.</h2>
+        <p class="lede reveal d-3">Snap learned this 15 years ago, watching its inventions show up in competitors&rsquo; apps within months. That&rsquo;s the same lesson the AI industry is learning right now.</p>
+
+        <div class="then-now">
+            <div class="tn-col then">
+                <h4 class="reveal d-3">Snap, 2013–2018</h4>
+                <h3 class="tn-headline reveal d-4">Stories. Filters. Lenses. Bitmoji.</h3>
+                <ul class="tn-list">
+                    <li class="reveal d-5">Each one shipped first by Snap.</li>
+                    <li class="reveal d-5">Each one cloned within 6&ndash;18 months.</li>
+                    <li class="reveal d-6">The clones often shipped on bigger networks.</li>
+                    <li class="reveal d-6">Conclusion: the feature was never the moat.</li>
+                </ul>
+            </div>
+            <div class="tn-divider reveal-rule d-3"></div>
+            <div class="tn-col now">
+                <h4 class="reveal d-4">AI industry, today</h4>
+                <h3 class="tn-headline reveal d-5">Models. Agents. Copilots. Wrappers.</h3>
+                <ul class="tn-list">
+                    <li class="reveal d-6">Capabilities replicate across providers in weeks.</li>
+                    <li class="reveal d-6">Open-source closes most gaps within a season.</li>
+                    <li class="reveal d-7">Pricing collapses faster than retention can be built.</li>
+                    <li class="reveal d-7">The moat lives somewhere else &mdash; channel, brand, hardware, taste.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>What is and isn&rsquo;t a moat</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 6 — TWO HARDEST BUSINESSES
+     =========================================== -->
+<section class="slide" data-title="HardModeSquared">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>The Bet</span></div>
+        <div>06 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Hard mode squared</div>
+        <h2 class="slide-title reveal d-2">Snap is betting on two of the <em>hardest</em> businesses in tech &mdash; at the same time.</h2>
+
+        <div class="difficulty">
+            <div class="diff-rect diff-social reveal-left d-3">
+                Consumer<br/>Social
+            </div>
+            <div class="diff-rect diff-hardware reveal d-4">
+                Consumer<br/>Hardware
+            </div>
+            <div class="diff-overlap reveal d-5">Where Snap lives</div>
+        </div>
+
+        <p class="body-copy reveal d-6">
+            <strong>Consumer social</strong> has a single-digit success rate over fifteen years. <strong>Consumer hardware</strong> has eaten the lunch of better-funded teams for decades. Picking either is courageous. Picking both at once requires a thesis &mdash; and Snap&rsquo;s is that the next computer is something you wear on your face, made by the people who already understand the camera.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>Hard mode squared</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 7 — SPECS
+     =========================================== -->
+<section class="slide" data-title="Specs">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>Hardware</span></div>
+        <div>07 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="specs-grid">
+            <div>
+                <div class="eyebrow reveal d-1">Why glasses, why now</div>
+                <h2 class="slide-title reveal d-2">Phones turn us into <em>gremlins.</em> Glasses keep us upright.</h2>
+                <p class="lede reveal d-3">Evan&rsquo;s case for AR isn&rsquo;t about screens &mdash; it&rsquo;s about posture. Phones drag people indoors and downward. Specs are an attempt to build a computer that lets you stay outside, stay together, and use your hands.</p>
+                <p class="body-copy reveal d-4">A decade of iteration: camera off the phone (2014), depth sensing, display, an OS for third-party developers (2024), and now a consumer launch that&rsquo;s been a long time coming.</p>
+            </div>
+
+            <div class="specs-visual">
+                <div class="specs-frame reveal-swipe d-2">
+                    <div class="specs-bridge"></div>
+                </div>
+                <p class="specs-caption reveal d-4">Specs &middot; outdoor-first computing</p>
+                <p class="specs-quote reveal d-5">A new computer that <em>brings you outside.</em></p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>The hardware bet</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 8 — 9 to 12 PERSON DESIGN TEAM
+     =========================================== -->
+<section class="slide" data-title="DesignTeam">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>Org</span></div>
+        <div>08 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="team-grid">
+            <div>
+                <div class="eyebrow reveal d-1">The team that out-ships giants</div>
+                <div class="team-stat-num reveal-blur d-2">9–12</div>
+                <p class="team-stat-label reveal d-3">people on the design team that has, over a decade, invented Stories, AR lenses, swipe-based navigation, and the camera-first UX paradigm.</p>
+            </div>
+
+            <div>
+                <h3 class="slide-title reveal d-3" style="font-size: clamp(1.3rem, 2.4vw, 1.9rem);">No <em>titles.</em> No <em>hierarchy.</em></h3>
+                <p class="body-copy reveal d-4">Hundreds of ideas reviewed weekly with the CEO. Day one, you present work. The team is small enough to fit in a room and brutal enough to ship.</p>
+
+                <div class="flat-org" aria-hidden="true">
+                    <div class="flat-org-row reveal d-5">
+                        <div class="flat-node lead"></div>
+                        <div class="flat-node"></div>
+                        <div class="flat-node"></div>
+                        <div class="flat-node"></div>
+                        <div class="flat-node"></div>
+                        <div class="flat-node"></div>
+                    </div>
+                    <div class="flat-org-row reveal d-6">
+                        <div class="flat-node"></div>
+                        <div class="flat-node"></div>
+                        <div class="flat-node"></div>
+                        <div class="flat-node"></div>
+                        <div class="flat-node"></div>
+                        <div class="flat-node"></div>
+                    </div>
+                </div>
+                <p class="body-copy reveal d-7" style="font-style: italic; margin-top: clamp(0.6rem, 1.2vh, 1rem); color: var(--text-soft);">A flat field. Everyone makes things. The CEO is on the row.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>The 9&ndash;12</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 9 — WEEKLY REVIEW RITUAL
+     =========================================== -->
+<section class="slide" data-title="WeeklyReview">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>Ritual</span></div>
+        <div>09 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="ritual">
+            <div class="ritual-num reveal-blur d-1">100s</div>
+            <div>
+                <div class="eyebrow reveal d-2">The ritual that compounds</div>
+                <h2 class="ritual-quote reveal d-3">If you want to have <em>one good idea,</em> you have to have <em>lots of ideas.</em></h2>
+                <p class="ritual-attr reveal d-4">— Evan Spiegel, on the weekly design review</p>
+                <p class="body-copy reveal d-5" style="margin-top: clamp(1rem, 2vh, 1.5rem);">Hundreds of concepts surface in the weekly review with the CEO. Most are killed. The ones that live shape the product. The number one rule of the room is volume — taste is a function of throughput.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>Weekly design review</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 10 — VELOCITY
+     =========================================== -->
+<section class="slide" data-title="Velocity">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>Velocity</span></div>
+        <div>10 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Velocity</div>
+        <h2 class="slide-title reveal d-2">Day one, you <em>present work.</em></h2>
+        <p class="lede reveal d-3">Snap&rsquo;s design culture is unromantic about process. The expectation isn&rsquo;t a deck about what you might do &mdash; it&rsquo;s the thing itself, in front of the room.</p>
+
+        <ol class="velocity-list">
+            <li class="reveal d-3">
+                <span></span>
+                <div>
+                    <h4>Make things, don&rsquo;t talk about making things.</h4>
+                    <p>The output of the room is artifacts: mocks, prototypes, fragments. Conversations happen <em>around</em> the work, not in lieu of it.</p>
+                </div>
+            </li>
+            <li class="reveal d-4">
+                <span></span>
+                <div>
+                    <h4>Throughput beats polish.</h4>
+                    <p>A loose pass on twenty ideas teaches more than a finished pass on one. Polish later, when the right idea has revealed itself.</p>
+                </div>
+            </li>
+            <li class="reveal d-5">
+                <span></span>
+                <div>
+                    <h4>Kill fast, kill kindly.</h4>
+                    <p>Most concepts die in the room. The team has stopped attaching ego to any single one &mdash; the value is in the next one.</p>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>Velocity</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 11 — TALK TO CUSTOMERS
+     =========================================== -->
+<section class="slide" data-title="Customers">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>Practice</span></div>
+        <div>11 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">A practice the CEO refuses to outsource</div>
+        <h2 class="slide-title reveal d-2">Talk to <em>customers.</em> Especially the ones the dashboard hides.</h2>
+        <p class="lede reveal d-3">Dashboards measure what is. Conversations surface what isn&rsquo;t there yet — the thing the user wanted but couldn&rsquo;t articulate, the workaround they invented, the moment they almost churned.</p>
+
+        <div class="customer-cols">
+            <div class="customer-card dashboard reveal d-4">
+                <h4>Dashboards</h4>
+                <p class="quote">Tell you what people did.</p>
+                <p class="detail">Aggregate behaviour. Lagging signals. Decisions you can defend in a slide.</p>
+            </div>
+            <div class="customer-card field reveal d-5">
+                <h4>Conversations</h4>
+                <p class="quote">Tell you why they did it.</p>
+                <p class="detail">Latent intent. Workarounds. The product they wish existed. Decisions you can&rsquo;t reach any other way.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>Field work</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 12 — STORIES ORIGIN
+     =========================================== -->
+<section class="slide" data-title="StoriesOrigin">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>Origin Story</span></div>
+        <div>12 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Origin: Stories</div>
+        <h2 class="slide-title reveal d-2">The biggest format of the decade was <em>a side effect.</em></h2>
+        <p class="lede reveal d-3">Stories was not the headline feature. It was a by-product of solving a different problem &mdash; how to share something with a small audience without the weight of permanence. The team noticed users behaving as if the feature already existed; they shipped the surface around the behaviour.</p>
+
+        <div class="timeline">
+            <div class="timeline-step reveal d-4">
+                <div class="timeline-dot"></div>
+                <div class="timeline-label">Step 01</div>
+                <p class="timeline-text">Solve a different problem</p>
+                <p class="timeline-detail">Ephemeral 1:1 sharing &mdash; the original Snapchat thesis.</p>
+            </div>
+            <div class="timeline-step reveal d-5">
+                <div class="timeline-dot"></div>
+                <div class="timeline-label">Step 02</div>
+                <p class="timeline-text">Watch the workarounds</p>
+                <p class="timeline-detail">Users sending the same snap to many friends, broadcast-style.</p>
+            </div>
+            <div class="timeline-step active reveal d-6">
+                <div class="timeline-dot"></div>
+                <div class="timeline-label">Step 03</div>
+                <p class="timeline-text">Build the surface around the behaviour</p>
+                <p class="timeline-detail">A 24-hour public reel. Stories, as we now know it.</p>
+            </div>
+            <div class="timeline-step reveal d-7">
+                <div class="timeline-dot"></div>
+                <div class="timeline-label">Step 04</div>
+                <p class="timeline-text">Watch it eat the industry</p>
+                <p class="timeline-detail">Within five years, every major social app shipped a clone.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>Origin story</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 13 — SCREENSHOT DETECTION
+     =========================================== -->
+<section class="slide" data-title="Screenshot">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>Detail</span></div>
+        <div>13 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="screenshot-grid">
+            <div class="phone-mock reveal-swipe d-2">
+                <div class="phone-icon">!</div>
+                <div class="phone-alert">Screenshot taken<br/>by recipient</div>
+                <div class="phone-detail">Sent at 11:47<br/>opened 11:48</div>
+            </div>
+
+            <div>
+                <div class="eyebrow reveal d-1">The micro-feature that saved early Snapchat</div>
+                <h2 class="slide-title reveal d-2">Trust is built in <em>tiny</em> places.</h2>
+                <p class="lede reveal d-3">Ephemeral messaging falls apart the instant users feel surveilled. The fix wasn&rsquo;t a feature roadmap &mdash; it was one notification.</p>
+                <p class="body-copy reveal d-4">Telling the sender when their snap was screenshotted made the asymmetry visible. It didn&rsquo;t prevent the screenshot. It made trust possible anyway. A four-line decision that anchored a billion-user product.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>The micro-feature</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 14 — PMs
+     =========================================== -->
+<section class="slide" data-title="PMs">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>PMs</span></div>
+        <div>14 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">PMs at Snap</div>
+        <h2 class="slide-title reveal d-2">For years, there <em>weren&rsquo;t any.</em></h2>
+        <p class="lede reveal d-3">Snap operated for most of its first decade with designers and engineers carrying the product. PMs were added later, deliberately, into a culture that already knew how to ship without them.</p>
+
+        <div class="pm-cols">
+            <div class="pm-col then">
+                <h4 class="reveal d-4">Then — pre-PM era</h4>
+                <h3 class="pm-headline reveal d-4">Designers and engineers shipped the product.</h3>
+                <ul class="pm-bullets">
+                    <li class="reveal d-5">No layer of translation between intent and artifact.</li>
+                    <li class="reveal d-5">Designers owned UX, engineers owned the system.</li>
+                    <li class="reveal d-5">Roadmap lived inside the design review.</li>
+                    <li class="reveal d-6">The cost: scaling pains as the org grew past 100.</li>
+                </ul>
+            </div>
+            <div class="pm-col now">
+                <h4 class="reveal d-5">Now — what PMs actually do</h4>
+                <h3 class="pm-headline reveal d-5">Connective tissue. Not gatekeepers.</h3>
+                <ul class="pm-bullets">
+                    <li class="reveal d-6">Hold the cross-functional thread (data, marketing, ops).</li>
+                    <li class="reveal d-6">Name the trade-offs the design room can&rsquo;t see.</li>
+                    <li class="reveal d-7">Defend long-arc bets when the calendar gets crowded.</li>
+                    <li class="reveal d-7">Earn their seat by accelerating shipping, not slowing it.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>The PM question</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 15 — TRIAD
+     =========================================== -->
+<section class="slide" data-title="Triad">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>The Role Shift</span></div>
+        <div>15 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Designer / PM / Engineer in the AI era</div>
+        <h2 class="slide-title reveal d-2">AI is collapsing the <em>hand-offs.</em></h2>
+
+        <div class="triad reveal-blur d-3">
+            <div class="triad-circle designer">Designer</div>
+            <div class="triad-circle pm">PM</div>
+            <div class="triad-circle eng">Engineer</div>
+            <div class="triad-center">AI in the centre</div>
+        </div>
+
+        <p class="lede reveal d-5" style="text-align: center; max-width: 64ch; margin: 0 auto; margin-top: clamp(0.5rem, 1vh, 1rem);">
+            Designers ship code. Engineers shape product. PMs are the only ones writing the doc that doesn&rsquo;t exist as code yet. The triad isn&rsquo;t three roles &mdash; it&rsquo;s one shared problem with three lenses, and the model sits in the middle of all three.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>The triad collapses</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 16 — DESIGN BOTTLENECK
+     =========================================== -->
+<section class="slide" data-title="Bottleneck">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>Cohesion</span></div>
+        <div>16 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Design as an intentional bottleneck</div>
+        <h2 class="slide-title reveal d-2">Speed without taste = <em>fragmentation.</em></h2>
+        <p class="lede reveal d-3">A 9–12 person design team is small enough to be a bottleneck on purpose. That&rsquo;s the feature, not the bug. Cohesion comes from a single point of taste &mdash; the alternative is a hundred tabs of independently-good work that don&rsquo;t add up to a product.</p>
+
+        <div class="bottleneck-viz">
+            <div class="bn-row row-1 reveal d-4">
+                <div class="bn-label">Engineering</div>
+                <div class="bn-bar"><div class="bn-bar-fill" style="background: var(--text-soft);"></div></div>
+            </div>
+            <div class="bn-row row-1 reveal d-5">
+                <div class="bn-label">Ops &amp; growth</div>
+                <div class="bn-bar"><div class="bn-bar-fill" style="background: var(--text-soft);"></div></div>
+            </div>
+            <div class="bn-row choke reveal d-6">
+                <div class="bn-label">Design</div>
+                <div class="bn-bar"><div class="bn-bar-fill"></div><span class="bn-tag">// the cohesion gate</span></div>
+            </div>
+            <div class="bn-row row-1 reveal d-7">
+                <div class="bn-label">Shipping</div>
+                <div class="bn-bar"><div class="bn-bar-fill" style="background: var(--text-soft);"></div></div>
+            </div>
+        </div>
+
+        <p class="body-copy reveal d-7" style="font-style: italic; max-width: 56ch;">
+            Everything passes through the gate. Nothing skips. The product stays one product.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>The cohesion gate</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 17 — HIRING DESIGNERS
+     =========================================== -->
+<section class="slide" data-title="HiringDesigners">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>Hiring</span></div>
+        <div>17 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">What Evan looks for</div>
+        <h2 class="slide-title reveal d-2">Three traits that <em>survive</em> the design review.</h2>
+
+        <div class="hiring-grid">
+            <div class="hire-card reveal d-3">
+                <span class="hire-num">// Trait 01</span>
+                <h3 class="hire-trait">Range</h3>
+                <p class="hire-detail">Can move from a wordmark to a hardware enclosure to a feed without losing the thread. The breadth is what makes a small team feasible.</p>
+            </div>
+            <div class="hire-card reveal d-4">
+                <span class="hire-num">// Trait 02</span>
+                <h3 class="hire-trait">Restlessness</h3>
+                <p class="hire-detail">Can&rsquo;t stop iterating. The portfolio is a record of revisions, not a museum of finished objects. Constructive dissatisfaction with their own work.</p>
+            </div>
+            <div class="hire-card reveal d-5">
+                <span class="hire-num">// Trait 03</span>
+                <h3 class="hire-trait">Ships</h3>
+                <p class="hire-detail">Has put real things in front of real users. Has seen the gap between a comp in Figma and a feature in production &mdash; and crossed it.</p>
+            </div>
+        </div>
+
+        <p class="body-copy reveal d-7" style="margin-top: clamp(1rem, 2vh, 1.5rem); max-width: 60ch;">
+            Younger designers are paired with senior ones the same week they start. The fastest way to develop taste is proximity to it.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>Hiring</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 18 — CONTRARIAN HERO
+     =========================================== -->
+<section class="slide hero-card-slide contrarian" data-title="Contrarian">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>The Contrarian Take</span></div>
+        <div>18 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="hero-side">
+            <div class="eyebrow">The contrarian take</div>
+            <p class="lede" style="margin-bottom: 0;">
+                The AI conversation is dominated by capability — what the model can do, what it scores, when it surpasses us. Evan&rsquo;s read is that <strong>the rate of adoption isn&rsquo;t set by capability at all</strong>. It&rsquo;s set by what people are emotionally and culturally willing to live with.
+            </p>
+        </div>
+
+        <div class="hero-card reveal-swipe d-1">
+            <div class="hero-card-num">// 18 — Contrarian</div>
+            <h2 class="hero-headline">Humanity is the bottleneck. Not the technology.</h2>
+            <p class="hero-sub">
+                The next decade of AI won&rsquo;t be gated by what the model can do. It&rsquo;ll be gated by how fast society can absorb the change &mdash; and the pushback that comes with it.
+            </p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>18 / 20</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 19 — CRUCIBLE YEAR
+     =========================================== -->
+<section class="slide" data-title="Crucible">
+    <header class="masthead">
+        <div class="left"><span class="square"></span><span>Transcript Brief</span><span>//</span><span>The Year Ahead</span></div>
+        <div>19 / 20</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The crucible year</div>
+        <h2 class="slide-title reveal d-2">Three converging forces &mdash; and Snap is <em>standing in the middle.</em></h2>
+
+        <div class="crucible-grid">
+            <div class="crucible-card reveal d-3">
+                <div class="crucible-num">01</div>
+                <p class="crucible-detail">A consumer hardware launch a decade in the making.</p>
+                <h3 class="crucible-headline">Specs ship to consumers.</h3>
+            </div>
+            <div class="crucible-card reveal d-4">
+                <div class="crucible-num">02</div>
+                <p class="crucible-detail">Feeds reorganize around generated content. Distribution mechanics rewrite themselves.</p>
+                <h3 class="crucible-headline">The AI feed era arrives.</h3>
+            </div>
+            <div class="crucible-card reveal d-5">
+                <div class="crucible-num">03</div>
+                <p class="crucible-detail">Is Snap a chat app, a camera, a hardware company, or all three? The market is asking out loud.</p>
+                <h3 class="crucible-headline">Snap&rsquo;s identity is on the line.</h3>
+            </div>
+        </div>
+
+        <p class="body-copy reveal d-7" style="text-align: center; max-width: 60ch; margin: clamp(1rem, 2vh, 1.5rem) auto 0; font-style: italic;">
+            &ldquo;A real turning point.&rdquo; — and the year that decides whether the next chapter looks like the last.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>Snap Inc.</span>
+        <span>The crucible</span>
+    </footer>
+</section>
+
+<!-- ===========================================
+     SLIDE 20 — CLOSING
+     =========================================== -->
+<section class="slide closing bare" data-title="Takeaways">
+    <div class="cover-top reveal d-1">
+        <span>Transcript Brief &nbsp;//&nbsp; Closing</span>
+        <span class="cover-issue">20 / 20</span>
+        <span>2026</span>
+    </div>
+
+    <div>
+        <div class="eyebrow reveal d-2">If you remember nothing else</div>
+        <h2 class="closing-headline reveal-blur d-3">
+            The product is the <em>price of entry.</em><br/>The moat is everything around it.
+        </h2>
+
+        <div class="takeaway-grid">
+            <div class="takeaway reveal d-4">
+                <div class="takeaway-num">// 01</div>
+                <p class="takeaway-text">Distribution is the new moat. Pick the channel before you pick the feature.</p>
+            </div>
+            <div class="takeaway reveal d-5">
+                <div class="takeaway-num">// 02</div>
+                <p class="takeaway-text">Software gets copied. Taste compounds. Build what can&rsquo;t be cloned in a quarter.</p>
+            </div>
+            <div class="takeaway reveal d-6">
+                <div class="takeaway-num">// 03</div>
+                <p class="takeaway-text">Humanity sets the pace, not the model. Design for the world that will accept the work.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="cover-bottom reveal d-7">
+        <div class="cover-byline">
+            <span style="opacity: 0.5;">Source</span>
+            <strong>Lenny&rsquo;s Podcast &nbsp;//&nbsp; Evan Spiegel, Snap</strong>
+        </div>
+        <div class="cover-byline" style="text-align: right;">
+            <span style="opacity: 0.5;">End</span>
+            <strong>Thank you.</strong>
+        </div>
+    </div>
+</section>
+
+<div class="keyboard-hint">← → or SPACE to navigate</div>
+
+<script>
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   Reused from cat_wu_deck.html, unchanged.
+   - IntersectionObserver for entrance animations
+   - Keyboard navigation (arrows, space, page up/down, home/end)
+   - Touch / swipe support
+   - Wheel-debounced navigation
+   - Progress bar + nav dots
+   =========================================== */
+class SlidePresentation {
+    constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.currentSlide = 0;
+        this.isScrolling = false;
+
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupTouchNav();
+        this.setupWheelNav();
+        this.setupProgressBar();
+        this.setupNavDots();
+
+        // Mark first slide visible immediately so its animations run on load
+        this.slides[0].classList.add('visible');
+    }
+
+    setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+                    entry.target.classList.add('visible');
+                    this.currentSlide = this.slides.indexOf(entry.target);
+                    this.updateNavDots();
+                    this.updateProgressBar();
+                }
+            });
+        }, { threshold: [0.5] });
+
+        this.slides.forEach(s => observer.observe(s));
+    }
+
+    setupKeyboardNav() {
+        document.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                case 'ArrowDown':
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    this.goTo(this.currentSlide + 1);
+                    break;
+                case 'ArrowUp':
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    this.goTo(this.currentSlide - 1);
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    this.goTo(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    this.goTo(this.slides.length - 1);
+                    break;
+            }
+        });
+    }
+
+    setupTouchNav() {
+        let touchStartY = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            const touchEndY = e.changedTouches[0].screenY;
+            const dy = touchStartY - touchEndY;
+            if (Math.abs(dy) > 60) {
+                this.goTo(this.currentSlide + (dy > 0 ? 1 : -1));
+            }
+        }, { passive: true });
+    }
+
+    setupWheelNav() {
+        let wheelTimer = null;
+        document.addEventListener('wheel', (e) => {
+            if (this.isScrolling) return;
+            if (Math.abs(e.deltaY) < 30) return;
+            this.isScrolling = true;
+            this.goTo(this.currentSlide + (e.deltaY > 0 ? 1 : -1));
+            clearTimeout(wheelTimer);
+            wheelTimer = setTimeout(() => { this.isScrolling = false; }, 800);
+        }, { passive: true });
+    }
+
+    setupProgressBar() {
+        this.progressBar = document.getElementById('progressBar');
+        this.updateProgressBar();
+    }
+
+    updateProgressBar() {
+        const pct = (this.currentSlide / (this.slides.length - 1)) * 100;
+        if (this.progressBar) this.progressBar.style.width = pct + '%';
+    }
+
+    setupNavDots() {
+        this.dotsContainer = document.getElementById('navDots');
+        this.slides.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+            dot.addEventListener('click', () => this.goTo(i));
+            this.dotsContainer.appendChild(dot);
+        });
+    }
+
+    updateNavDots() {
+        if (!this.dotsContainer) return;
+        Array.from(this.dotsContainer.children).forEach((d, i) => {
+            d.classList.toggle('active', i === this.currentSlide);
+        });
+    }
+
+    goTo(index) {
+        const target = Math.max(0, Math.min(this.slides.length - 1, index));
+        this.slides[target].scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new SlidePresentation());
+} else {
+    new SlidePresentation();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Podcast Field Notes — Lenny's Podcast Slide Briefs</title>
+<meta name="description" content="A small collection of editorial-style slide decks summarizing episodes of Lenny's Podcast.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --paper:        #f4ede2;
+    --paper-deep:   #ebe3d4;
+    --paper-rule:   rgba(26, 24, 20, 0.18);
+    --ink:          #1a1814;
+    --ink-soft:     #4a423a;
+    --ink-faint:    #8a7f70;
+    --accent:       #d8553e;
+    --gold:         #c4923a;
+
+    --font-display: 'Fraunces', 'Times New Roman', serif;
+    --font-body:    'Inter Tight', system-ui, sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+
+    --container: clamp(320px, 92vw, 1180px);
+    --pad:       clamp(1.25rem, 4vw, 3rem);
+
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    background-image:
+        radial-gradient(ellipse at 85% 0%, rgba(216, 85, 62, 0.08) 0%, transparent 55%),
+        radial-gradient(ellipse at 5% 100%, rgba(196, 146, 58, 0.06) 0%, transparent 55%);
+}
+
+.shell {
+    width: var(--container);
+    margin: 0 auto;
+    padding: var(--pad);
+}
+
+/* ===== Masthead ===== */
+.masthead {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--ink-faint);
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--ink);
+    margin-bottom: clamp(2rem, 5vh, 4rem);
+}
+.masthead .issue { color: var(--accent); font-weight: 700; }
+
+/* ===== Hero ===== */
+.hero {
+    margin-bottom: clamp(2.5rem, 6vh, 5rem);
+    max-width: 22ch;
+}
+.hero .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+}
+.hero .eyebrow::before {
+    content: "";
+    width: 32px; height: 2px;
+    background: var(--accent);
+}
+.hero h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(2.4rem, 7vw, 5.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+}
+.hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+}
+.hero p {
+    font-family: var(--font-body);
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    color: var(--ink-soft);
+    margin-top: 1.5rem;
+    max-width: 56ch;
+    line-height: 1.55;
+}
+
+/* ===== Decks Grid ===== */
+.decks {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: clamp(1rem, 2vw, 1.5rem);
+    margin-bottom: clamp(3rem, 7vh, 5rem);
+}
+
+.deck {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    background: var(--paper-deep);
+    border: 1px solid var(--paper-rule);
+    padding: clamp(1.2rem, 2.5vw, 1.8rem);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease), border-color 0.5s var(--ease);
+    aspect-ratio: 4 / 5;
+    min-height: 360px;
+}
+.deck::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--accent);
+    transform-origin: left;
+    transform: scaleX(0.2);
+    transition: transform 0.5s var(--ease);
+}
+.deck:hover {
+    transform: translateY(-6px);
+    border-color: var(--ink);
+    box-shadow: 0 18px 40px -20px rgba(26, 24, 20, 0.25);
+}
+.deck:hover::before {
+    transform: scaleX(1);
+}
+
+.deck-number {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--accent);
+    margin-bottom: 1rem;
+}
+.deck-guest {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    margin-bottom: 0.4rem;
+}
+.deck-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    font-variation-settings: "opsz" 60, "SOFT" 30;
+    margin-bottom: 0.8rem;
+}
+.deck-title em {
+    font-style: italic;
+    color: var(--accent);
+    font-variation-settings: "opsz" 60, "SOFT" 100;
+}
+.deck-blurb {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    margin-bottom: auto;
+}
+
+.deck-foot {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--paper-rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+}
+.deck-foot .open {
+    color: var(--ink);
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    transition: color 0.3s var(--ease);
+}
+.deck:hover .deck-foot .open {
+    color: var(--accent);
+}
+.deck-foot .open::after {
+    content: "→";
+    transition: transform 0.3s var(--ease);
+}
+.deck:hover .deck-foot .open::after {
+    transform: translateX(4px);
+}
+
+/* Per-deck accent variations */
+.deck.d-1::before { background: var(--accent); }
+.deck.d-2::before { background: #ffd400; }
+.deck.d-3::before { background: #e63946; }
+.deck.d-4::before { background: #0066b8; }
+.deck.d-5::before { background: var(--gold); }
+
+.deck.d-1 .deck-number,
+.deck.d-1 .deck-title em { color: var(--accent); }
+.deck.d-2 .deck-number,
+.deck.d-2 .deck-title em { color: #b8860b; }
+.deck.d-3 .deck-number,
+.deck.d-3 .deck-title em { color: #e63946; }
+.deck.d-4 .deck-number,
+.deck.d-4 .deck-title em { color: #0066b8; }
+.deck.d-5 .deck-number,
+.deck.d-5 .deck-title em { color: var(--gold); }
+
+/* ===== Footer ===== */
+.colophon {
+    border-top: 1px solid var(--ink);
+    padding-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--ink-faint);
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.colophon a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--paper-rule);
+    transition: border-color 0.3s var(--ease);
+}
+.colophon a:hover { border-color: var(--accent); }
+
+/* Subtle entrance animation */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 0.9s var(--ease) forwards;
+}
+.fade-in.delay-1 { animation-delay: 0.1s; }
+.fade-in.delay-2 { animation-delay: 0.25s; }
+.fade-in.delay-3 { animation-delay: 0.4s; }
+@keyframes fadeIn {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fade-in { opacity: 1; transform: none; animation: none; }
+    .deck { transition: none; }
+}
+
+@media (max-width: 600px) {
+    .deck { aspect-ratio: auto; min-height: 280px; }
+    .masthead { font-size: 0.65rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+    <header class="masthead fade-in">
+        <span>Podcast Field Notes</span>
+        <span class="issue">Vol. 1</span>
+        <span>2026</span>
+    </header>
+
+    <section class="hero fade-in delay-1">
+        <span class="eyebrow">A small collection</span>
+        <h1>Slide briefs from <em>Lenny&rsquo;s Podcast.</em></h1>
+        <p>Each deck distills one episode into a navigable, animation-rich set of slides &mdash; original framing, faithful to the speaker, designed to be scrolled through in five minutes. Built with Claude.</p>
+    </section>
+
+    <main class="decks fade-in delay-2">
+
+        <a class="deck d-1" href="cat_wu_deck/cat_wu_deck.html">
+            <div class="deck-number">// 01 &middot; Product</div>
+            <div class="deck-guest">Cat Wu &middot; Anthropic</div>
+            <h2 class="deck-title">How Anthropic&rsquo;s product team moves <em>faster</em> than anyone else.</h2>
+            <p class="deck-blurb">Inside the operating model behind Claude Code &mdash; PRDs that fit in a Slack message, evals as the new specs, and why &ldquo;just do things&rdquo; is the principle.</p>
+            <div class="deck-foot">
+                <span>13 slides &middot; Editorial</span>
+                <span class="open">Open deck</span>
+            </div>
+        </a>
+
+        <a class="deck d-2" href="spiegel_deck/spiegel_deck.html">
+            <div class="deck-number">// 02 &middot; Consumer</div>
+            <div class="deck-guest">Evan Spiegel &middot; Snap</div>
+            <h2 class="deck-title">Distribution is the <em>new moat.</em></h2>
+            <p class="deck-blurb">15 years of being copied taught Snap something the AI industry is just learning: capability gets you used, distribution decides who wins.</p>
+            <div class="deck-foot">
+                <span>20 slides &middot; Bold Signal</span>
+                <span class="open">Open deck</span>
+            </div>
+        </a>
+
+        <a class="deck d-3" href="nikhyl_deck/nikhyl_deck.html">
+            <div class="deck-number">// 03 &middot; Career</div>
+            <div class="deck-guest">Nikhyl Singhal &middot; The Skip</div>
+            <h2 class="deck-title">Why half of product managers are <em>in trouble.</em></h2>
+            <p class="deck-blurb">A blunt diagnosis of where the PM profession is heading over the next 24 months &mdash; with a prescription for staying in the rehired 8,000.</p>
+            <div class="deck-foot">
+                <span>35 slides &middot; Vital Signs</span>
+                <span class="open">Open deck</span>
+            </div>
+        </a>
+
+        <a class="deck d-4" href="claire_deck/claire_deck.html">
+            <div class="deck-number">// 04 &middot; AI Tools</div>
+            <div class="deck-guest">Claire Vo &middot; ChatPRD / How I AI</div>
+            <h2 class="deck-title">From skeptic to <em>true believer.</em></h2>
+            <p class="deck-blurb">Nine AI agents, three Mac Minis, one deleted family calendar. A masterclass in actually living with personal AI agents.</p>
+            <div class="deck-foot">
+                <span>35 slides &middot; Operator&rsquo;s Manual</span>
+                <span class="open">Open deck</span>
+            </div>
+        </a>
+
+        <a class="deck d-5" href="marc_deck/marc_deck.html">
+            <div class="deck-number">// 05 &middot; Markets</div>
+            <div class="deck-guest">Marc Andreessen &middot; a16z</div>
+            <h2 class="deck-title">The real AI boom <em>hasn&rsquo;t even started yet.</em></h2>
+            <p class="deck-blurb">The contrarian frame on why we&rsquo;re still in the prelude &mdash; and what changes when AI moves from chatbots to systems.</p>
+            <div class="deck-foot">
+                <span>Open in browser</span>
+                <span class="open">Open deck</span>
+            </div>
+        </a>
+
+    </main>
+
+    <footer class="colophon fade-in delay-3">
+        <span>Hand-built with Claude</span>
+        <span><a href="https://www.lennysnewsletter.com" target="_blank" rel="noopener">Lenny&rsquo;s Podcast</a></span>
+        <span>2026</span>
+    </footer>
+</div>
+
+</body>
+</html>

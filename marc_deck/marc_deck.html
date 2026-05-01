@@ -1,0 +1,2590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Real AI Boom Hasn't Even Started Yet — Marc Andreessen × Lenny's Podcast</title>
+
+<!-- "Almanac" type stack:
+     EB Garamond (classical book serif) + Inter (body) + IBM Plex Mono (data)
+     Distinct from all 5 prior decks (Fraunces / Archivo Black / Instrument Serif / DM Serif Display / Cormorant family) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=IBM+Plex+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   THEME — "The Almanac"
+   Parchment canvas, oxblood + inkwell-navy + gold.
+   Library / historical-text register.
+   =========================================== */
+:root {
+    --parchment:    #f1ead8;        /* aged paper */
+    --parchment-2:  #ebe2cc;        /* deeper paper */
+    --parchment-3:  #e3d9bf;        /* card surface */
+    --rule-thin:    rgba(26, 20, 16, 0.22);
+    --rule-faint:   rgba(26, 20, 16, 0.10);
+
+    --ink:          #1a1410;        /* oxblood-black */
+    --ink-soft:     #4a3f33;
+    --ink-faint:    #897e6b;
+    --ink-ghost:    #b8ad95;
+
+    --oxblood:      #7a1f2b;        /* primary accent */
+    --oxblood-soft: rgba(122, 31, 43, 0.1);
+    --oxblood-deep: #5a1620;
+
+    --inkwell:      #1d3557;        /* navy for charts */
+    --inkwell-soft: rgba(29, 53, 87, 0.1);
+
+    --gold:         #b8893d;        /* ornamental */
+    --gold-soft:    rgba(184, 137, 61, 0.16);
+    --gold-deep:    #8c6526;
+
+    --font-display: 'EB Garamond', 'Garamond', 'Times New Roman', serif;
+    --font-body:    'Inter', system-ui, sans-serif;
+    --font-mono:    'IBM Plex Mono', monospace;
+
+    --title-size:   clamp(2.5rem, 7vw, 6rem);
+    --huge-size:    clamp(3.5rem, 11vw, 9rem);
+    --mega-size:    clamp(5rem, 16vw, 14rem);
+    --h2-size:      clamp(1.9rem, 4.6vw, 3.8rem);
+    --body-size:    clamp(0.9rem, 1.3vw, 1.1rem);
+    --small-size:   clamp(0.74rem, 0.95vw, 0.88rem);
+    --label-size:   clamp(0.62rem, 0.8vw, 0.76rem);
+
+    --slide-padding: clamp(1.5rem, 5vw, 4.5rem);
+    --content-gap:   clamp(0.8rem, 1.8vw, 1.8rem);
+
+    --ease-soft: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --ease-snap: cubic-bezier(0.45, 0, 0.15, 1);
+    --duration: 0.95s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* === VIEWPORT BASE === */
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+
+body {
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: var(--body-size);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+.slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: var(--slide-padding);
+    background: var(--parchment);
+}
+
+/* Subtle paper grain — sparse dots + warm tint, distinct from prior decks
+   (no graph paper, no dotted notebook grid, no 12-col line grid) */
+.slide::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 25% 30%, rgba(184, 137, 61, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 75% 70%, rgba(122, 31, 43, 0.04) 0%, transparent 40%),
+        radial-gradient(rgba(26, 20, 16, 0.04) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 4px 4px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+}
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+}
+
+img, .image-container {
+    max-width: 100%;
+    max-height: min(50vh, 400px);
+    object-fit: contain;
+}
+
+@media (max-height: 700px) {
+    :root {
+        --slide-padding: clamp(1rem, 3.5vw, 3rem);
+        --title-size: clamp(2rem, 5.5vw, 4rem);
+        --huge-size: clamp(2.5rem, 8vw, 6rem);
+        --mega-size: clamp(3.5rem, 12vw, 9rem);
+        --h2-size: clamp(1.5rem, 3.8vw, 2.8rem);
+    }
+}
+@media (max-height: 600px) {
+    :root {
+        --slide-padding: clamp(0.75rem, 2.5vw, 2rem);
+        --title-size: clamp(1.5rem, 4.5vw, 3rem);
+        --body-size: clamp(0.78rem, 1.1vw, 0.95rem);
+    }
+    .nav-dots, .keyboard-hint, .slide::before { display: none; }
+}
+@media (max-height: 500px) {
+    :root {
+        --title-size: clamp(1.2rem, 3.5vw, 2rem);
+        --h2-size: clamp(1rem, 2.5vw, 1.4rem);
+    }
+}
+@media (max-width: 600px) {
+    :root { --title-size: clamp(1.5rem, 8vw, 3rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+    html { scroll-behavior: auto; }
+}
+
+/* ===========================================
+   CHROME — almanac-style header with double rule
+   =========================================== */
+.masthead {
+    position: absolute;
+    top: clamp(0.9rem, 2vh, 1.6rem);
+    left: var(--slide-padding);
+    right: var(--slide-padding);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    z-index: 5;
+    padding-bottom: 0.6em;
+    border-bottom: 1px solid var(--ink);
+}
+.masthead::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 0; right: 0;
+    height: 1px;
+    background: var(--ink);
+}
+.masthead .roman {
+    color: var(--oxblood);
+    font-weight: 700;
+}
+
+.footer {
+    position: absolute;
+    bottom: clamp(0.8rem, 2vh, 1.5rem);
+    left: var(--slide-padding);
+    right: var(--slide-padding);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--ink-faint);
+    letter-spacing: 0.14em;
+    z-index: 5;
+    padding-top: 0.6em;
+    border-top: 1px solid var(--ink);
+    text-transform: uppercase;
+}
+.footer::before {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: 0; right: 0;
+    height: 1px;
+    background: var(--ink);
+}
+
+.slide.bare .masthead,
+.slide.bare .footer { display: none; }
+
+/* ===========================================
+   PROGRESS BAR & NAV DOTS
+   =========================================== */
+.progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--oxblood);
+    width: 0%;
+    z-index: 100;
+    transition: width 0.3s var(--ease-snap);
+}
+
+.nav-dots {
+    position: fixed;
+    right: clamp(0.8rem, 1.5vw, 1.2rem);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 50;
+}
+.nav-dot {
+    width: 10px; height: 10px;
+    background: transparent;
+    border: 1.5px solid var(--ink-ghost);
+    cursor: pointer;
+    transition: all 0.3s var(--ease-snap);
+    padding: 0;
+    transform: rotate(45deg);
+}
+.nav-dot.active {
+    background: var(--oxblood);
+    border-color: var(--oxblood);
+}
+.nav-dot:hover { border-color: var(--ink); }
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity var(--duration) var(--ease-snap),
+                transform var(--duration) var(--ease-snap);
+}
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+
+.reveal-blur {
+    opacity: 0;
+    filter: blur(10px);
+    transition: opacity 1.1s var(--ease-snap),
+                filter 1.1s var(--ease-snap);
+}
+.slide.visible .reveal-blur { opacity: 1; filter: blur(0); }
+
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: opacity var(--duration) var(--ease-snap),
+                transform var(--duration) var(--ease-snap);
+}
+.slide.visible .reveal-left { opacity: 1; transform: translateX(0); }
+
+.reveal-rule {
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 1.1s var(--ease-snap);
+}
+.slide.visible .reveal-rule { transform: scaleX(1); }
+
+.d-1 { transition-delay: 0.08s; }
+.d-2 { transition-delay: 0.2s; }
+.d-3 { transition-delay: 0.32s; }
+.d-4 { transition-delay: 0.44s; }
+.d-5 { transition-delay: 0.56s; }
+.d-6 { transition-delay: 0.68s; }
+.d-7 { transition-delay: 0.8s; }
+.d-8 { transition-delay: 0.92s; }
+
+/* ===========================================
+   SHARED COMPONENTS
+   =========================================== */
+.eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: var(--oxblood);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7em;
+    margin-bottom: clamp(0.7rem, 1.6vh, 1.2rem);
+}
+.eyebrow::before {
+    content: "❦";
+    color: var(--gold);
+    font-size: 1.1em;
+    line-height: 1;
+}
+.eyebrow.gold { color: var(--gold-deep); }
+.eyebrow.navy { color: var(--inkwell); }
+
+.slide-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--h2-size);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    max-width: 22ch;
+    margin-bottom: clamp(0.8rem, 1.6vh, 1.4rem);
+}
+.slide-title em {
+    font-style: italic;
+    color: var(--oxblood);
+    font-weight: 500;
+}
+.slide-title .gold { color: var(--gold-deep); font-style: italic; }
+.slide-title .navy { color: var(--inkwell); font-style: italic; }
+
+.lede {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.1rem, 1.7vw, 1.4rem);
+    line-height: 1.45;
+    color: var(--ink-soft);
+    max-width: 56ch;
+    margin-bottom: clamp(0.8rem, 1.8vh, 1.6rem);
+}
+.lede strong { color: var(--ink); font-weight: 600; }
+
+.body-copy {
+    font-size: var(--body-size);
+    line-height: 1.65;
+    color: var(--ink-soft);
+    max-width: 62ch;
+}
+.body-copy strong { color: var(--ink); font-weight: 600; }
+
+/* Drop cap — a hallmark of the almanac register */
+.drop-cap::first-letter {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 4em;
+    float: left;
+    line-height: 0.85;
+    margin: 0.05em 0.08em 0 0;
+    color: var(--oxblood);
+}
+
+/* Quote block — almanac style with ornament */
+.quote-block {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.3rem, 2.5vw, 2rem);
+    line-height: 1.3;
+    color: var(--ink);
+    max-width: 38ch;
+    position: relative;
+    padding-left: clamp(1rem, 2vw, 1.6rem);
+    border-left: 2px solid var(--oxblood);
+}
+.quote-block::before {
+    content: "\201C";
+    position: absolute;
+    left: -0.1em;
+    top: -0.4em;
+    font-size: 3em;
+    color: var(--gold);
+    font-style: normal;
+    line-height: 1;
+    opacity: 0.6;
+}
+.quote-block .attribution {
+    display: block;
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    margin-top: clamp(0.7rem, 1.4vh, 1rem);
+}
+
+/* Engraved ornament divider */
+.ornament {
+    text-align: center;
+    color: var(--gold);
+    font-size: 1.2em;
+    margin: clamp(0.6rem, 1vh, 0.9rem) 0;
+    letter-spacing: 0.5em;
+}
+
+/* ===========================================
+   COVER — engraved frame
+   =========================================== */
+.cover {
+    background: var(--parchment);
+    justify-content: space-between;
+    padding-top: clamp(2rem, 5vh, 4rem);
+    padding-bottom: clamp(2rem, 5vh, 4rem);
+}
+.cover-frame {
+    position: absolute;
+    inset: clamp(1.2rem, 2.5vw, 2rem);
+    border: 1px solid var(--ink);
+    pointer-events: none;
+}
+.cover-frame::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1px solid var(--ink);
+}
+
+.cover-top, .cover-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    color: var(--ink-faint);
+    position: relative;
+    z-index: 3;
+    padding: 0 clamp(0.5rem, 1.5vw, 1.5rem);
+}
+.cover-issue { color: var(--oxblood); font-weight: 700; }
+
+.cover-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    padding: 0 clamp(0.5rem, 2vw, 2rem);
+}
+.cover-eyebrow {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    font-size: var(--small-size);
+    letter-spacing: 0.4em;
+    color: var(--oxblood);
+    margin-bottom: clamp(1rem, 2vh, 1.5rem);
+}
+.cover-eyebrow::before, .cover-eyebrow::after {
+    content: "—";
+    margin: 0 0.8em;
+    color: var(--gold);
+}
+.cover-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--huge-size);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    max-width: 14ch;
+    margin: 0 auto;
+}
+.cover-title em {
+    font-style: italic;
+    color: var(--oxblood);
+}
+.cover-deck {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1rem, 1.5vw, 1.3rem);
+    color: var(--ink-soft);
+    max-width: 50ch;
+    margin: clamp(1rem, 2.2vh, 1.8rem) auto 0;
+    line-height: 1.5;
+}
+.cover-byline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+}
+.cover-byline strong {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1rem, 1.5vw, 1.3rem);
+    color: var(--ink);
+    text-transform: none;
+}
+
+.cover-monogram {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(4rem, 9vw, 7rem);
+    color: var(--oxblood);
+    line-height: 1;
+    margin: clamp(1rem, 2vh, 1.5rem) auto;
+    text-align: center;
+    letter-spacing: -0.03em;
+    opacity: 0.18;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ===========================================
+   ABOUT MARC
+   =========================================== */
+.about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: stretch;
+    height: 100%;
+}
+.bio-card {
+    background: var(--parchment-2);
+    border: 1px solid var(--ink);
+    padding: clamp(1.2rem, 2.5vw, 2.2rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+.bio-card::after {
+    content: "";
+    position: absolute;
+    top: 8px; left: 8px; right: 8px; bottom: 8px;
+    border: 1px solid var(--rule-thin);
+    pointer-events: none;
+}
+.bio-monogram {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(7rem, 17vw, 13rem);
+    line-height: 0.85;
+    color: var(--oxblood);
+    letter-spacing: -0.04em;
+    position: relative;
+    z-index: 2;
+}
+.bio-name {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+    color: var(--ink);
+    line-height: 1.05;
+    margin-bottom: 0.3em;
+    position: relative;
+    z-index: 2;
+}
+.bio-role {
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--ink-faint);
+    line-height: 1.7;
+    position: relative;
+    z-index: 2;
+}
+.bio-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+    padding-top: clamp(0.8rem, 1.5vh, 1.2rem);
+    border-top: 1px solid var(--rule-thin);
+    position: relative;
+    z-index: 2;
+}
+.bio-meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+}
+.bio-meta-row span:first-child { color: var(--ink-faint); }
+.bio-meta-row span:last-child { color: var(--ink); font-weight: 700; }
+
+.bio-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* ===========================================
+   STAT SLABS — almanac figures
+   =========================================== */
+.figures {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1rem, 2vw, 2rem);
+    margin-top: clamp(1rem, 2vh, 1.6rem);
+}
+.figure {
+    text-align: center;
+    padding: clamp(1rem, 2vw, 1.5rem);
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    position: relative;
+}
+.figure::before, .figure::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 1px;
+    background: var(--ink);
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-3px);
+}
+.figure::after { top: auto; bottom: -1px; transform: translateX(-50%) translateY(3px); }
+.figure-num {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: 0.9;
+    color: var(--oxblood);
+    letter-spacing: -0.03em;
+}
+.figure-num.gold { color: var(--gold-deep); }
+.figure-num.navy { color: var(--inkwell); }
+.figure-label {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    margin-top: 0.6em;
+    line-height: 1.5;
+}
+
+/* ===========================================
+   CENTURY TIMELINE
+   =========================================== */
+.timeline {
+    margin-top: clamp(1rem, 2vh, 1.6rem);
+    position: relative;
+    padding-bottom: clamp(2rem, 4vh, 3rem);
+}
+.timeline-line {
+    height: 2px;
+    background: var(--ink);
+    position: relative;
+    margin: 0 0.5em;
+}
+.timeline-line::before, .timeline-line::after {
+    content: "❦";
+    position: absolute;
+    color: var(--gold);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--parchment);
+    padding: 0 0.3em;
+    font-size: 0.9em;
+}
+.timeline-line::before { left: -0.5em; }
+.timeline-line::after { right: -0.5em; }
+
+.timeline-marks {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    margin-top: 0;
+}
+.tl-mark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4em;
+    position: relative;
+    transform: translateY(-7px);
+}
+.tl-tick {
+    width: 2px;
+    height: 12px;
+    background: var(--ink);
+}
+.tl-mark.now .tl-tick {
+    background: var(--oxblood);
+    width: 3px;
+    height: 18px;
+    box-shadow: 0 0 0 4px var(--oxblood-soft);
+}
+.tl-year {
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    color: var(--ink);
+    font-weight: 700;
+    margin-top: 0.4em;
+}
+.tl-mark.now .tl-year { color: var(--oxblood); }
+.tl-detail {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--small-size);
+    color: var(--ink-soft);
+    text-align: center;
+    max-width: 14ch;
+    line-height: 1.3;
+    margin-top: 0.2em;
+}
+
+/* ===========================================
+   TWO-COLUMN BODY
+   =========================================== */
+.body-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: center;
+    height: 100%;
+}
+.body-grid.flip { grid-template-columns: 1fr 1.2fr; }
+
+/* ===========================================
+   MEXICAN STANDOFF DIAGRAM
+   =========================================== */
+.standoff {
+    position: relative;
+    width: clamp(280px, 42vw, 480px);
+    aspect-ratio: 1.15 / 1;
+    margin: clamp(0.8rem, 1.5vh, 1.2rem) auto;
+}
+.standoff-node {
+    position: absolute;
+    width: clamp(100px, 14vw, 140px);
+    height: clamp(100px, 14vw, 140px);
+    border-radius: 50%;
+    border: 2px solid var(--ink);
+    background: var(--parchment-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.2em;
+    text-align: center;
+}
+.standoff-role {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1rem, 1.7vw, 1.3rem);
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -0.01em;
+}
+.standoff-belief {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-faint);
+    line-height: 1.3;
+    max-width: 12ch;
+}
+.standoff-node.eng {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border-color: var(--oxblood);
+    background: var(--oxblood-soft);
+}
+.standoff-node.eng .standoff-role { color: var(--oxblood); }
+.standoff-node.pm {
+    bottom: 0;
+    left: 0;
+    border-color: var(--inkwell);
+    background: var(--inkwell-soft);
+}
+.standoff-node.pm .standoff-role { color: var(--inkwell); }
+.standoff-node.des {
+    bottom: 0;
+    right: 0;
+    border-color: var(--gold-deep);
+    background: var(--gold-soft);
+}
+.standoff-node.des .standoff-role { color: var(--gold-deep); }
+
+.standoff svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+}
+.standoff-arrow {
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    fill: none;
+    marker-end: url(#arrowhead);
+    stroke-dasharray: 4 3;
+    opacity: 0.55;
+}
+
+/* ===========================================
+   CONTRARIAN CARD (full-bleed pivot slide)
+   =========================================== */
+.hero-card-slide { padding: 0; }
+.hero-card-slide .slide-content {
+    flex-direction: row;
+    padding: 0;
+    align-items: stretch;
+}
+.hero-side {
+    flex: 1;
+    background: var(--parchment);
+    padding: var(--slide-padding);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+}
+.hero-card {
+    flex: 1.3;
+    background: var(--oxblood);
+    color: var(--parchment);
+    padding: var(--slide-padding);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border-left: 4px solid var(--gold);
+}
+.hero-card::after {
+    content: "";
+    position: absolute;
+    inset: clamp(0.8rem, 2vw, 1.5rem);
+    border: 1px solid rgba(241, 234, 216, 0.2);
+    pointer-events: none;
+}
+.hero-num {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    margin-bottom: clamp(0.8rem, 1.5vh, 1.2rem);
+    position: relative;
+    z-index: 2;
+}
+.hero-headline {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(2rem, 5.5vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: -0.025em;
+    color: var(--parchment);
+    max-width: 14ch;
+    position: relative;
+    z-index: 2;
+}
+.hero-sub {
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    color: rgba(241, 234, 216, 0.78);
+    max-width: 42ch;
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+    line-height: 1.5;
+    position: relative;
+    z-index: 2;
+    font-style: italic;
+}
+
+/* ===========================================
+   THEN / NOW SPLIT
+   =========================================== */
+.then-now {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    margin-top: clamp(1rem, 2vh, 1.6rem);
+}
+.tn-divider {
+    background: var(--ink);
+    width: 1px;
+    position: relative;
+}
+.tn-divider::before, .tn-divider::after {
+    content: "❦";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--parchment);
+    color: var(--gold);
+    padding: 0.3em 0;
+    font-size: 0.9em;
+}
+.tn-divider::before { top: 30%; }
+.tn-divider::after { bottom: 30%; }
+.tn-col h4 {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    margin-bottom: clamp(0.8rem, 1.5vh, 1.2rem);
+    color: var(--ink-faint);
+}
+.tn-col.now h4 { color: var(--oxblood); }
+.tn-col.then h4 { color: var(--inkwell); }
+.tn-headline {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(1.4rem, 2.8vw, 2.2rem);
+    line-height: 1.05;
+    margin-bottom: clamp(0.8rem, 1.5vh, 1.2rem);
+    letter-spacing: -0.02em;
+}
+.tn-col.now .tn-headline { color: var(--oxblood); }
+.tn-col.then .tn-headline { color: var(--inkwell); }
+.tn-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+}
+.tn-list li {
+    font-size: var(--body-size);
+    line-height: 1.45;
+    color: var(--ink-soft);
+    padding-left: 1.5em;
+    position: relative;
+}
+.tn-list li::before {
+    content: "❦";
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 0.8em;
+    top: 0.2em;
+}
+
+/* ===========================================
+   E-SHAPED CAREER DIAGRAM
+   =========================================== */
+.e-shape {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.4rem, 0.8vh, 0.7rem);
+    margin: clamp(1rem, 2vh, 1.5rem) 0;
+}
+.e-row {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.6rem, 1.2vw, 1.2rem);
+}
+.e-stem {
+    width: clamp(20px, 3vw, 36px);
+    height: clamp(28px, 4vh, 44px);
+    background: var(--ink);
+}
+.e-bar {
+    background: var(--oxblood);
+    height: clamp(28px, 4vh, 44px);
+    flex: 1;
+    max-width: clamp(180px, 28vw, 320px);
+    display: flex;
+    align-items: center;
+    padding: 0 0.8em;
+    color: var(--parchment);
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+}
+.e-bar.short { max-width: clamp(120px, 22vw, 240px); }
+.e-bar.shorter { max-width: clamp(100px, 18vw, 200px); }
+.e-bar.gold { background: var(--gold-deep); }
+.e-bar.navy { background: var(--inkwell); }
+
+/* ===========================================
+   BLOOM 2-SIGMA
+   =========================================== */
+.bloom-card {
+    background: var(--gold-soft);
+    border: 1px solid var(--gold);
+    padding: clamp(1.2rem, 2.5vw, 2rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+    position: relative;
+}
+.bloom-card::before {
+    content: "σ";
+    position: absolute;
+    top: clamp(0.4rem, 1vw, 0.8rem);
+    right: clamp(0.6rem, 1.2vw, 1rem);
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: var(--gold);
+    opacity: 0.4;
+    line-height: 1;
+}
+.bloom-headline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1.4rem, 2.6vw, 2rem);
+    line-height: 1.1;
+    color: var(--ink);
+    max-width: 30ch;
+    letter-spacing: -0.02em;
+}
+.bloom-detail {
+    margin-top: clamp(0.6rem, 1.2vh, 1rem);
+    font-size: var(--body-size);
+    color: var(--ink-soft);
+    line-height: 1.55;
+    max-width: 60ch;
+}
+
+/* ===========================================
+   INSIGHT LIST (numbered, almanac style)
+   =========================================== */
+.insight-list {
+    list-style: none;
+    counter-reset: insight;
+    display: flex;
+    flex-direction: column;
+}
+.insight-list li {
+    counter-increment: insight;
+    padding: clamp(0.7rem, 1.4vh, 1.1rem) 0;
+    border-bottom: 1px solid var(--rule-thin);
+    display: grid;
+    grid-template-columns: clamp(40px, 6vw, 64px) 1fr;
+    gap: clamp(0.8rem, 1.5vw, 1.3rem);
+    align-items: baseline;
+}
+.insight-list li:first-child { border-top: 1px solid var(--rule-thin); }
+.insight-list li::before {
+    content: counter(insight, upper-roman) ".";
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    color: var(--oxblood);
+    letter-spacing: 0;
+    font-weight: 500;
+}
+.insight-list h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(1.1rem, 1.9vw, 1.45rem);
+    color: var(--ink);
+    line-height: 1.15;
+    margin-bottom: 0.3em;
+    letter-spacing: -0.01em;
+}
+.insight-list p {
+    font-size: var(--small-size);
+    color: var(--ink-soft);
+    line-height: 1.55;
+    max-width: 64ch;
+}
+
+/* ===========================================
+   FOOTNOTE / ASIDE
+   =========================================== */
+.aside {
+    border-left: 3px solid var(--gold);
+    padding: clamp(0.8rem, 1.5vw, 1.2rem) clamp(1rem, 2vw, 1.5rem);
+    background: var(--gold-soft);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+    max-width: 64ch;
+}
+.aside p {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    color: var(--ink);
+    line-height: 1.45;
+}
+
+/* ===========================================
+   PREDICTIONS GRID (what Marc said before)
+   =========================================== */
+.pred-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(0.8rem, 1.5vw, 1.3rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+}
+.pred-card {
+    background: var(--parchment-2);
+    border: 1px solid var(--ink);
+    padding: clamp(1rem, 2vw, 1.5rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    aspect-ratio: 4 / 5;
+    position: relative;
+}
+.pred-card::before {
+    content: "";
+    position: absolute;
+    top: 6px; left: 6px; right: 6px; bottom: 6px;
+    border: 1px solid var(--rule-thin);
+    pointer-events: none;
+}
+.pred-year {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--gold-deep);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-weight: 700;
+    position: relative;
+    z-index: 2;
+}
+.pred-claim {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1rem, 1.7vw, 1.3rem);
+    color: var(--ink);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    position: relative;
+    z-index: 2;
+}
+.pred-result {
+    margin-top: auto;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--oxblood);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    position: relative;
+    z-index: 2;
+    padding-top: 0.6em;
+    border-top: 1px solid var(--rule-thin);
+}
+
+/* ===========================================
+   ONE-PERSON COMPANY
+   =========================================== */
+.one-person {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: clamp(1rem, 2vw, 2rem);
+    align-items: center;
+    margin: clamp(1rem, 2vh, 1.5rem) 0;
+    justify-content: center;
+}
+.op-figure {
+    text-align: center;
+}
+.op-num {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(4rem, 9vw, 7rem);
+    color: var(--oxblood);
+    line-height: 0.9;
+}
+.op-num.gold { color: var(--gold-deep); }
+.op-label {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-top: 0.4em;
+}
+.op-arrow {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    color: var(--gold);
+}
+
+/* ===========================================
+   AGI MEDITATION SLIDE
+   =========================================== */
+.meditation {
+    text-align: center;
+    max-width: 56ch;
+    margin: 0 auto;
+}
+.meditation-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(2rem, 5vw, 4rem);
+    line-height: 1.05;
+    color: var(--ink);
+    letter-spacing: -0.025em;
+}
+.meditation-title em { color: var(--oxblood); }
+
+/* ===========================================
+   CLOSING
+   =========================================== */
+.closing-headline {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(2rem, 5vw, 4rem);
+    line-height: 1.0;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    max-width: 22ch;
+}
+.closing-headline em {
+    font-style: italic;
+    color: var(--oxblood);
+}
+.takeaway-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1rem, 2vw, 2rem);
+    margin-top: clamp(1.5rem, 3vh, 2.5rem);
+}
+.takeaway {
+    border-top: 2px solid var(--oxblood);
+    padding-top: clamp(0.6rem, 1.2vh, 1rem);
+    position: relative;
+}
+.takeaway:nth-child(2) { border-top-color: var(--inkwell); }
+.takeaway:nth-child(3) { border-top-color: var(--gold-deep); }
+.takeaway-num {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--oxblood);
+    letter-spacing: 0.25em;
+    margin-bottom: 0.5em;
+}
+.takeaway:nth-child(2) .takeaway-num { color: var(--inkwell); }
+.takeaway:nth-child(3) .takeaway-num { color: var(--gold-deep); }
+.takeaway-text {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+    line-height: 1.2;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+    .about-grid,
+    .body-grid,
+    .body-grid.flip,
+    .figures,
+    .pred-grid,
+    .takeaway-grid,
+    .then-now,
+    .timeline-marks {
+        grid-template-columns: 1fr;
+    }
+    .then-now { grid-template-columns: 1fr; }
+    .tn-divider { display: none; }
+    .hero-card-slide .slide-content { flex-direction: column; }
+}
+
+.keyboard-hint {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--ink-faint);
+    letter-spacing: 0.18em;
+    opacity: 0;
+    animation: fadeHint 0.6s ease 1.8s forwards;
+    pointer-events: none;
+    z-index: 50;
+    text-transform: uppercase;
+}
+@keyframes fadeHint { to { opacity: 0.6; } }
+</style>
+</head>
+<body>
+
+<!-- SVG defs for arrowhead used in standoff diagram -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="var(--ink)"/>
+        </marker>
+    </defs>
+</svg>
+
+<div class="progress-bar" id="progressBar"></div>
+<nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+<!-- ============================================================
+     SLIDE 1 — COVER
+     ============================================================ -->
+<section class="slide cover bare" data-title="Cover">
+    <div class="cover-frame" aria-hidden="true"></div>
+    <div class="cover-monogram" aria-hidden="true">MA</div>
+
+    <div class="cover-top reveal d-1">
+        <span>Lenny&rsquo;s Podcast &middot; The Almanac</span>
+        <span class="cover-issue">No. CCLI &middot; AI &amp; Society</span>
+        <span>MMXXVI</span>
+    </div>
+
+    <div class="cover-content">
+        <div class="cover-eyebrow reveal d-2">A conversation with Marc Andreessen</div>
+        <h1 class="cover-title reveal-blur d-3">
+            The real <em>AI boom</em> hasn&rsquo;t even started yet.
+        </h1>
+        <div class="ornament reveal d-4">❦ ❦ ❦</div>
+        <p class="cover-deck reveal d-5">
+            Civilizational notes from a builder-investor who thinks AI arrived precisely when humanity needed it &mdash; on demographic collapse, the philosopher&rsquo;s stone, the Mexican standoff in tech, and why the only career advice that still holds is <em>don&rsquo;t be fungible</em>.
+        </p>
+    </div>
+
+    <div class="cover-bottom reveal d-7">
+        <div class="cover-byline">
+            <span style="opacity: 0.6;">Guest</span>
+            <strong>Marc Andreessen</strong>
+        </div>
+        <div class="cover-byline" style="text-align: center;">
+            <span style="opacity: 0.6;">Co-founder</span>
+            <strong>a16z &middot; Netscape</strong>
+        </div>
+        <div class="cover-byline" style="text-align: right;">
+            <span style="opacity: 0.6;">Hosted by</span>
+            <strong>Lenny Rachitsky</strong>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 2 — ABOUT MARC
+     ============================================================ -->
+<section class="slide" data-title="About">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">A Conversation in MMXXVI</span></div>
+        <div>II / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="about-grid">
+            <div class="bio-card reveal-left d-1">
+                <div class="bio-monogram">MA</div>
+                <div>
+                    <div class="bio-name">Marc Andreessen</div>
+                    <div class="bio-role">Co-founder<br/>Andreessen Horowitz<br/>(formerly: Netscape, Mosaic)</div>
+                    <div class="bio-meta">
+                        <div class="bio-meta-row"><span>Active since</span><span>1993</span></div>
+                        <div class="bio-meta-row"><span>Cycle counted</span><span>5 booms</span></div>
+                        <div class="bio-meta-row"><span>Predisposition</span><span>Optimist</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bio-text">
+                <div class="eyebrow reveal d-2">The guest</div>
+                <h2 class="slide-title reveal d-3">A builder-investor who thinks in <em>centuries.</em></h2>
+                <p class="lede reveal d-4">Marc has watched and shaped the consumer-internet era from the browser forward. He frames AI not as a product cycle but as a civilizational arrival &mdash; and one whose timing, he argues, is almost suspiciously good.</p>
+                <p class="body-copy reveal d-5">His read on the present moment leans heavily on long horizons: demographic curves, technological waves, the historical record of who wins what kind of disruption.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac &middot; About</span>
+        <span>The guest</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 3 — HISTORIC MOMENT
+     ============================================================ -->
+<section class="slide" data-title="HistoricMoment">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">The Moment</span></div>
+        <div>III / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The moment we live in</div>
+        <h2 class="slide-title reveal d-2">A <em>very, very historic</em> time &mdash; and most people are pricing it as a quarter, not a century.</h2>
+        <p class="lede reveal d-3 drop-cap">Marc&rsquo;s opening frame is the largest one available: this isn&rsquo;t a product cycle, a tech wave, or even a decade-long shift. It is, in his telling, a once-in-civilization arrival of a tool that converts the most abundant material on earth (sand, made into silicon) into the most rare (thought).</p>
+
+        <div class="quote-block reveal d-4">
+            AI is the philosopher&rsquo;s stone. We have a technology that transfers the most common thing in the world &mdash; sand &mdash; into the most rare thing in the world: thought.
+            <span class="attribution">— Marc Andreessen</span>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>The moment</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 4 — DEMOGRAPHIC TIMING
+     ============================================================ -->
+<section class="slide" data-title="Demographics">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">Demographics</span></div>
+        <div>IV / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Why the timing is suspicious</div>
+        <h2 class="slide-title reveal d-2">AI arrives <em>precisely</em> when populations are shrinking and productivity has stalled.</h2>
+        <p class="lede reveal d-3">For 50 years, the developed world has been quietly running a slower-and-slower productivity engine against a flattening population curve. Without AI, Marc argues, this would already be a panic.</p>
+
+        <div class="figures">
+            <div class="figure reveal d-4">
+                <div class="figure-num">50</div>
+                <div class="figure-label">Years of declining<br/>productivity growth</div>
+            </div>
+            <div class="figure reveal d-5">
+                <div class="figure-num navy">↓</div>
+                <div class="figure-label">Birth rates below<br/>replacement worldwide</div>
+            </div>
+            <div class="figure reveal d-6">
+                <div class="figure-num gold">∞</div>
+                <div class="figure-label">Workers AI can supply<br/>just as humans run short</div>
+            </div>
+        </div>
+
+        <p class="body-copy reveal d-7" style="text-align: center; max-width: 64ch; margin: clamp(1rem, 2vh, 1.5rem) auto 0;">
+            &ldquo;If we didn&rsquo;t have AI, we&rsquo;d be in a panic right now about what&rsquo;s going to happen to the economy.&rdquo;
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>Demographic timing</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 5 — CENTURY TIMELINE
+     ============================================================ -->
+<section class="slide" data-title="Timeline">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">A Long View</span></div>
+        <div>V / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">A long view</div>
+        <h2 class="slide-title reveal d-2">Five waves &mdash; and the one we are <em>at the front of.</em></h2>
+        <p class="lede reveal d-3">Marc&rsquo;s implicit periodization. Each wave reshaped the labor force more than the headlines of its decade suggested. The current one, by his read, is the largest of them.</p>
+
+        <div class="timeline">
+            <div class="timeline-line reveal-rule d-4"></div>
+            <div class="timeline-marks">
+                <div class="tl-mark reveal d-4">
+                    <div class="tl-tick"></div>
+                    <div class="tl-year">1760s</div>
+                    <div class="tl-detail">Steam &middot; the factory</div>
+                </div>
+                <div class="tl-mark reveal d-5">
+                    <div class="tl-tick"></div>
+                    <div class="tl-year">1880s</div>
+                    <div class="tl-detail">Electricity &middot; the city</div>
+                </div>
+                <div class="tl-mark reveal d-5">
+                    <div class="tl-tick"></div>
+                    <div class="tl-year">1950s</div>
+                    <div class="tl-detail">Computers &middot; the office</div>
+                </div>
+                <div class="tl-mark reveal d-6">
+                    <div class="tl-tick"></div>
+                    <div class="tl-year">1990s</div>
+                    <div class="tl-detail">Internet &middot; the network</div>
+                </div>
+                <div class="tl-mark now reveal d-7">
+                    <div class="tl-tick"></div>
+                    <div class="tl-year">2020s</div>
+                    <div class="tl-detail">AI &middot; the colleague</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>A long view</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 6 — TASK LOSS, NOT JOB LOSS
+     ============================================================ -->
+<section class="slide" data-title="TaskLoss">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">A Reframe</span></div>
+        <div>VI / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid">
+            <div>
+                <div class="eyebrow reveal d-1">A reframe</div>
+                <h2 class="slide-title reveal d-2">Stop looking at <em>job loss.</em> Start looking at <em>task loss.</em></h2>
+                <p class="lede reveal d-3">The single most important conceptual shift in the conversation. Jobs are bundles of tasks. Tasks get automated long before jobs do &mdash; and when tasks leave, the job often becomes <strong>more</strong> valuable, not less, because the human has time for the part that mattered.</p>
+                <p class="body-copy reveal d-4">The bookkeeper didn&rsquo;t disappear when the spreadsheet arrived. The bookkeeper became an accountant.</p>
+            </div>
+            <div>
+                <div class="quote-block reveal d-5">
+                    Everybody wants to talk about job loss. But really what you want to look at is task loss. The job persists longer than the individual tasks.
+                    <span class="attribution">— Marc Andreessen</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>Task loss</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 7 — JOBS PANIC IS OFF-BASE
+     ============================================================ -->
+<section class="slide" data-title="JobsPanic">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">The Panic</span></div>
+        <div>VII / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The panic</div>
+        <h2 class="slide-title reveal d-2">The mass-unemployment scenario is <em>totally off base.</em></h2>
+        <p class="lede reveal d-3">Marc&rsquo;s flat read on the &ldquo;AI takes everyone&rsquo;s jobs&rdquo; narrative. Not because AI isn&rsquo;t powerful, but because the labor pool the developed world has &mdash; and is going to have &mdash; is shrinking faster than the technology can replace it.</p>
+
+        <div class="aside reveal d-4">
+            <p>The panic gets the demographics backwards. Workers will be at a <strong>premium</strong>, not a discount. The bottleneck for the next two decades is going to be the absence of humans, not the presence of machines.</p>
+        </div>
+
+        <p class="body-copy reveal d-5" style="margin-top: clamp(1rem, 2vh, 1.5rem);">
+            That doesn&rsquo;t mean no displacement. It means the macro story is the inverse of the headline: a widening gap between what economies need to produce and the labor pool available, with AI partially &mdash; not entirely &mdash; closing it.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>The panic, reconsidered</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 8 — PAST PREDICTIONS
+     ============================================================ -->
+<section class="slide" data-title="PastPredictions">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">The Record</span></div>
+        <div>VIII / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The record</div>
+        <h2 class="slide-title reveal d-2">A <em>30-year ledger</em> of bets people thought were too bold.</h2>
+        <p class="lede reveal d-3">Marc has spent three decades publicly betting on outcomes that read as fringe at the time. The current claim &mdash; that the AI boom is <em>just starting</em> &mdash; is in the lineage of those bets.</p>
+
+        <div class="pred-grid">
+            <div class="pred-card reveal d-4">
+                <span class="pred-year">1993</span>
+                <h3 class="pred-claim">&ldquo;The browser will eat all software.&rdquo;</h3>
+                <span class="pred-result">→ It did.</span>
+            </div>
+            <div class="pred-card reveal d-5">
+                <span class="pred-year">2011</span>
+                <h3 class="pred-claim">&ldquo;Software is eating the world.&rdquo;</h3>
+                <span class="pred-result">→ It is.</span>
+            </div>
+            <div class="pred-card reveal d-6">
+                <span class="pred-year">2026</span>
+                <h3 class="pred-claim">&ldquo;The real AI boom hasn&rsquo;t even started yet.&rdquo;</h3>
+                <span class="pred-result">→ TBD.</span>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>The track record</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 9 — MEXICAN STANDOFF
+     ============================================================ -->
+<section class="slide" data-title="Standoff">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">Three Roles, One Triangle</span></div>
+        <div>IX / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid">
+            <div>
+                <div class="eyebrow reveal d-1">The Mexican standoff</div>
+                <h2 class="slide-title reveal d-2">PM, designer, engineer &mdash; <em>each thinks they can become the other two.</em></h2>
+                <p class="lede reveal d-3">Marc&rsquo;s sharpest observation about the present: every coder believes AI lets them also be a PM and a designer. Every PM thinks they can be a coder and a designer. Every designer knows they can be a PM and a coder.</p>
+                <p class="body-copy reveal d-4">And here&rsquo;s the twist: <strong>they&rsquo;re all correct.</strong> The standoff isn&rsquo;t about who wins &mdash; it&rsquo;s that the line between the three roles is dissolving for anyone willing to cross it.</p>
+            </div>
+
+            <div>
+                <div class="standoff reveal-blur d-3" aria-hidden="true">
+                    <div class="standoff-node eng">
+                        <div class="standoff-role">Engineer</div>
+                        <div class="standoff-belief">&ldquo;I can do PM &amp; design&rdquo;</div>
+                    </div>
+                    <div class="standoff-node pm">
+                        <div class="standoff-role">PM</div>
+                        <div class="standoff-belief">&ldquo;I can code &amp; design&rdquo;</div>
+                    </div>
+                    <div class="standoff-node des">
+                        <div class="standoff-role">Designer</div>
+                        <div class="standoff-belief">&ldquo;I can PM &amp; code&rdquo;</div>
+                    </div>
+                    <svg viewBox="0 0 100 100">
+                        <path class="standoff-arrow" d="M 50 18 Q 30 50 22 78"/>
+                        <path class="standoff-arrow" d="M 30 82 Q 55 80 75 80"/>
+                        <path class="standoff-arrow" d="M 78 75 Q 70 50 55 25"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>The standoff</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 10 — STANDOFF, EXPANDED
+     ============================================================ -->
+<section class="slide" data-title="StandoffExpanded">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">The Standoff, Continued</span></div>
+        <div>X / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The standoff is not just in tech</div>
+        <h2 class="slide-title reveal d-2">Hollywood&rsquo;s version: <em>director, writer, actor</em> &mdash; same triangle, same dissolve.</h2>
+        <p class="lede reveal d-3">Marc&rsquo;s lateral move that lights up the framework. The director thinks AI can write the script and play the parts. The writer thinks AI can direct and cast. The actor thinks AI can write and direct, and they&rsquo;ll just turn up and perform.</p>
+        <p class="body-copy reveal d-4">The pattern is general. Wherever a creative discipline used to require three specialized humans handing off to each other, the dissolve is happening &mdash; and the standoff is the result. <em>Whoever crosses two of the three lines first owns the room.</em></p>
+
+        <div class="aside reveal d-5">
+            <p>Look for the triangle in your industry. There almost certainly is one. The question is which corner you&rsquo;re standing in &mdash; and which other corner you&rsquo;re willing to learn.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>The standoff is general</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 11 — ADDITIVE MATH OF SKILLS (key insight)
+     ============================================================ -->
+<section class="slide hero-card-slide" data-title="AdditiveMath">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">The Insight</span></div>
+        <div>XI / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="hero-side">
+            <div class="eyebrow">The math under the standoff</div>
+            <p class="lede" style="margin-bottom: 0;">
+                Why combining skills is so disproportionately rewarded. The arithmetic Marc keeps coming back to &mdash; borrowed from Scott Adams &mdash; explains why the &ldquo;learn one more thing&rdquo; advice keeps compounding.
+            </p>
+        </div>
+
+        <div class="hero-card reveal-left d-1">
+            <div class="hero-num">XI &mdash; The arithmetic</div>
+            <h2 class="hero-headline">Two skills &gt; double. Three skills &gt; triple.</h2>
+            <p class="hero-sub">
+                The additive effect of being good at two things is more than double the effect of either one. The additive effect of three is more than triple. The combination is where the value lives.
+            </p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>The arithmetic</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 12 — DILBERT EXAMPLE
+     ============================================================ -->
+<section class="slide" data-title="Dilbert">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">An Illustration</span></div>
+        <div>XII / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">An illustration: how the math creates Dilbert</div>
+        <h2 class="slide-title reveal d-2">Scott Adams was a <em>pretty good</em> cartoonist and a <em>pretty good</em> businessman. The combination made him spectacular.</h2>
+        <p class="lede reveal d-3 drop-cap">Marc&rsquo;s favorite worked example. Adams himself put it this way: the world&rsquo;s best cartoonist who didn&rsquo;t understand business could not have made Dilbert. The world&rsquo;s best businessperson who couldn&rsquo;t draw could not have made Dilbert. It took someone with both &mdash; even at a moderate level of each &mdash; to produce one of the most successful comic strips ever printed.</p>
+
+        <p class="body-copy reveal d-4" style="font-style: italic; max-width: 60ch;">
+            The same logic produces Hollywood&rsquo;s &ldquo;auteur&rdquo; &mdash; the writer-director who is uncopyable because the combination is what they are.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>The Dilbert example</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 13 — T-SHAPED → E-SHAPED
+     ============================================================ -->
+<section class="slide" data-title="EShaped">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">A Career Shape</span></div>
+        <div>XIII / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid flip">
+            <div>
+                <div class="e-shape reveal-blur d-2" aria-hidden="true">
+                    <div class="e-row">
+                        <div class="e-stem"></div>
+                        <div class="e-bar">Deep specialty</div>
+                    </div>
+                    <div class="e-row">
+                        <div class="e-stem"></div>
+                        <div class="e-bar gold short">Adjacent skill 1</div>
+                    </div>
+                    <div class="e-row">
+                        <div class="e-stem"></div>
+                        <div class="e-bar navy short">Adjacent skill 2</div>
+                    </div>
+                    <div class="e-row">
+                        <div class="e-stem"></div>
+                        <div class="e-bar shorter">Working knowledge of the rest</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="eyebrow reveal d-1">Career shape</div>
+                <h2 class="slide-title reveal d-2">From <em>T-shaped</em> to <em>E-shaped.</em></h2>
+                <p class="lede reveal d-3">The T-shaped career &mdash; one deep skill, broad collaboration &mdash; was the right shape for the last decade. The E-shaped career &mdash; one deep skill, two or three serious adjacent ones, plus AI as a force multiplier on all of them &mdash; is the right shape for the next.</p>
+                <p class="body-copy reveal d-4">AI doesn&rsquo;t make the deep specialty optional. It makes the second and third specialties suddenly accessible.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>E-shaped careers</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 14 — DON'T BE FUNGIBLE (hero)
+     ============================================================ -->
+<section class="slide hero-card-slide" data-title="DontBeFungible">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">The Career Advice</span></div>
+        <div>XIV / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="hero-side">
+            <div class="eyebrow">The career advice he keeps coming back to</div>
+            <p class="lede" style="margin-bottom: 0;">
+                Marc&rsquo;s shortest piece of career advice. It compresses the additive-skill argument, the standoff, and the E-shaped career into three words. If you do nothing else with this conversation, do this.
+            </p>
+        </div>
+
+        <div class="hero-card reveal-left d-1">
+            <div class="hero-num">XIV &mdash; The advice</div>
+            <h2 class="hero-headline">Don&rsquo;t be fungible.</h2>
+            <p class="hero-sub">
+                If you can be replaced by anyone with your title, you will be. The work of a career is the work of becoming a combination that doesn&rsquo;t exist anywhere else &mdash; and AI is the most powerful tool we&rsquo;ve ever had for assembling that combination.
+            </p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>Don&rsquo;t be fungible</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 15 — STILL LEARN TO CODE
+     ============================================================ -->
+<section class="slide" data-title="LearnToCode">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">Programming</span></div>
+        <div>XV / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">A countercurrent</div>
+        <h2 class="slide-title reveal d-2">Yes, you should still <em>learn to code.</em></h2>
+        <p class="lede reveal d-3">The take that surprises people. AI doesn&rsquo;t make coding obsolete &mdash; it makes coding more accessible and more leveraged. The instinct to read the code, fix it, ship it, and reason about systems is what separates people who direct AI from people who get directed by it.</p>
+
+        <div class="then-now">
+            <div class="tn-col then">
+                <h4 class="reveal d-3">Then</h4>
+                <h3 class="tn-headline reveal d-4">Assembly &amp; C</h3>
+                <ul class="tn-list">
+                    <li class="reveal d-5">Years to learn.</li>
+                    <li class="reveal d-5">Decades of value per investment.</li>
+                    <li class="reveal d-6">Prerequisite for almost everything technical.</li>
+                </ul>
+            </div>
+            <div class="tn-divider reveal-rule d-3"></div>
+            <div class="tn-col now">
+                <h4 class="reveal d-4">Now</h4>
+                <h3 class="tn-headline reveal d-5">Python &amp; the model in your editor</h3>
+                <ul class="tn-list">
+                    <li class="reveal d-6">Weeks to literacy with AI as tutor.</li>
+                    <li class="reveal d-6">The coder is now also the PM.</li>
+                    <li class="reveal d-7">The unit of leverage is one person + one model.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>Programming, still</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 16 — UNDERSTANDING CODE
+     ============================================================ -->
+<section class="slide" data-title="UnderstandingCode">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">Reading the Machine</span></div>
+        <div>XVI / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid">
+            <div>
+                <div class="eyebrow reveal d-1">Why understanding code still matters</div>
+                <h2 class="slide-title reveal d-2">The job is no longer <em>writing</em> code. It&rsquo;s <em>reading</em> it &mdash; with judgment.</h2>
+                <p class="lede reveal d-3">When the model writes the function, the leverage is in the human who can look at the output and say &ldquo;this is wrong, here&rsquo;s why, here&rsquo;s the cleaner approach.&rdquo; That&rsquo;s a code-literacy skill, not a typing skill.</p>
+                <p class="body-copy reveal d-4">The people who refuse to read code in the AI era are putting themselves in the same position non-readers were in during the Reformation: trusting an intermediary they have no way to check.</p>
+            </div>
+
+            <div>
+                <div class="quote-block reveal d-5">
+                    People who really want to improve themselves and develop their careers should be spending every spare hour right now talking to AI: &ldquo;train me up.&rdquo;
+                    <span class="attribution">— Marc Andreessen</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>Reading the machine</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 17 — DESIGN STILL VALUABLE
+     ============================================================ -->
+<section class="slide" data-title="DesignValue">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">Design</span></div>
+        <div>XVII / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Design in the AI era</div>
+        <h2 class="slide-title reveal d-2">Designers don&rsquo;t lose value. They <em>finally get to the higher work.</em></h2>
+        <p class="lede reveal d-3">Marc&rsquo;s read on the design profession is more optimistic than most. The boring 70% of design work &mdash; producing the assets, exploring permutations, polishing the obvious &mdash; is what AI is best at. Which means the designer&rsquo;s time can move up the stack to the part most never reach.</p>
+
+        <ol class="insight-list">
+            <li class="reveal d-4">
+                <div>
+                    <h4>Strategy &mdash; what should this even be?</h4>
+                    <p>The framing of the product, the principles of the brand, the answer to the question users haven&rsquo;t articulated.</p>
+                </div>
+            </li>
+            <li class="reveal d-5">
+                <div>
+                    <h4>Taste &mdash; calling great from good.</h4>
+                    <p>When the model produces 30 plausible options per minute, the value isn&rsquo;t producing them. It&rsquo;s knowing which one is the right one.</p>
+                </div>
+            </li>
+            <li class="reveal d-6">
+                <div>
+                    <h4>Cohesion &mdash; making the whole thing one thing.</h4>
+                    <p>Every surface produced by AI in isolation drifts. Designers become the cohesion gate &mdash; the only role that holds the product together as a single artifact.</p>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>Design moves up</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 18 — KIDS / EDUCATION
+     ============================================================ -->
+<section class="slide" data-title="Education">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">On Children</span></div>
+        <div>XVIII / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">On raising children for this</div>
+        <h2 class="slide-title reveal d-2">Marc raised his ten-year-old to <em>treat AI as a tutor,</em> not a search engine.</h2>
+        <p class="lede reveal d-3">The mental model he&rsquo;s installed in his son: AI is the patient tutor every wealthy family used to hire, now available to anyone with curiosity. The skill is asking, listening, asking again. The skill is not Googling.</p>
+
+        <div class="bloom-card reveal d-4">
+            <h3 class="bloom-headline">Bloom&rsquo;s 2-sigma problem &mdash; finally solvable.</h3>
+            <p class="bloom-detail">In 1984, Bloom showed that students with one-on-one tutors performed two standard deviations better than those in classrooms. The catch: tutors don&rsquo;t scale. AI is the first technology that can deliver one-on-one tutoring at population scale. The implications for education are civilizational.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>On education</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 19 — BUILDERS WIN
+     ============================================================ -->
+<section class="slide" data-title="Builders">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">For Founders</span></div>
+        <div>XIX / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">For the most cutting-edge founders</div>
+        <h2 class="slide-title reveal d-2">The leading question is no longer &ldquo;<em>who do I hire?</em>&rdquo; It is &ldquo;<em>do I hire?</em>&rdquo;</h2>
+        <p class="lede reveal d-3">In Marc&rsquo;s portfolio conversations, the most ambitious founders are seriously asking whether the founder, plus the model, plus a small handful of contractors, can run an entire company. Not theoretical. Live experiments.</p>
+
+        <div class="quote-block reveal d-4" style="margin-top: clamp(1rem, 2vh, 1.5rem);">
+            The most leading-edge founders are thinking of: can you have entire companies where the founder does everything?
+            <span class="attribution">— Marc Andreessen</span>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>For founders</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 20 — ONE-PERSON BILLION-DOLLAR COMPANY
+     ============================================================ -->
+<section class="slide" data-title="OnePerson">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">A Threshold</span></div>
+        <div>XX / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow gold reveal d-1">A threshold within sight</div>
+        <h2 class="slide-title reveal d-2">The <em>one-person, billion-dollar</em> company.</h2>
+        <p class="lede reveal d-3">Sam Altman speculated about it. Marc thinks the line will be crossed sooner than most people in venture want to admit. It is, in his read, less an outlier outcome than a logical endpoint of the additive-skill argument plus AI as force multiplier.</p>
+
+        <div class="one-person">
+            <div class="op-figure reveal d-4">
+                <div class="op-num">1</div>
+                <div class="op-label">person</div>
+            </div>
+            <div class="op-arrow reveal d-5">+</div>
+            <div class="op-figure reveal d-5">
+                <div class="op-num gold">∞</div>
+                <div class="op-label">model hours</div>
+            </div>
+            <div class="op-arrow reveal d-6">=</div>
+            <div class="op-figure reveal d-6">
+                <div class="op-num">$1B</div>
+                <div class="op-label">market cap, plausibly</div>
+            </div>
+        </div>
+
+        <p class="body-copy reveal d-7" style="text-align: center; max-width: 60ch; margin: 0 auto;">
+            Whether or not the first one happens this decade, the trajectory is what matters. Companies are no longer made of headcount. They are made of decisions, leverage, and the model-hours that connect the two.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>One-person company</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 21 — AI MOATS DEBATE
+     ============================================================ -->
+<section class="slide" data-title="Moats">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">On Moats</span></div>
+        <div>XXI / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">A live debate inside venture</div>
+        <h2 class="slide-title reveal d-2">Where do the moats <em>actually</em> live in the AI era?</h2>
+        <p class="lede reveal d-3">Marc&rsquo;s honest answer is &ldquo;we&rsquo;re still figuring it out.&rdquo; The debate inside a16z &mdash; and across his peers &mdash; is alive. Three candidate answers keep surfacing, all imperfect, none fully resolved.</p>
+
+        <ol class="insight-list">
+            <li class="reveal d-4">
+                <div>
+                    <h4>Distribution.</h4>
+                    <p>Whoever owns the channel wins the category. The argument that&rsquo;s strongest in consumer.</p>
+                </div>
+            </li>
+            <li class="reveal d-5">
+                <div>
+                    <h4>Data &mdash; the proprietary kind.</h4>
+                    <p>Unique signals nobody else can replicate at any price. Strongest in regulated industries, financial services, healthcare.</p>
+                </div>
+            </li>
+            <li class="reveal d-6">
+                <div>
+                    <h4>Compounding workflows.</h4>
+                    <p>Products that get more useful the longer a customer uses them, with switching costs growing weekly. Strongest in enterprise.</p>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>Moats</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 22 — RAPID MODEL EVOLUTION
+     ============================================================ -->
+<section class="slide" data-title="ModelSpeed">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">The Pace</span></div>
+        <div>XXII / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The pace</div>
+        <h2 class="slide-title reveal d-2">Model improvement still surprises <em>even the people building them.</em></h2>
+        <p class="lede reveal d-3">The cadence of capability jumps hasn&rsquo;t cooled. Each generation reaches benchmarks the previous one couldn&rsquo;t touch. For products built on top, the design problem is no longer &ldquo;what works today?&rdquo; &mdash; it&rsquo;s &ldquo;what will work in eight months?&rdquo;</p>
+
+        <p class="body-copy reveal d-4">The implication for builders: build the version of the product that doesn&rsquo;t quite work yet. By the time you ship it, the model has caught up &mdash; and you&rsquo;re ahead of every competitor who built only what was possible at the moment they started.</p>
+
+        <div class="aside reveal d-5">
+            <p>This is the design discipline of the era: imagining the artifact for a model that doesn&rsquo;t exist for another six months &mdash; and shipping it now anyway.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>Model pace</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 23 — INDETERMINATE OPTIMISM
+     ============================================================ -->
+<section class="slide" data-title="IndeterminateOptimism">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">A Disposition</span></div>
+        <div>XXIII / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid">
+            <div>
+                <div class="eyebrow reveal d-1">A disposition for VC &mdash; and life</div>
+                <h2 class="slide-title reveal d-2"><em>Indeterminate optimism.</em></h2>
+                <p class="lede reveal d-3">Borrowed from Peter Thiel&rsquo;s framework but turned into Marc&rsquo;s personal stance. The future is going to be brighter than the present &mdash; and we don&rsquo;t know specifically how. That second clause is the one most people skip.</p>
+                <p class="body-copy reveal d-4">The discipline is to invest, build, and live as though good things are coming, while staying honest that the specific shape of those good things will keep surprising you. The opposite of cynicism. Also the opposite of utopian planning.</p>
+            </div>
+            <div>
+                <div class="quote-block reveal d-5">
+                    Indeterminate optimism &mdash; the future is going to be better, and we don&rsquo;t know exactly how. That uncertainty is a feature, not a bug.
+                    <span class="attribution">— Marc Andreessen, paraphrased</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>Indeterminate optimism</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 24 — AGI DEFINITION
+     ============================================================ -->
+<section class="slide" data-title="AGI">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">On AGI</span></div>
+        <div>XXIV / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="meditation">
+            <div class="eyebrow reveal d-1" style="justify-content: center;">On AGI</div>
+            <h2 class="meditation-title reveal-blur d-2">
+                If we never define it precisely, <em>does it matter when we get there?</em>
+            </h2>
+            <p class="lede reveal d-4" style="margin-top: clamp(1rem, 2vh, 1.5rem); margin-left: auto; margin-right: auto;">
+                Marc&rsquo;s wry framing on the AGI debate. Every benchmark we set gets cleared, then redefined the next year. At some point you have to ask whether the moving target is doing useful work &mdash; or whether the goalposts are moving because the conversation needs them to.
+            </p>
+            <p class="body-copy reveal d-5" style="margin-left: auto; margin-right: auto; max-width: 56ch;">
+                His pragmatic stance: stop trying to define the line. Watch what the systems do. Watch what they don&rsquo;t do. Watch what they replace and what they create around themselves. The threshold will be obvious in the rear-view mirror &mdash; the way the Industrial Revolution was.
+            </p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>On AGI</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 25 — MEDIA DIET
+     ============================================================ -->
+<section class="slide" data-title="MediaDiet">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">A Diet</span></div>
+        <div>XXV / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Marc&rsquo;s media diet</div>
+        <h2 class="slide-title reveal d-2"><em>X and old books.</em> Nothing in between.</h2>
+        <p class="lede reveal d-3">A pragmatic two-channel diet that surprises people. The signal he wants from the present is fastest on X. The signal he wants about everything else &mdash; human nature, civilizations, decisions, mistakes &mdash; is slowest in books written before 1950.</p>
+
+        <p class="body-copy reveal d-4">The logic: the present is moving so fast that anything in between &mdash; weekly magazines, monthly think-pieces, prestige newsletters &mdash; arrives stale on one end and shallow on the other. The bookend strategy maximizes both speed and depth.</p>
+
+        <div class="aside reveal d-5">
+            <p>Worth stress-testing your own diet against this. How much of what you read is fast enough to inform action? How much is deep enough to inform judgment? Most diets deliver neither.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>Media diet</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 26 — ADAPTING TO CHANGING TASKS
+     ============================================================ -->
+<section class="slide" data-title="AdaptingTasks">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">Practical Adjustments</span></div>
+        <div>XXVI / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Practical adjustments inside an existing job</div>
+        <h2 class="slide-title reveal d-2">Watch what <em>shifts</em> in your week. Reallocate to the part AI can&rsquo;t do.</h2>
+        <p class="lede reveal d-3">For people who don&rsquo;t want to change careers but want to keep their seat, Marc&rsquo;s practical guidance is unglamorous: track which tasks the model takes from you, and deliberately move your attention up the stack.</p>
+
+        <ol class="insight-list">
+            <li class="reveal d-4">
+                <div>
+                    <h4>Audit your week.</h4>
+                    <p>Which 8 hours could a competent agent do this Friday? Move them. Use the recovered hours for the work that actually requires you.</p>
+                </div>
+            </li>
+            <li class="reveal d-5">
+                <div>
+                    <h4>Pick the up-stack work.</h4>
+                    <p>Strategy. Taste. Cross-functional alignment. Customer conversations. The work that the model is genuinely worse at.</p>
+                </div>
+            </li>
+            <li class="reveal d-6">
+                <div>
+                    <h4>Repeat quarterly.</h4>
+                    <p>The frontier moves. What was up-stack last quarter is in-frontier this one. The audit is recurring, not one-time.</p>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>Adapting tasks</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 27 — SCRIPTING LANGUAGES SHIFT
+     ============================================================ -->
+<section class="slide" data-title="ScriptingLanguages">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">A Hint from History</span></div>
+        <div>XXVII / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">A hint from the last shift</div>
+        <h2 class="slide-title reveal d-2">When code went from C to Python, the <em>population of programmers exploded.</em></h2>
+        <p class="lede reveal d-3">Marc&rsquo;s pattern from the previous wave. Each move &ldquo;up&rdquo; the abstraction stack &mdash; assembly to C to Java to Python to JavaScript &mdash; multiplied the number of people who could meaningfully build software. The current move (English as a programming language) is the largest jump yet.</p>
+
+        <p class="body-copy reveal d-4">If history rhymes, the population of people who can build software in 2030 won&rsquo;t be 30 million. It&rsquo;ll be hundreds of millions. The competitive landscape that produces is different in kind, not degree.</p>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>Up the stack</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 28 — WORKERS AT A PREMIUM
+     ============================================================ -->
+<section class="slide" data-title="WorkerPremium">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">Labor Markets</span></div>
+        <div>XXVIII / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Labor markets, repriced</div>
+        <h2 class="slide-title reveal d-2">Remaining human workers will be at a <em>premium</em>, not a discount.</h2>
+        <p class="lede reveal d-3">The headline of Marc&rsquo;s economic argument. Combine declining birth rates with rising productivity from AI, and the market for the humans still in the labor force tightens. Compensation goes up. Bargaining power goes up. The narrative that AI &ldquo;commoditizes&rdquo; workers reads it backwards.</p>
+
+        <div class="quote-block reveal d-4" style="margin-top: clamp(1rem, 2vh, 1.5rem);">
+            The remaining human workers are going to be at a premium, not at a discount.
+            <span class="attribution">— Marc Andreessen</span>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>Worker premium</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 29 — COMPANIES AS BUNDLES
+     ============================================================ -->
+<section class="slide" data-title="CompaniesBundles">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">Org Theory</span></div>
+        <div>XXIX / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">A new theory of the firm</div>
+        <h2 class="slide-title reveal d-2">Companies are <em>bundles of decisions</em> &mdash; not bundles of headcount.</h2>
+        <p class="lede reveal d-3">An implication of the additive-skill argument applied at the org level. The valuable thing about a company isn&rsquo;t how many people it employs &mdash; it&rsquo;s the rate and quality of decisions it produces. Smaller, denser teams making sharper decisions, leveraged by AI, will outperform large slow ones at almost every scale.</p>
+        <p class="body-copy reveal d-4">This rewires hiring, organizational design, M&amp;A, valuation, and the very definition of company size. The Industrial Revolution&rsquo;s dominant unit was the factory. The AI era&rsquo;s dominant unit may be the small studio.</p>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>Theory of the firm</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 30 — VOICE / NEW INTERFACES
+     ============================================================ -->
+<section class="slide" data-title="VoiceInterfaces">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">Interfaces</span></div>
+        <div>XXX / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Interfaces, finally evolving</div>
+        <h2 class="slide-title reveal d-2">Voice is going to <em>matter again</em> &mdash; and this time it works.</h2>
+        <p class="lede reveal d-3">Marc has watched voice interfaces fail in three previous cycles. The current one is different: the latency, the prosody, the ability to interrupt and be interrupted have crossed the threshold where conversation feels like conversation rather than transaction.</p>
+        <p class="body-copy reveal d-4">For products: the design space just got bigger. The set of contexts where the right interface is &ldquo;talk to it&rdquo; rather than &ldquo;tap on it&rdquo; is going to surprise people who haven&rsquo;t built for voice in fifteen years.</p>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>On voice</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 31 — WHAT MARC TELLS HIS SON
+     ============================================================ -->
+<section class="slide" data-title="HisSon">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">For the Next Generation</span></div>
+        <div>XXXI / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid">
+            <div>
+                <div class="eyebrow reveal d-1">For the next generation</div>
+                <h2 class="slide-title reveal d-2">What Marc tells his ten-year-old:</h2>
+                <ul class="tn-list reveal d-3" style="margin-top: clamp(1rem, 2vh, 1.5rem);">
+                    <li class="reveal d-3">Treat AI like a tutor, not a search engine.</li>
+                    <li class="reveal d-4">Ask it questions until you understand. Then ask harder ones.</li>
+                    <li class="reveal d-5">Read old books. Watch what holds up across centuries.</li>
+                    <li class="reveal d-6">Learn one thing deeply. Then a second. Then a third.</li>
+                    <li class="reveal d-7">The combination is the career.</li>
+                </ul>
+            </div>
+            <div>
+                <div class="quote-block reveal d-5">
+                    AI can democratize one-on-one tutoring &mdash; potentially the biggest change in education since the printing press.
+                    <span class="attribution">— Marc Andreessen, paraphrased</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>For the next generation</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 32 — RISK OF MISSING IT
+     ============================================================ -->
+<section class="slide" data-title="MissingIt">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">The Risk</span></div>
+        <div>XXXII / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The risk on the other side</div>
+        <h2 class="slide-title reveal d-2">The danger isn&rsquo;t AI taking your job. It&rsquo;s <em>refusing to pick it up.</em></h2>
+        <p class="lede reveal d-3">Marc&rsquo;s reframe of the panic. The vast majority of people displaced in this cycle won&rsquo;t be displaced by the technology &mdash; they&rsquo;ll be displaced by other people who used the technology and reorganized their work around it first.</p>
+        <p class="body-copy reveal d-4">The asymmetry is brutal but accessible: the cost of starting now is small. The cost of starting in 2028 is enormous.</p>
+
+        <div class="aside reveal d-5">
+            <p>If you&rsquo;ve been postponing the &ldquo;learn AI&rdquo; week on your calendar &mdash; this is a sign. The window is open and small.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>The asymmetry</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 33 — A LISTENER QUESTION
+     ============================================================ -->
+<section class="slide" data-title="ListenerQuestion">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">For the Listener</span></div>
+        <div>XXXIII / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="meditation">
+            <div class="eyebrow reveal d-1" style="justify-content: center;">A question to sit with</div>
+            <h2 class="meditation-title reveal-blur d-2">
+                What is the <em>second skill</em> you are willing to get serious about &mdash; this year?
+            </h2>
+            <p class="lede reveal d-4" style="margin-top: clamp(1rem, 2vh, 1.5rem); margin-left: auto; margin-right: auto;">
+                If your answer is &ldquo;none&rdquo; &mdash; that&rsquo;s the most important data point in your career strategy.
+                If your answer is specific &mdash; the additive math is on your side, and AI is the most powerful tutor anyone has ever had.
+            </p>
+            <p class="body-copy reveal d-5" style="margin-left: auto; margin-right: auto; max-width: 56ch; font-style: italic; color: var(--oxblood);">
+                Don&rsquo;t be fungible.
+            </p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>For the listener</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 34 — A FINAL FRAME
+     ============================================================ -->
+<section class="slide" data-title="FinalFrame">
+    <header class="masthead">
+        <div>The Almanac &middot; <span class="roman">The Final Frame</span></div>
+        <div>XXXIV / XXXV</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow gold reveal d-1">A final frame</div>
+        <h2 class="slide-title reveal d-2">We are at the <em>start</em> of the boom &mdash; not the middle, not the end.</h2>
+        <p class="lede reveal d-3 drop-cap">Marc&rsquo;s closing thesis, restated. Most of the money, the products, the careers, the artifacts, and the discoveries that will be associated with this technological era have not been made yet. The chart of the next 20 years &mdash; if his read is right &mdash; is one in which we look back at 2026 the way we now look back at 1996: as the obvious moment to have started, glaringly missed by most.</p>
+
+        <div class="ornament reveal d-4">❦ ❦ ❦</div>
+
+        <p class="body-copy reveal d-5" style="text-align: center; max-width: 56ch; margin: 0 auto; font-style: italic;">
+            The real AI boom hasn&rsquo;t even started yet.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Almanac</span>
+        <span>Final frame</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 35 — TAKEAWAYS / CLOSE
+     ============================================================ -->
+<section class="slide bare" data-title="Takeaways" style="background: var(--parchment); justify-content: space-between; padding-top: clamp(2rem, 5vh, 4rem); padding-bottom: clamp(2rem, 5vh, 4rem);">
+    <div class="cover-frame" aria-hidden="true"></div>
+
+    <div class="cover-top reveal d-1">
+        <span>The Almanac &middot; Closing</span>
+        <span class="cover-issue">XXXV / XXXV</span>
+        <span>MMXXVI</span>
+    </div>
+
+    <div style="padding: 0 clamp(0.5rem, 2vw, 2rem); position: relative; z-index: 3;">
+        <div class="eyebrow reveal d-2">If you remember nothing else</div>
+        <h2 class="closing-headline reveal-blur d-3">
+            <em>Don&rsquo;t be fungible.</em><br/>The boom is just starting.
+        </h2>
+
+        <div class="takeaway-grid">
+            <div class="takeaway reveal d-4">
+                <div class="takeaway-num">— I.</div>
+                <p class="takeaway-text">AI is arriving precisely when humanity needs it. Workers will be at a premium, not a discount.</p>
+            </div>
+            <div class="takeaway reveal d-5">
+                <div class="takeaway-num">— II.</div>
+                <p class="takeaway-text">Two skills compound more than double. Three more than triple. Become a combination.</p>
+            </div>
+            <div class="takeaway reveal d-6">
+                <div class="takeaway-num">— III.</div>
+                <p class="takeaway-text">Spend every spare hour with AI as your tutor. The window to learn cheaply is short.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="cover-bottom reveal d-7">
+        <div class="cover-byline">
+            <span style="opacity: 0.6;">Source</span>
+            <strong>Lenny&rsquo;s Podcast &middot; Marc Andreessen</strong>
+        </div>
+        <div class="cover-byline" style="text-align: right;">
+            <span style="opacity: 0.6;">End</span>
+            <strong>The boom is just starting.</strong>
+        </div>
+    </div>
+</section>
+
+<div class="keyboard-hint">← → or SPACE to navigate</div>
+
+<script>
+class SlidePresentation {
+    constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.currentSlide = 0;
+        this.isScrolling = false;
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupTouchNav();
+        this.setupWheelNav();
+        this.setupProgressBar();
+        this.setupNavDots();
+        this.slides[0].classList.add('visible');
+    }
+    setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+                    entry.target.classList.add('visible');
+                    this.currentSlide = this.slides.indexOf(entry.target);
+                    this.updateNavDots();
+                    this.updateProgressBar();
+                }
+            });
+        }, { threshold: [0.5] });
+        this.slides.forEach(s => observer.observe(s));
+    }
+    setupKeyboardNav() {
+        document.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                    e.preventDefault(); this.goTo(this.currentSlide + 1); break;
+                case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                    e.preventDefault(); this.goTo(this.currentSlide - 1); break;
+                case 'Home': e.preventDefault(); this.goTo(0); break;
+                case 'End': e.preventDefault(); this.goTo(this.slides.length - 1); break;
+            }
+        });
+    }
+    setupTouchNav() {
+        let touchStartY = 0;
+        document.addEventListener('touchstart', (e) => { touchStartY = e.changedTouches[0].screenY; }, { passive: true });
+        document.addEventListener('touchend', (e) => {
+            const dy = touchStartY - e.changedTouches[0].screenY;
+            if (Math.abs(dy) > 60) this.goTo(this.currentSlide + (dy > 0 ? 1 : -1));
+        }, { passive: true });
+    }
+    setupWheelNav() {
+        let wheelTimer = null;
+        document.addEventListener('wheel', (e) => {
+            if (this.isScrolling || Math.abs(e.deltaY) < 30) return;
+            this.isScrolling = true;
+            this.goTo(this.currentSlide + (e.deltaY > 0 ? 1 : -1));
+            clearTimeout(wheelTimer);
+            wheelTimer = setTimeout(() => { this.isScrolling = false; }, 800);
+        }, { passive: true });
+    }
+    setupProgressBar() {
+        this.progressBar = document.getElementById('progressBar');
+        this.updateProgressBar();
+    }
+    updateProgressBar() {
+        const pct = (this.currentSlide / (this.slides.length - 1)) * 100;
+        if (this.progressBar) this.progressBar.style.width = pct + '%';
+    }
+    setupNavDots() {
+        this.dotsContainer = document.getElementById('navDots');
+        this.slides.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+            dot.addEventListener('click', () => this.goTo(i));
+            this.dotsContainer.appendChild(dot);
+        });
+    }
+    updateNavDots() {
+        if (!this.dotsContainer) return;
+        Array.from(this.dotsContainer.children).forEach((d, i) => {
+            d.classList.toggle('active', i === this.currentSlide);
+        });
+    }
+    goTo(index) {
+        const target = Math.max(0, Math.min(this.slides.length - 1, index));
+        this.slides[target].scrollIntoView({ behavior: 'smooth' });
+    }
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new SlidePresentation());
+} else {
+    new SlidePresentation();
+}
+</script>
+</body>
+</html>

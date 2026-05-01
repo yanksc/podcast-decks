@@ -1,0 +1,2845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why Half Of Product Managers Are In Trouble — Nikhyl Singhal × Lenny's Podcast</title>
+
+<!-- "Vital Signs" type stack:
+     Instrument Serif (display, warm, distinctive) + Inter (body) + JetBrains Mono (data) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   THEME — "Vital Signs"
+   Light paper canvas, graph-paper grid, two
+   accents (pulse-red for diagnosis, therapy-
+   green for prescription).
+   =========================================== */
+:root {
+    --paper:        #fafaf7;        /* warm paper-white */
+    --paper-deep:   #f3f1ea;        /* card surface */
+    --paper-line:   rgba(24, 26, 31, 0.06);  /* graph grid */
+    --paper-rule:   rgba(24, 26, 31, 0.14);  /* hairlines */
+
+    --ink:          #181a1f;        /* dense charcoal */
+    --ink-soft:     #4b4f57;
+    --ink-faint:    #8a8e96;
+    --ink-ghost:    #b8bbc1;
+
+    --pulse:        #e63946;        /* diagnosis red */
+    --pulse-soft:   rgba(230, 57, 70, 0.08);
+    --pulse-deep:   #b32b36;
+
+    --therapy:      #2d6a4f;        /* prescription green */
+    --therapy-soft: rgba(45, 106, 79, 0.1);
+
+    --highlight:    rgba(241, 196, 15, 0.32);  /* gold marker pen */
+
+    --font-display: 'Instrument Serif', 'Times New Roman', serif;
+    --font-body:    'Inter', system-ui, sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+
+    --title-size:   clamp(2.5rem, 7vw, 6rem);
+    --huge-size:    clamp(3.5rem, 11vw, 9rem);
+    --mega-size:    clamp(5rem, 16vw, 14rem);
+    --h2-size:      clamp(1.8rem, 4.5vw, 3.6rem);
+    --h3-size:      clamp(1.2rem, 2.4vw, 1.8rem);
+    --body-size:    clamp(0.85rem, 1.25vw, 1.05rem);
+    --small-size:   clamp(0.72rem, 0.95vw, 0.85rem);
+    --label-size:   clamp(0.62rem, 0.8vw, 0.76rem);
+
+    --slide-padding: clamp(1.5rem, 5vw, 4.5rem);
+    --content-gap:   clamp(0.8rem, 1.8vw, 1.8rem);
+
+    --ease-soft: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --ease-snap: cubic-bezier(0.45, 0, 0.15, 1);
+    --duration: 0.85s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* === VIEWPORT BASE — mandatory, do not modify === */
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+
+body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: var(--body-size);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+}
+
+.slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: var(--slide-padding);
+    background: var(--paper);
+}
+
+/* Graph paper grid — quiet on every slide, the visual backbone */
+.slide::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(var(--paper-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+    background-size: clamp(28px, 3vw, 44px) clamp(28px, 3vw, 44px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+}
+
+img, .image-container {
+    max-width: 100%;
+    max-height: min(50vh, 400px);
+    object-fit: contain;
+}
+
+/* Responsive scaling */
+@media (max-height: 700px) {
+    :root {
+        --slide-padding: clamp(1rem, 3.5vw, 3rem);
+        --title-size: clamp(2rem, 5.5vw, 4rem);
+        --huge-size: clamp(2.5rem, 8vw, 6rem);
+        --mega-size: clamp(3.5rem, 12vw, 9rem);
+        --h2-size: clamp(1.4rem, 3.6vw, 2.6rem);
+    }
+}
+@media (max-height: 600px) {
+    :root {
+        --slide-padding: clamp(0.75rem, 2.5vw, 2rem);
+        --title-size: clamp(1.5rem, 4.5vw, 3rem);
+        --huge-size: clamp(2rem, 6vw, 4.5rem);
+        --body-size: clamp(0.75rem, 1.1vw, 0.95rem);
+    }
+    .nav-dots, .keyboard-hint, .decorative, .slide::before { display: none; }
+}
+@media (max-height: 500px) {
+    :root {
+        --title-size: clamp(1.2rem, 3.5vw, 2rem);
+        --h2-size: clamp(1rem, 2.5vw, 1.4rem);
+    }
+}
+@media (max-width: 600px) {
+    :root { --title-size: clamp(1.5rem, 8vw, 3rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+    html { scroll-behavior: auto; }
+}
+
+/* ===========================================
+   CHROME — the "chart header" treatment.
+   Mimics a clinical / journal layout.
+   =========================================== */
+.masthead {
+    position: absolute;
+    top: clamp(0.9rem, 2vh, 1.6rem);
+    left: var(--slide-padding);
+    right: var(--slide-padding);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    z-index: 5;
+    padding-bottom: 0.7em;
+    border-bottom: 1px solid var(--paper-rule);
+}
+.masthead .pulse-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+}
+.masthead .pulse-mark::before {
+    content: "";
+    width: 8px; height: 8px;
+    background: var(--pulse);
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulseDot 2.4s ease-in-out infinite;
+}
+@keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.footer {
+    position: absolute;
+    bottom: clamp(0.8rem, 2vh, 1.5rem);
+    left: var(--slide-padding);
+    right: var(--slide-padding);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--ink-faint);
+    letter-spacing: 0.12em;
+    z-index: 5;
+    padding-top: 0.7em;
+    border-top: 1px solid var(--paper-rule);
+}
+
+.slide.bare .masthead,
+.slide.bare .footer { display: none; }
+
+/* ===========================================
+   PROGRESS BAR & NAV DOTS
+   =========================================== */
+.progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--pulse);
+    width: 0%;
+    z-index: 100;
+    transition: width 0.3s var(--ease-snap);
+}
+
+.nav-dots {
+    position: fixed;
+    right: clamp(0.8rem, 1.5vw, 1.2rem);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    z-index: 50;
+}
+.nav-dot {
+    width: 16px; height: 2px;
+    background: var(--ink-ghost);
+    cursor: pointer;
+    transition: all 0.3s var(--ease-snap);
+    border: none; padding: 0;
+    opacity: 0.7;
+}
+.nav-dot.active {
+    background: var(--pulse);
+    width: 24px;
+    opacity: 1;
+}
+.nav-dot:hover { opacity: 1; }
+
+/* ===========================================
+   ANIMATION PRIMITIVES
+   =========================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity var(--duration) var(--ease-snap),
+                transform var(--duration) var(--ease-snap);
+}
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+
+.reveal-blur {
+    opacity: 0;
+    filter: blur(12px);
+    transition: opacity 1s var(--ease-snap),
+                filter 1s var(--ease-snap);
+}
+.slide.visible .reveal-blur { opacity: 1; filter: blur(0); }
+
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-44px);
+    transition: opacity var(--duration) var(--ease-snap),
+                transform var(--duration) var(--ease-snap);
+}
+.slide.visible .reveal-left { opacity: 1; transform: translateX(0); }
+
+.reveal-rule {
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 1s var(--ease-snap);
+}
+.slide.visible .reveal-rule { transform: scaleX(1); }
+
+.reveal-mark {
+    background: linear-gradient(90deg, var(--highlight) 50%, transparent 50%);
+    background-size: 200% 100%;
+    background-position: right;
+    background-repeat: no-repeat;
+    transition: background-position 1.2s var(--ease-snap);
+    padding: 0.05em 0.15em;
+}
+.slide.visible .reveal-mark { background-position: left; }
+
+.d-1 { transition-delay: 0.08s; }
+.d-2 { transition-delay: 0.2s; }
+.d-3 { transition-delay: 0.32s; }
+.d-4 { transition-delay: 0.44s; }
+.d-5 { transition-delay: 0.56s; }
+.d-6 { transition-delay: 0.68s; }
+.d-7 { transition-delay: 0.8s; }
+.d-8 { transition-delay: 0.92s; }
+
+/* ===========================================
+   SHARED COMPONENTS
+   =========================================== */
+.eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--pulse);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    margin-bottom: clamp(0.7rem, 1.6vh, 1.2rem);
+}
+.eyebrow.green { color: var(--therapy); }
+.eyebrow.green::before { background: var(--therapy); }
+.eyebrow::before {
+    content: "";
+    width: clamp(20px, 3vw, 36px);
+    height: 2px;
+    background: var(--pulse);
+}
+
+.slide-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--h2-size);
+    line-height: 1.0;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    max-width: 22ch;
+    margin-bottom: clamp(0.8rem, 1.6vh, 1.4rem);
+}
+.slide-title em {
+    font-style: italic;
+    color: var(--pulse);
+}
+.slide-title .green {
+    color: var(--therapy);
+    font-style: italic;
+}
+
+.lede {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 58ch;
+    margin-bottom: clamp(0.8rem, 1.8vh, 1.6rem);
+}
+.lede strong { color: var(--ink); font-weight: 600; }
+
+.body-copy {
+    font-size: var(--body-size);
+    line-height: 1.6;
+    color: var(--ink-soft);
+    max-width: 62ch;
+}
+.body-copy strong { color: var(--ink); font-weight: 600; }
+
+/* Direct quotes — Instrument Serif italic */
+.quote-block {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.25rem, 2.4vw, 1.95rem);
+    line-height: 1.25;
+    color: var(--ink);
+    max-width: 38ch;
+    position: relative;
+    padding-left: clamp(1rem, 2vw, 1.6rem);
+    border-left: 3px solid var(--pulse);
+}
+.quote-block .attribution {
+    display: block;
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    margin-top: clamp(0.7rem, 1.4vh, 1rem);
+}
+
+/* ===========================================
+   SLIDE 1 — COVER
+   Editorial cover treatment with a pulse line
+   =========================================== */
+.cover {
+    background: var(--paper);
+    justify-content: space-between;
+    padding-top: clamp(2rem, 5vh, 4rem);
+    padding-bottom: clamp(2rem, 5vh, 4rem);
+}
+.cover-top, .cover-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--ink-faint);
+    position: relative;
+    z-index: 3;
+}
+.cover-top { border-bottom: 1px solid var(--ink); padding-bottom: 1rem; }
+.cover-bottom { border-top: 1px solid var(--ink); padding-top: 1rem; }
+.cover-issue { color: var(--pulse); font-weight: 700; }
+
+.cover-content { position: relative; z-index: 3; }
+.cover-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--huge-size);
+    line-height: 0.92;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+    max-width: 13ch;
+}
+.cover-title em {
+    font-style: italic;
+    color: var(--pulse);
+}
+.cover-deck {
+    font-family: var(--font-body);
+    font-size: clamp(1rem, 1.4vw, 1.2rem);
+    color: var(--ink-soft);
+    max-width: 52ch;
+    margin-top: clamp(1rem, 2.2vh, 1.8rem);
+    line-height: 1.55;
+}
+.cover-byline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+}
+.cover-byline strong {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(1rem, 1.5vw, 1.3rem);
+    letter-spacing: 0;
+    color: var(--ink);
+    text-transform: none;
+}
+
+/* The pulse line — a heartbeat-style EKG drawn in SVG, runs across the cover */
+.cover-pulse {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 30%;
+    height: clamp(60px, 12vh, 120px);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.55;
+}
+.cover-pulse svg { width: 100%; height: 100%; }
+.cover-pulse path {
+    stroke: var(--pulse);
+    stroke-width: 2;
+    fill: none;
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 2000;
+    animation: drawPulse 3s var(--ease-snap) 0.5s forwards;
+}
+@keyframes drawPulse {
+    to { stroke-dashoffset: 0; }
+}
+
+/* ===========================================
+   SLIDE 2 — ABOUT NIKHYL
+   =========================================== */
+.about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: stretch;
+    height: 100%;
+}
+.bio-card {
+    background: var(--paper-deep);
+    border: 1px solid var(--paper-rule);
+    padding: clamp(1.2rem, 2.5vw, 2.2rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+.bio-card::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--pulse);
+}
+.bio-monogram {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(7rem, 17vw, 13rem);
+    line-height: 0.85;
+    color: var(--pulse);
+    letter-spacing: -0.05em;
+}
+.bio-name {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+    color: var(--ink);
+    line-height: 1.05;
+    margin-bottom: 0.3em;
+}
+.bio-role {
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-faint);
+    line-height: 1.6;
+}
+.bio-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+    padding-top: clamp(0.8rem, 1.5vh, 1.2rem);
+    border-top: 1px solid var(--paper-rule);
+}
+.bio-meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+}
+.bio-meta-row span:first-child { color: var(--ink-faint); }
+.bio-meta-row span:last-child { color: var(--ink); font-weight: 700; }
+
+.bio-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Credit list */
+.credit-list {
+    list-style: none;
+    margin-top: clamp(0.8rem, 1.5vh, 1.2rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+}
+.credit-list li {
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    color: var(--ink-soft);
+    display: flex;
+    gap: 1em;
+    padding: 0.3em 0;
+    border-bottom: 1px dotted var(--paper-rule);
+}
+.credit-list li span:first-child {
+    color: var(--pulse);
+    flex-shrink: 0;
+    width: clamp(60px, 10vw, 90px);
+}
+
+/* ===========================================
+   SLIDE 3 — THESIS / The big claim
+   =========================================== */
+.thesis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: center;
+    height: 100%;
+}
+.thesis-stat {
+    text-align: left;
+}
+.thesis-fraction {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: var(--mega-size);
+    line-height: 0.85;
+    color: var(--pulse);
+    letter-spacing: -0.05em;
+}
+.thesis-fraction .denom {
+    color: var(--ink);
+    font-style: normal;
+}
+.thesis-label {
+    font-family: var(--font-mono);
+    font-size: clamp(0.85rem, 1.2vw, 1rem);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    margin-top: 1em;
+    line-height: 1.5;
+}
+
+/* ===========================================
+   SLIDE 4 — "MOST CHAOTIC" warning
+   =========================================== */
+.warning-card {
+    border: 2px solid var(--pulse);
+    background: var(--pulse-soft);
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+    position: relative;
+}
+.warning-tag {
+    position: absolute;
+    top: 0;
+    left: clamp(1.5rem, 3vw, 2.5rem);
+    transform: translateY(-50%);
+    background: var(--paper);
+    color: var(--pulse);
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    padding: 0.3em 0.8em;
+    border: 1px solid var(--pulse);
+    font-weight: 700;
+}
+.warning-headline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    line-height: 1.05;
+    color: var(--ink);
+    letter-spacing: -0.025em;
+    max-width: 24ch;
+}
+.warning-detail {
+    margin-top: clamp(0.8rem, 1.5vh, 1.2rem);
+    font-size: var(--body-size);
+    color: var(--ink-soft);
+    line-height: 1.55;
+    max-width: 60ch;
+}
+
+/* ===========================================
+   SLIDE 5 — JOB MARKET DATA (chart)
+   =========================================== */
+.chart-card {
+    background: var(--paper-deep);
+    border: 1px solid var(--paper-rule);
+    padding: clamp(1.2rem, 2.5vw, 2rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+    position: relative;
+}
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: clamp(0.8rem, 1.5vh, 1.2rem);
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+}
+.chart-header h4 { color: var(--ink); font-weight: 700; }
+.bars-row {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: clamp(0.4rem, 1vw, 0.8rem);
+    align-items: end;
+    height: clamp(160px, 26vh, 240px);
+    border-bottom: 1px solid var(--ink);
+}
+.bar {
+    background: var(--ink-ghost);
+    transform-origin: bottom;
+    transform: scaleY(0);
+    transition: transform 0.9s var(--ease-snap);
+    position: relative;
+}
+.bar.peak { background: var(--pulse); }
+.bar.now { background: var(--pulse); }
+.slide.visible .bar { transform: scaleY(1); }
+.slide.visible .bar:nth-child(1) { transition-delay: 0.1s; }
+.slide.visible .bar:nth-child(2) { transition-delay: 0.18s; }
+.slide.visible .bar:nth-child(3) { transition-delay: 0.26s; }
+.slide.visible .bar:nth-child(4) { transition-delay: 0.34s; }
+.slide.visible .bar:nth-child(5) { transition-delay: 0.42s; }
+.slide.visible .bar:nth-child(6) { transition-delay: 0.50s; }
+.slide.visible .bar:nth-child(7) { transition-delay: 0.58s; }
+.slide.visible .bar:nth-child(8) { transition-delay: 0.66s; }
+
+.bar-label {
+    position: absolute;
+    bottom: -1.6em;
+    left: 0; right: 0;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--ink-faint);
+}
+.bar.peak .bar-label,
+.bar.now .bar-label { color: var(--pulse); font-weight: 700; }
+
+.chart-callout {
+    margin-top: clamp(2rem, 4vh, 3rem);
+    padding-top: clamp(0.6rem, 1.2vh, 1rem);
+    border-top: 1px dotted var(--paper-rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+}
+.chart-callout strong { color: var(--pulse); }
+
+/* ===========================================
+   SLIDE 6, 7, 8 — ARCHETYPE CARDS
+   =========================================== */
+.archetype-card {
+    border: 1px solid var(--paper-rule);
+    background: var(--paper-deep);
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.archetype-card.danger {
+    border-color: var(--pulse);
+    background: var(--pulse-soft);
+}
+.archetype-card.thriving {
+    border-color: var(--therapy);
+    background: var(--therapy-soft);
+}
+.archetype-tag {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--ink-faint);
+    margin-bottom: 0.7em;
+}
+.archetype-card.danger .archetype-tag { color: var(--pulse); }
+.archetype-card.thriving .archetype-tag { color: var(--therapy); }
+.archetype-name {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.5rem, 3vw, 2.4rem);
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: clamp(0.6rem, 1.2vh, 1rem);
+}
+.archetype-card.danger .archetype-name { color: var(--pulse); }
+.archetype-card.thriving .archetype-name { color: var(--therapy); }
+.archetype-traits {
+    list-style: none;
+    margin-top: clamp(0.6rem, 1.2vh, 1rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+.archetype-traits li {
+    font-size: var(--body-size);
+    line-height: 1.5;
+    color: var(--ink-soft);
+    padding-left: 1.3em;
+    position: relative;
+}
+.archetype-traits li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--ink-faint);
+    font-family: var(--font-mono);
+}
+.archetype-card.danger .archetype-traits li::before { color: var(--pulse); }
+.archetype-card.thriving .archetype-traits li::before { color: var(--therapy); }
+
+.archetype-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1rem, 2vw, 2rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+    height: clamp(280px, 50vh, 460px);
+}
+
+/* ===========================================
+   SLIDE 9 — 30,000 → 8,000 prediction (flow)
+   =========================================== */
+.shed-flow {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: clamp(1rem, 2vw, 2rem);
+    margin-top: clamp(1rem, 2vh, 1.8rem);
+}
+.shed-num-card {
+    text-align: center;
+    padding: clamp(1.2rem, 2.5vw, 2rem);
+    border: 1px solid var(--paper-rule);
+    background: var(--paper-deep);
+}
+.shed-num-card.shed { border-color: var(--pulse); background: var(--pulse-soft); }
+.shed-num-card.rehire { border-color: var(--therapy); background: var(--therapy-soft); }
+.shed-num {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+}
+.shed-num-card.shed .shed-num { color: var(--pulse); }
+.shed-num-card.rehire .shed-num { color: var(--therapy); }
+.shed-label {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    margin-top: 0.6em;
+    line-height: 1.5;
+}
+.shed-num-card.shed .shed-label { color: var(--pulse); font-weight: 700; }
+.shed-num-card.rehire .shed-label { color: var(--therapy); font-weight: 700; }
+.shed-arrow {
+    font-family: var(--font-mono);
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    color: var(--ink-faint);
+    text-align: center;
+}
+.shed-arrow .label {
+    display: block;
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-top: 0.4em;
+    color: var(--ink-faint);
+}
+
+/* ===========================================
+   SLIDE 10–17 — Generic body slides
+   =========================================== */
+.body-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: center;
+    height: 100%;
+}
+.body-grid.flip { grid-template-columns: 1fr 1.2fr; }
+
+.aside {
+    border-left: 3px solid var(--pulse);
+    padding-left: clamp(1rem, 2vw, 1.5rem);
+}
+.aside.green { border-color: var(--therapy); }
+.aside h4 {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--pulse);
+    margin-bottom: 0.6em;
+}
+.aside.green h4 { color: var(--therapy); }
+.aside .point {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.3rem, 2.4vw, 1.8rem);
+    line-height: 1.15;
+    color: var(--ink);
+}
+
+/* ===========================================
+   SLIDE 12 — SKILLS FLIP (before/after columns)
+   =========================================== */
+.skills-flip {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    margin-top: clamp(0.8rem, 1.6vh, 1.4rem);
+}
+.skills-col {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.6rem, 1.2vh, 1rem);
+}
+.skills-col h4 {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--ink-faint);
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid var(--paper-rule);
+}
+.skills-col.up h4 { color: var(--therapy); }
+.skills-col.down h4 { color: var(--pulse); }
+.skill-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em 0;
+    border-bottom: 1px dotted var(--paper-rule);
+    font-size: var(--body-size);
+}
+.skill-name { color: var(--ink); }
+.skill-trend {
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    font-weight: 700;
+}
+.skills-col.up .skill-trend { color: var(--therapy); }
+.skills-col.down .skill-trend { color: var(--pulse); }
+.skills-col.down .skill-name { text-decoration: line-through; text-decoration-color: var(--pulse); text-decoration-thickness: 1.5px; color: var(--ink-soft); }
+
+/* ===========================================
+   SLIDE 20 — Equal Disappointment Algorithm
+   (a quirky illustrated formula)
+   =========================================== */
+.formula {
+    background: var(--paper-deep);
+    border: 1px solid var(--paper-rule);
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    margin: clamp(1rem, 2vh, 1.6rem) 0;
+    text-align: center;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.5rem, 3vw, 2.4rem);
+    line-height: 1.4;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+}
+.formula .var {
+    color: var(--pulse);
+}
+.formula .op {
+    color: var(--ink-faint);
+    font-style: normal;
+    margin: 0 0.3em;
+    font-family: var(--font-mono);
+}
+.formula .result {
+    display: block;
+    color: var(--therapy);
+    margin-top: 0.5em;
+    font-size: 0.8em;
+}
+
+/* ===========================================
+   SLIDE 21 — Threshold visualization
+   =========================================== */
+.threshold-viz {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: clamp(0.8rem, 2vw, 1.6rem);
+    margin: clamp(1rem, 2vh, 1.5rem) 0;
+}
+.threshold-side {
+    padding: clamp(1rem, 2vw, 1.6rem);
+    border: 1px dashed var(--paper-rule);
+    text-align: center;
+    min-height: clamp(140px, 22vh, 200px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5em;
+}
+.threshold-side.fear {
+    background: var(--pulse-soft);
+    border-color: var(--pulse);
+}
+.threshold-side.joy {
+    background: var(--therapy-soft);
+    border-color: var(--therapy);
+}
+.threshold-emoji {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    color: var(--ink);
+}
+.threshold-side.fear .threshold-emoji { color: var(--pulse); }
+.threshold-side.joy .threshold-emoji { color: var(--therapy); }
+.threshold-detail {
+    font-family: var(--font-mono);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    line-height: 1.4;
+}
+.threshold-gap {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink);
+    padding: 1em 0.5em;
+    position: relative;
+}
+.threshold-gap::before {
+    content: "→";
+    display: block;
+    font-size: clamp(1.4rem, 2.6vw, 2rem);
+    color: var(--pulse);
+    margin-bottom: 0.4em;
+    font-weight: 700;
+}
+
+/* ===========================================
+   SLIDE 24 — Moment of joy (highlight treatment)
+   =========================================== */
+.joy-card {
+    background: var(--therapy-soft);
+    border: 1px solid var(--therapy);
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    margin: clamp(1rem, 2vh, 1.5rem) 0;
+    position: relative;
+}
+.joy-card::before {
+    content: "RX";
+    position: absolute;
+    top: clamp(-12px, -1.5vw, -16px);
+    left: clamp(1rem, 2vw, 1.5rem);
+    background: var(--therapy);
+    color: var(--paper);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: var(--small-size);
+    letter-spacing: 0.2em;
+    padding: 0.3em 0.8em;
+}
+.joy-headline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+    line-height: 1.05;
+    color: var(--therapy);
+    letter-spacing: -0.025em;
+    margin-bottom: clamp(0.8rem, 1.5vh, 1.2rem);
+    max-width: 26ch;
+}
+.joy-detail {
+    font-size: var(--body-size);
+    color: var(--ink-soft);
+    line-height: 1.6;
+    max-width: 60ch;
+}
+
+/* ===========================================
+   SLIDE 27 — Four jobs (grid)
+   =========================================== */
+.jobs-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(0.8rem, 1.5vw, 1.2rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+}
+.job-card {
+    border: 1px solid var(--paper-rule);
+    background: var(--paper-deep);
+    padding: clamp(1rem, 2vw, 1.5rem);
+    aspect-ratio: 3 / 4;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+.job-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 6px;
+    background: var(--pulse);
+}
+.job-card:nth-child(2)::before { background: var(--therapy); }
+.job-card:nth-child(3)::before { background: #f1c40f; }
+.job-card:nth-child(4)::before { background: var(--ink); }
+.job-num {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--pulse);
+    letter-spacing: 0.25em;
+    margin-top: 0.5em;
+}
+.job-card:nth-child(2) .job-num { color: var(--therapy); }
+.job-card:nth-child(3) .job-num { color: #b8860b; }
+.job-card:nth-child(4) .job-num { color: var(--ink); }
+.job-name {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.2rem, 2.2vw, 1.7rem);
+    line-height: 1.05;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+}
+.job-detail {
+    font-size: var(--small-size);
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin-top: auto;
+}
+
+/* ===========================================
+   SLIDE 26 — Advice (numbered prescriptions)
+   =========================================== */
+.advice-list {
+    list-style: none;
+    counter-reset: advice;
+    display: flex;
+    flex-direction: column;
+}
+.advice-list li {
+    counter-increment: advice;
+    padding: clamp(0.7rem, 1.4vh, 1.1rem) 0;
+    border-bottom: 1px solid var(--paper-rule);
+    display: grid;
+    grid-template-columns: clamp(40px, 6vw, 64px) 1fr;
+    gap: clamp(0.8rem, 1.5vw, 1.3rem);
+    align-items: baseline;
+}
+.advice-list li::before {
+    content: counter(advice, decimal-leading-zero);
+    font-family: var(--font-mono);
+    font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+    font-weight: 700;
+    color: var(--therapy);
+    letter-spacing: 0.1em;
+}
+.advice-list h4 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+    color: var(--ink);
+    line-height: 1.15;
+    margin-bottom: 0.3em;
+    letter-spacing: -0.01em;
+}
+.advice-list p {
+    font-size: var(--small-size);
+    color: var(--ink-soft);
+    line-height: 1.5;
+    max-width: 64ch;
+}
+
+/* ===========================================
+   SLIDE 17 — Diversity setback (compact)
+   =========================================== */
+.warning-soft {
+    border-left: 4px solid var(--pulse);
+    background: var(--pulse-soft);
+    padding: clamp(1rem, 2vw, 1.5rem) clamp(1.2rem, 2.5vw, 1.8rem);
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+}
+.warning-soft p {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.1rem, 1.9vw, 1.4rem);
+    line-height: 1.3;
+    color: var(--ink);
+    max-width: 56ch;
+}
+
+/* ===========================================
+   SLIDE 22 — Smiling exhaustion
+   =========================================== */
+.exhaust-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: center;
+    height: 100%;
+}
+.exhaust-mask {
+    aspect-ratio: 1;
+    max-width: clamp(220px, 32vw, 380px);
+    margin: 0 auto;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    background: var(--paper-deep);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.8rem, 1.5vh, 1.2rem);
+}
+.exhaust-eye-row {
+    display: flex;
+    gap: clamp(2rem, 4vw, 3.5rem);
+}
+.exhaust-eye {
+    width: clamp(24px, 4vw, 36px);
+    height: 2px;
+    background: var(--ink);
+}
+.exhaust-mouth {
+    width: 40%;
+    height: clamp(20px, 3.5vw, 32px);
+    border: 2px solid var(--ink);
+    border-top: none;
+    border-radius: 0 0 50% 50%;
+    margin-top: clamp(0.5rem, 1vh, 0.8rem);
+}
+.exhaust-tear {
+    position: absolute;
+    width: 8px;
+    height: 14px;
+    background: var(--pulse);
+    border-radius: 0 50% 50% 50%;
+    transform: rotate(-45deg);
+    top: 38%;
+    right: 22%;
+}
+
+/* ===========================================
+   SLIDE 23 — Chaos timeline (settle)
+   =========================================== */
+.timeline-bar {
+    height: clamp(70px, 12vh, 110px);
+    background: var(--paper-deep);
+    border: 1px solid var(--paper-rule);
+    margin: clamp(1rem, 2vh, 1.5rem) 0;
+    position: relative;
+    display: flex;
+    overflow: hidden;
+}
+.tl-segment {
+    flex: 1;
+    border-right: 1px dashed var(--paper-rule);
+    padding: clamp(0.6rem, 1.2vw, 1rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+.tl-segment:last-child { border-right: none; }
+.tl-segment.peak {
+    background: linear-gradient(180deg, var(--pulse-soft) 0%, transparent 100%);
+}
+.tl-segment.peak::before {
+    content: "";
+    position: absolute;
+    top: 8px; left: 8px;
+    width: 8px; height: 8px;
+    background: var(--pulse);
+    border-radius: 50%;
+    animation: pulseDot 2s ease-in-out infinite;
+}
+.tl-segment.settle {
+    background: linear-gradient(180deg, var(--therapy-soft) 0%, transparent 100%);
+}
+.tl-when {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+}
+.tl-segment.peak .tl-when { color: var(--pulse); }
+.tl-segment.settle .tl-when { color: var(--therapy); }
+.tl-state {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+    color: var(--ink);
+    line-height: 1.1;
+}
+
+/* ===========================================
+   SLIDE 25 — Obsolescence mindset
+   =========================================== */
+.obs-arrow {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.8rem, 2vw, 1.5rem);
+    margin: clamp(1rem, 2vh, 1.5rem) 0;
+}
+.obs-state {
+    flex: 1;
+    padding: clamp(1rem, 2vw, 1.5rem);
+    border: 1px solid var(--paper-rule);
+    background: var(--paper-deep);
+}
+.obs-state.from { border-left: 4px solid var(--pulse); }
+.obs-state.to { border-left: 4px solid var(--therapy); }
+.obs-tag {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    margin-bottom: 0.5em;
+}
+.obs-state.from .obs-tag { color: var(--pulse); }
+.obs-state.to .obs-tag { color: var(--therapy); }
+.obs-statement {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+    color: var(--ink);
+    line-height: 1.2;
+}
+
+/* ===========================================
+   SLIDE 31 — Brand / fancy logos
+   =========================================== */
+.logo-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: clamp(0.4rem, 0.8vw, 0.8rem);
+    margin-top: clamp(0.8rem, 1.5vh, 1.2rem);
+}
+.logo-cell {
+    aspect-ratio: 5 / 3;
+    border: 1px solid var(--paper-rule);
+    background: var(--paper-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+    color: var(--ink-ghost);
+    text-decoration: line-through;
+    text-decoration-color: var(--pulse);
+    text-decoration-thickness: 1.5px;
+    letter-spacing: -0.01em;
+}
+
+/* ===========================================
+   SLIDE 33 — Optimism (closing)
+   =========================================== */
+.closing-card {
+    background: var(--therapy);
+    color: var(--paper);
+    padding: clamp(2rem, 5vw, 4rem);
+    margin: clamp(1rem, 2vh, 1.5rem) 0;
+    position: relative;
+    overflow: hidden;
+}
+.closing-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: clamp(28px, 3vw, 44px) clamp(28px, 3vw, 44px);
+    pointer-events: none;
+}
+.closing-card .eyebrow { color: var(--paper); position: relative; z-index: 2; }
+.closing-card .eyebrow::before { background: var(--paper); }
+.closing-headline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(2rem, 5vw, 4rem);
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--paper);
+    max-width: 22ch;
+    position: relative;
+    z-index: 2;
+}
+
+/* ===========================================
+   SLIDE 35 — Final card / takeaways
+   =========================================== */
+.takeaway-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1rem, 2vw, 2rem);
+    margin-top: clamp(1.5rem, 3vh, 2.5rem);
+}
+.takeaway {
+    border-top: 3px solid var(--pulse);
+    padding-top: clamp(0.6rem, 1.2vh, 1rem);
+}
+.takeaway:nth-child(2) { border-top-color: var(--therapy); }
+.takeaway:nth-child(3) { border-top-color: var(--ink); }
+.takeaway-num {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--pulse);
+    letter-spacing: 0.25em;
+    margin-bottom: 0.5em;
+}
+.takeaway:nth-child(2) .takeaway-num { color: var(--therapy); }
+.takeaway:nth-child(3) .takeaway-num { color: var(--ink); }
+.takeaway-text {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1rem, 1.6vw, 1.3rem);
+    line-height: 1.2;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+/* Responsive collapse */
+@media (max-width: 800px) {
+    .about-grid,
+    .thesis-grid,
+    .body-grid,
+    .body-grid.flip,
+    .skills-flip,
+    .archetype-pair,
+    .shed-flow,
+    .threshold-viz,
+    .exhaust-grid,
+    .takeaway-grid,
+    .obs-arrow {
+        grid-template-columns: 1fr;
+    }
+    .jobs-grid { grid-template-columns: 1fr 1fr; }
+    .logo-grid { grid-template-columns: 1fr 1fr 1fr; }
+    .timeline-bar { flex-direction: column; height: auto; }
+    .tl-segment { border-right: none; border-bottom: 1px dashed var(--paper-rule); }
+    .shed-arrow { transform: rotate(90deg); }
+    .archetype-pair { height: auto; }
+}
+
+.keyboard-hint {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--ink-faint);
+    letter-spacing: 0.18em;
+    opacity: 0;
+    animation: fadeHint 0.6s ease 1.8s forwards;
+    pointer-events: none;
+    z-index: 50;
+    text-transform: uppercase;
+}
+@keyframes fadeHint { to { opacity: 0.6; } }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+<!-- ============================================================
+     SLIDE 1 — COVER
+     ============================================================ -->
+<section class="slide cover bare" data-title="Cover">
+    <!-- Animated EKG line behind the title -->
+    <div class="cover-pulse" aria-hidden="true">
+        <svg viewBox="0 0 1600 120" preserveAspectRatio="none">
+            <path d="M0,60 L240,60 L260,60 L300,60 L340,30 L360,90 L380,10 L400,110 L420,60 L460,60 L600,60 L660,60 L680,60 L720,60 L760,30 L780,90 L800,10 L820,110 L840,60 L880,60 L1100,60 L1160,60 L1180,60 L1220,60 L1260,30 L1280,90 L1300,10 L1320,110 L1340,60 L1380,60 L1600,60"/>
+        </svg>
+    </div>
+
+    <div class="cover-top reveal d-1">
+        <span>Lenny&rsquo;s Podcast &middot; Field Diagnosis</span>
+        <span class="cover-issue">No. 249 &middot; Career</span>
+        <span>2026</span>
+    </div>
+
+    <div class="cover-content">
+        <div class="eyebrow reveal d-2">A conversation with Nikhyl Singhal</div>
+        <h1 class="cover-title reveal-blur d-3">
+            Why half of <em>product managers</em> are in trouble.
+        </h1>
+        <p class="cover-deck reveal d-5">
+            A blunt diagnosis of where the PM profession is heading over the next 24 months &mdash; from a career counsellor who has watched the function up close at Google, Meta, and Credit Karma. The good news, the bad news, and the prescription.
+        </p>
+    </div>
+
+    <div class="cover-bottom reveal d-7">
+        <div class="cover-byline">
+            <span style="opacity: 0.55;">Guest</span>
+            <strong>Nikhyl Singhal</strong>
+        </div>
+        <div class="cover-byline" style="text-align: center;">
+            <span style="opacity: 0.55;">Founder</span>
+            <strong>The Skip</strong>
+        </div>
+        <div class="cover-byline" style="text-align: right;">
+            <span style="opacity: 0.55;">Hosted by</span>
+            <strong>Lenny Rachitsky</strong>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 2 — ABOUT NIKHYL
+     ============================================================ -->
+<section class="slide" data-title="About">
+    <header class="masthead">
+        <div class="pulse-mark"><span>Field Diagnosis</span></div>
+        <div>02 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="about-grid">
+            <div class="bio-card reveal-left d-1">
+                <div class="bio-monogram">NS</div>
+                <div>
+                    <div class="bio-name">Nikhyl<br/>Singhal</div>
+                    <div class="bio-role">Founder, The Skip<br/>Career counselor to senior PMs</div>
+                    <div class="bio-meta">
+                        <div class="bio-meta-row"><span>Tenure</span><span>30+ yrs</span></div>
+                        <div class="bio-meta-row"><span>Founded</span><span>4 companies</span></div>
+                        <div class="bio-meta-row"><span>Coached</span><span>1,000s of PMs</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bio-text">
+                <div class="eyebrow reveal d-2">The guest</div>
+                <h2 class="slide-title reveal d-3">A career counselor watching the PM function rewire itself <em>in real time.</em></h2>
+                <p class="lede reveal d-4">Nikhyl spent decades inside the function he&rsquo;s now diagnosing &mdash; product exec roles at companies that built the playbook, and a community where senior leaders confide what they won&rsquo;t say on LinkedIn.</p>
+
+                <ul class="credit-list">
+                    <li class="reveal d-5"><span>Google</span><span>Product exec</span></li>
+                    <li class="reveal d-5"><span>Meta</span><span>Product exec</span></li>
+                    <li class="reveal d-6"><span>Credit Karma</span><span>Chief Product Officer</span></li>
+                    <li class="reveal d-6"><span>The Skip</span><span>Founder &middot; community for senior PMs</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip &middot; Field Diagnosis</span>
+        <span>About the guest</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 3 — THE THESIS / The 1/2 statistic
+     ============================================================ -->
+<section class="slide" data-title="Thesis">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Thesis</span></div>
+        <div>03 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="thesis-grid">
+            <div class="thesis-stat">
+                <div class="eyebrow reveal d-1">The headline</div>
+                <div class="thesis-fraction reveal-blur d-2">
+                    1<br/><span class="denom">2</span>
+                </div>
+                <p class="thesis-label reveal d-3">of today&rsquo;s product managers won&rsquo;t make it through the next 24 months in their current shape.</p>
+            </div>
+
+            <div>
+                <h2 class="slide-title reveal d-3">The skills that <em>used to be valued</em> in product managers are changing substantially.</h2>
+                <p class="lede reveal d-4">It&rsquo;s not that PM is going away. It&rsquo;s that the <strong>job description has split in two</strong> &mdash; and only one half is being hired for. Roughly half of the people who built careers in the old shape have a thin window to migrate into the new one.</p>
+                <p class="body-copy reveal d-5">Nikhyl&rsquo;s read isn&rsquo;t a doom prediction. It&rsquo;s a triage chart.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The triage chart</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 4 — Most chaotic period (warning card)
+     ============================================================ -->
+<section class="slide" data-title="MostChaotic">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Forecast</span></div>
+        <div>04 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The forecast</div>
+        <h2 class="slide-title reveal d-2">The next two years will be the <em>most chaotic</em> period in product-management history.</h2>
+        <p class="lede reveal d-3">Three things are changing at once: how companies build, what they need a PM to do, and what they&rsquo;re willing to pay for. Most professions get one of those at a time. The PM industry is getting all three.</p>
+
+        <div class="warning-card reveal d-4">
+            <span class="warning-tag">Warning</span>
+            <p class="warning-headline">&ldquo;Our industry is very much in stress. Nothing&rsquo;s constant. Everyone&rsquo;s in a state of alert.&rdquo;</p>
+            <p class="warning-detail">Layoffs, role redefinitions, comp resets, and a complete inversion of which skills companies pay for &mdash; all happening on top of each other. The chaos is the environment, not a phase to wait out.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The forecast</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 5 — JOB MARKET DATA (good news)
+     ============================================================ -->
+<section class="slide" data-title="JobMarket">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Data</span></div>
+        <div>05 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The data &mdash; good news first</div>
+        <h2 class="slide-title reveal d-2">There are <em>more</em> open PM roles right now than there have been in three years.</h2>
+        <p class="lede reveal d-3">The narrative that &ldquo;AI is killing PM&rdquo; runs into a stubborn fact: tech companies are hiring product managers at a rate not seen since the COVID-era peak. The question isn&rsquo;t whether the function exists &mdash; it&rsquo;s who gets the seats.</p>
+
+        <div class="chart-card reveal d-4">
+            <div class="chart-header">
+                <h4>Open PM Roles, Global Tech &middot; 8-quarter index</h4>
+                <span>Source: Lenny&rsquo;s state-of-PM-market report</span>
+            </div>
+            <div class="bars-row">
+                <div class="bar" style="height: 38%;"><span class="bar-label">Q1 &rsquo;24</span></div>
+                <div class="bar" style="height: 30%;"><span class="bar-label">Q2 &rsquo;24</span></div>
+                <div class="bar" style="height: 26%;"><span class="bar-label">Q3 &rsquo;24</span></div>
+                <div class="bar" style="height: 35%;"><span class="bar-label">Q4 &rsquo;24</span></div>
+                <div class="bar peak" style="height: 62%;"><span class="bar-label">COVID peak</span></div>
+                <div class="bar" style="height: 48%;"><span class="bar-label">Q2 &rsquo;25</span></div>
+                <div class="bar" style="height: 64%;"><span class="bar-label">Q3 &rsquo;25</span></div>
+                <div class="bar now" style="height: 78%;"><span class="bar-label">Now</span></div>
+            </div>
+            <div class="chart-callout">
+                <span>Highest open roles in <strong>3+ years</strong></span>
+                <span>The catch: not for every kind of PM</span>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>Job-market data</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 6 — TWO ARCHETYPES (intro)
+     ============================================================ -->
+<section class="slide" data-title="Archetypes">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Split</span></div>
+        <div>06 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Two archetypes diverge</div>
+        <h2 class="slide-title reveal d-2">For the first time, the PM job has <em>cleanly split</em> into two professions.</h2>
+        <p class="lede reveal d-3">Three years ago we talked about &ldquo;archetypes&rdquo; the way you talk about flavors of the same role. That language no longer holds. The market is now hiring one of them and quietly retiring the other.</p>
+
+        <div class="archetype-pair">
+            <div class="archetype-card danger reveal-left d-4">
+                <span class="archetype-tag">In trouble</span>
+                <h3 class="archetype-name">The Information&nbsp;Mover</h3>
+                <ul class="archetype-traits">
+                    <li>Day was largely <strong>moving information</strong> &mdash; status reports, doc relays, alignment loops.</li>
+                    <li>Value came from being the connective tissue between functions.</li>
+                    <li>Most of that work is now done faster and more honestly by an agent.</li>
+                    <li>About <strong>half</strong> of the people who grew into PM have this shape.</li>
+                </ul>
+            </div>
+
+            <div class="archetype-card thriving reveal d-5">
+                <span class="archetype-tag">In demand</span>
+                <h3 class="archetype-name">The Builder</h3>
+                <ul class="archetype-traits">
+                    <li>Got into product because they <strong>like making things</strong>, not managing them.</li>
+                    <li>Comfortable in Codex / Claude Code / Lovable. Ships, doesn&rsquo;t just plan.</li>
+                    <li>The hires the survey is counting. The bidding war is on this side.</li>
+                    <li>&ldquo;Builders are going to have the time of their lives.&rdquo;</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The PM split</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 7 — INFO MOVER / DINOSAUR
+     ============================================================ -->
+<section class="slide" data-title="InfoMover">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Decline</span></div>
+        <div>07 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid">
+            <div>
+                <div class="eyebrow reveal d-1">The dinosaur</div>
+                <h2 class="slide-title reveal d-2">The information mover is becoming <em>a dinosaur.</em></h2>
+                <p class="lede reveal d-3">If your value to the org was knowing what was happening across teams &mdash; running the status report, brokering the doc, summarizing the meeting &mdash; that work is now an agent call away. The role didn&rsquo;t disappear; the <strong>moat around the role</strong> did.</p>
+                <p class="body-copy reveal d-4">Nikhyl is unsentimental about it: &ldquo;That part of the job, frankly, just absolutely sucked.&rdquo; The work was always lower-leverage than the people doing it wanted to admit. AI just made that legible to the C-suite.</p>
+            </div>
+
+            <div>
+                <div class="quote-block reveal d-5">
+                    The information mover is essentially going to become a dinosaur.
+                    <span class="attribution">— Nikhyl Singhal</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The decline</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 8 — BUILDER RISES
+     ============================================================ -->
+<section class="slide" data-title="BuilderRises">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Renaissance</span></div>
+        <div>08 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid flip">
+            <div>
+                <div class="quote-block reveal-left d-2" style="border-color: var(--therapy);">
+                    Builders are going to have the time of their lives.
+                    <span class="attribution">— Nikhyl Singhal</span>
+                </div>
+            </div>
+
+            <div>
+                <div class="eyebrow green reveal d-1">The renaissance</div>
+                <h2 class="slide-title reveal d-2">The other half of the profession is having a <span class="green">renaissance.</span></h2>
+                <p class="lede reveal d-3">Comp is up. Bay Area is back in favor. The bidding wars on senior product builders are loud and getting louder. Anyone who can <strong>open a laptop and ship</strong> &mdash; PM, designer, marketer, ops &mdash; is suddenly the most expensive person on the floor.</p>
+                <p class="body-copy reveal d-4">&ldquo;Lots of engineers are builders, lots of designers are builders, lots of marketing folks are builders. Builders-wanted is going to be the big tagline for the next couple of years.&rdquo;</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>Builder renaissance</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 9 — 30,000 / 8,000 PREDICTION
+     ============================================================ -->
+<section class="slide" data-title="30k8k">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Prediction</span></div>
+        <div>09 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The prediction</div>
+        <h2 class="slide-title reveal d-2">Massive shedding. Then massive rehiring &mdash; <em>but not the same people.</em></h2>
+        <p class="lede reveal d-3">Nikhyl&rsquo;s 12-to-24-month forecast for big tech: companies will let go at scale, then hire back at a fraction of the headcount &mdash; and the people coming in will be wired differently from the people going out.</p>
+
+        <div class="shed-flow">
+            <div class="shed-num-card shed reveal-left d-4">
+                <div class="shed-num">30,000</div>
+                <p class="shed-label">Shed</p>
+            </div>
+            <div class="shed-arrow reveal d-5">
+                →<span class="label">Re-shape the destination<br/>with a lighter payload</span>
+            </div>
+            <div class="shed-num-card rehire reveal d-6">
+                <div class="shed-num">8,000</div>
+                <p class="shed-label">Rehired &mdash; AI-first</p>
+            </div>
+        </div>
+
+        <p class="body-copy reveal d-7" style="text-align: center; max-width: 64ch; margin: 0 auto;">
+            &ldquo;That&rsquo;s dark. That&rsquo;s going to make this year and next year pretty challenging.&rdquo; &mdash; the math is rough, but the shape is the point.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>30,000 → 8,000</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 10 — JUDGMENT
+     ============================================================ -->
+<section class="slide" data-title="Judgment">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Skill</span></div>
+        <div>10 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid">
+            <div>
+                <div class="eyebrow reveal d-1">What &ldquo;judgment&rdquo; really means now</div>
+                <h2 class="slide-title reveal d-2">Deciding <em>what to build,</em> deciding <em>if it&rsquo;s good,</em> deciding <em>if it&rsquo;s ready.</em></h2>
+                <p class="lede reveal d-3">When the agent can write the doc, run the analysis, and draft the spec, what&rsquo;s left for the PM is the part that was always the hardest and the most underpaid: <strong>taste</strong>. Saying yes to the right thing, no to the loud thing, and now to the slow thing.</p>
+                <p class="body-copy reveal d-4">The role didn&rsquo;t shrink &mdash; the connective-tissue layer fell away and the judgment layer got more exposed.</p>
+            </div>
+            <div>
+                <div class="quote-block reveal d-5">
+                    Deciding what to build, deciding if this is good and great and ready, and prioritizing &mdash; that&rsquo;s what remains.
+                    <span class="attribution">— Lenny &amp; Nikhyl, on what survives</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>Judgment, redefined</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 11 — NO MORE BAD SOFTWARE
+     ============================================================ -->
+<section class="slide" data-title="NoMoreBadSoftware">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Floor Rises</span></div>
+        <div>11 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The floor rises</div>
+        <h2 class="slide-title reveal d-2">There <em>won&rsquo;t be any more bad software.</em></h2>
+        <p class="lede reveal d-3">The bottom of the industry &mdash; clunky tools, half-baked CRUD apps, the long tail of internal stuff nobody loved &mdash; gets rebuilt by AI in months. The bar for &ldquo;acceptable&rdquo; jumps. Mediocre product gets replaced before it gets pitied.</p>
+
+        <div class="warning-soft reveal d-4">
+            <p>Which means: the implicit deal where most PMs spent careers shipping &ldquo;fine&rdquo; products is gone. Fine isn&rsquo;t a bar anyone&rsquo;s paying for anymore.</p>
+        </div>
+
+        <p class="body-copy reveal d-5" style="margin-top: clamp(0.8rem, 1.5vh, 1.2rem);">
+            The implication for PMs: you cannot earn a seat by shipping <em>okay</em>. The okay tier is a button now. You earn the seat by deciding what gets built in the first place &mdash; and by recognizing &ldquo;great&rdquo; when the model can produce thirty &ldquo;goods&rdquo; an hour.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The floor rises</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 12 — SKILLS FLIP
+     ============================================================ -->
+<section class="slide" data-title="SkillsFlip">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Flip</span></div>
+        <div>12 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Valued skills, flipped</div>
+        <h2 class="slide-title reveal d-2">The list hasn&rsquo;t shrunk. It has <em>inverted.</em></h2>
+        <p class="lede reveal d-3">Skills that were premium in 2022 are commodity now. Skills that were &ldquo;nice to have&rdquo; are the only thing companies are pricing for. Career strategy is suddenly: catch the inversion before it lands on your seat.</p>
+
+        <div class="skills-flip">
+            <div class="skills-col down">
+                <h4 class="reveal d-3">Falling — was premium, now commodity</h4>
+                <div class="skill-item reveal d-4"><span class="skill-name">Running the cross-functional sync</span><span class="skill-trend">↓</span></div>
+                <div class="skill-item reveal d-4"><span class="skill-name">Writing the polished PRD</span><span class="skill-trend">↓</span></div>
+                <div class="skill-item reveal d-5"><span class="skill-name">Owning the roadmap deck</span><span class="skill-trend">↓</span></div>
+                <div class="skill-item reveal d-5"><span class="skill-name">Brokering decisions across teams</span><span class="skill-trend">↓</span></div>
+                <div class="skill-item reveal d-6"><span class="skill-name">Pulling the dashboard together</span><span class="skill-trend">↓</span></div>
+            </div>
+            <div class="skills-col up">
+                <h4 class="reveal d-3">Rising — was nice-to-have, now mandatory</h4>
+                <div class="skill-item reveal d-4"><span class="skill-name">Shipping working software with AI</span><span class="skill-trend">↑</span></div>
+                <div class="skill-item reveal d-4"><span class="skill-name">Calling &ldquo;great&rdquo; from &ldquo;good enough&rdquo;</span><span class="skill-trend">↑</span></div>
+                <div class="skill-item reveal d-5"><span class="skill-name">Pace &mdash; throughput per week</span><span class="skill-trend">↑</span></div>
+                <div class="skill-item reveal d-5"><span class="skill-name">Opinion held under disagreement</span><span class="skill-trend">↑</span></div>
+                <div class="skill-item reveal d-6"><span class="skill-name">Living inside the model, not around it</span><span class="skill-trend">↑</span></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>Skill inversion</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 13 — BUILDER vs INFO MOVER divide (deeper)
+     ============================================================ -->
+<section class="slide" data-title="Divide">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Divide</span></div>
+        <div>13 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The divide, in practice</div>
+        <h2 class="slide-title reveal d-2">The split isn&rsquo;t about <em>title.</em> It&rsquo;s about <em>what gives you energy.</em></h2>
+        <p class="lede reveal d-3">Two PMs with the same job title can sit on opposite sides of the divide. The diagnostic isn&rsquo;t the resume &mdash; it&rsquo;s how the person spends their best hour of the day, and what kind of work makes them late for dinner.</p>
+
+        <div class="archetype-pair">
+            <div class="archetype-card danger reveal-left d-4">
+                <span class="archetype-tag">If your best hour is...</span>
+                <h3 class="archetype-name">Coordinating</h3>
+                <ul class="archetype-traits">
+                    <li>Threading a decision through 6 stakeholders.</li>
+                    <li>Getting the doc approved.</li>
+                    <li>Running the offsite.</li>
+                    <li>You feel productive when alignment lands.</li>
+                </ul>
+            </div>
+            <div class="archetype-card thriving reveal d-5">
+                <span class="archetype-tag">...or making</span>
+                <h3 class="archetype-name">Crafting</h3>
+                <ul class="archetype-traits">
+                    <li>Building a working prototype with the model.</li>
+                    <li>Touching the actual surface users will use.</li>
+                    <li>Watching a thing improve in front of you.</li>
+                    <li>You feel productive when the artifact ships.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>Coordinating vs crafting</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 14 — NON-BUILDER PROBLEM
+     ============================================================ -->
+<section class="slide" data-title="NonBuilder">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Hard Conversation</span></div>
+        <div>14 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The hard conversation</div>
+        <h2 class="slide-title reveal d-2">What about the people who <em>don&rsquo;t</em> want to build?</h2>
+        <p class="lede reveal d-3">Nikhyl&rsquo;s honest answer: there&rsquo;s a class of PM who reads all of this and feels nothing. No spark. No curiosity. The work that excites the new market simply doesn&rsquo;t excite them.</p>
+
+        <div class="quote-block reveal d-4" style="margin: clamp(1rem, 2vh, 1.5rem) 0;">
+            If you find the whole thing kind of boring, nauseating &mdash; you&rsquo;re probably not in for the next version of our industry. And you should be honest with yourself.
+            <span class="attribution">— Nikhyl Singhal</span>
+        </div>
+
+        <p class="body-copy reveal d-5">
+            That&rsquo;s not a moral judgment. It&rsquo;s a compatibility test. The kindest thing for that person is to stop pretending and explore what does light them up &mdash; another function, another industry, another stage of life. The cruelest thing is to stay and resent the work.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The non-builder question</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 15 — SHOULD PMs CODE?
+     ============================================================ -->
+<section class="slide" data-title="ShouldCode">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Question</span></div>
+        <div>15 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid flip">
+            <div>
+                <div class="quote-block reveal-left d-2" style="border-color: var(--therapy);">
+                    You can participate in the joy. You can create a design. You don&rsquo;t have to wait for the designer or convince anyone to put your stuff on a backlog.
+                    <span class="attribution">— Nikhyl, on PMs in code</span>
+                </div>
+            </div>
+
+            <div>
+                <div class="eyebrow green reveal d-1">Should PMs code?</div>
+                <h2 class="slide-title reveal d-2">Wrong question. The real one is: <span class="green">do you ship?</span></h2>
+                <p class="lede reveal d-3">&ldquo;Coding&rdquo; is a red herring &mdash; the bar isn&rsquo;t writing production C++. The bar is whether you can walk from idea to working artifact without handing the work to four other people first. Claude Code, Codex, Lovable &mdash; pick one and live in it.</p>
+                <p class="body-copy reveal d-4">The PM who used to swap in light bulbs for satisfaction can now ship the actual feature. That&rsquo;s the whole shift.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>Should PMs code?</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 16 — EXPERIENCED LEADERS STILL MATTER
+     ============================================================ -->
+<section class="slide" data-title="Experienced">
+    <header class="masthead">
+        <div class="pulse-mark"><span>Counter-current</span></div>
+        <div>16 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">A counter-current</div>
+        <h2 class="slide-title reveal d-2">Experienced leaders still <em>matter</em> &mdash; just not for the reasons they used to.</h2>
+        <p class="lede reveal d-3">The narrative that AI flattens seniority is half-true. What flattens is the <strong>information arbitrage</strong> seniority used to confer. What deepens is the value of pattern recognition, calibrated judgment, and the willingness to make a call when the data is contradictory.</p>
+
+        <div class="body-copy reveal d-4" style="display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.5rem, 3vw, 2.5rem); margin-top: clamp(1rem, 2vh, 1.5rem); max-width: none;">
+            <div>
+                <h4 style="font-family: var(--font-mono); font-size: var(--label-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--pulse); margin-bottom: 0.6em;">What experience used to buy</h4>
+                <p>Networks. Knowing who to ask. Having seen the playbook. Defending the roadmap from a louder room.</p>
+            </div>
+            <div>
+                <h4 style="font-family: var(--font-mono); font-size: var(--label-size); text-transform: uppercase; letter-spacing: 0.2em; color: var(--therapy); margin-bottom: 0.6em;">What experience buys now</h4>
+                <p>Calibration. Calling great from good. Holding the line when the model produces twenty plausible answers and only one of them is the right thing for the user.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>Why seniority still matters</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 17 — DIVERSITY SETBACK
+     ============================================================ -->
+<section class="slide" data-title="Diversity">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Setback</span></div>
+        <div>17 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The setback nobody&rsquo;s talking about</div>
+        <h2 class="slide-title reveal d-2">A <em>diversity unwind</em> is happening underneath the AI story.</h2>
+        <p class="lede reveal d-3">When companies cut the &ldquo;information mover&rdquo; tier, the cuts disproportionately hit cohorts the industry spent a decade trying to bring in. The work moved to the &ldquo;builder&rdquo; tier, which got built before the industry diversified its pipelines.</p>
+
+        <div class="warning-soft reveal d-4">
+            <p>The optimistic story &mdash; &ldquo;AI will democratize building&rdquo; &mdash; is true on a 5-year horizon. On a 24-month horizon, the people getting laid off and the people getting hired don&rsquo;t look the same. That&rsquo;s a real cost, and it&rsquo;s being underweighted in industry conversation.</p>
+        </div>
+
+        <p class="body-copy reveal d-5" style="margin-top: clamp(0.8rem, 1.5vh, 1.2rem);">
+            For leaders: hiring AI-first doesn&rsquo;t have to mean hiring from one demographic. The actual signal &mdash; ships, builds, has taste &mdash; is broadly available. The lazy version of the search is the one that compounds the setback.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The unwind</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 18 — BRAND DOESN'T MATTER
+     ============================================================ -->
+<section class="slide" data-title="Brand">
+    <header class="masthead">
+        <div class="pulse-mark"><span>Resume reset</span></div>
+        <div>18 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">Resume reset</div>
+        <h2 class="slide-title reveal d-2">Your fancy logos matter <em>less than ever.</em></h2>
+        <p class="lede reveal d-3">The half-decade where &ldquo;ex-Google, ex-Meta&rdquo; opened any door is over. Hiring managers read a resume now looking for <strong>artifacts</strong>, not affiliations.</p>
+
+        <div class="logo-grid reveal d-4" aria-hidden="true">
+            <div class="logo-cell">Google</div>
+            <div class="logo-cell">Meta</div>
+            <div class="logo-cell">Apple</div>
+            <div class="logo-cell">Amazon</div>
+            <div class="logo-cell">Microsoft</div>
+            <div class="logo-cell">Stripe</div>
+            <div class="logo-cell">Airbnb</div>
+            <div class="logo-cell">Uber</div>
+            <div class="logo-cell">Netflix</div>
+            <div class="logo-cell">Salesforce</div>
+            <div class="logo-cell">Oracle</div>
+            <div class="logo-cell">Adobe</div>
+        </div>
+
+        <p class="body-copy reveal d-7" style="margin-top: clamp(1rem, 2vh, 1.5rem); max-width: 64ch;">
+            Replacing them in the screening filter: a working app you built, a public side project, a body of writing, a track record of shipped surfaces. <strong>Things you made</strong>, not places you sat.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The resume reset</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 19 — WHY CHANGE IS HARD
+     ============================================================ -->
+<section class="slide" data-title="ChangeIsHard">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Block</span></div>
+        <div>19 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid">
+            <div>
+                <div class="eyebrow reveal d-1">Why change is so hard for humans</div>
+                <h2 class="slide-title reveal d-2">The block isn&rsquo;t the new skill. It&rsquo;s the <em>identity</em> attached to the old one.</h2>
+                <p class="lede reveal d-3">People aren&rsquo;t avoiding AI tools because they can&rsquo;t learn them. They&rsquo;re avoiding them because using them well requires admitting that the version of the job they were great at is winding down.</p>
+                <p class="body-copy reveal d-4">That&rsquo;s a grief problem dressed up as a productivity problem. The career-coaching question isn&rsquo;t &ldquo;which course should you take.&rdquo; It&rsquo;s &ldquo;are you willing to be a beginner again, in public, for six months?&rdquo;</p>
+            </div>
+            <div>
+                <div class="quote-block reveal d-5">
+                    Most people aren&rsquo;t going to cross that mental threshold. And they&rsquo;re going to be left behind by everybody else.
+                    <span class="attribution">— Nikhyl Singhal</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>Why people don&rsquo;t move</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 20 — EQUAL DISAPPOINTMENT ALGORITHM
+     ============================================================ -->
+<section class="slide" data-title="EqualDisappointment">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Trap</span></div>
+        <div>20 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The trap mid-career people fall into</div>
+        <h2 class="slide-title reveal d-2">The <em>&ldquo;equal disappointment&rdquo;</em> algorithm.</h2>
+        <p class="lede reveal d-3">Most senior PMs are running an unspoken optimization where they try to disappoint each constituency by exactly the same small amount &mdash; boss, partner, kids, team, self. The work product is &ldquo;adequate.&rdquo; Nobody&rsquo;s yelling. Nobody&rsquo;s thrilled either.</p>
+
+        <div class="formula reveal-blur d-4">
+            <span class="var">boss</span><span class="op">=</span><span class="var">partner</span><span class="op">=</span><span class="var">kids</span><span class="op">=</span><span class="var">self</span>
+            <span class="result">&rarr; everyone equally let down, all the time</span>
+        </div>
+
+        <p class="body-copy reveal d-5" style="max-width: 60ch;">
+            It&rsquo;s a stable equilibrium, and it&rsquo;s exactly the equilibrium AI is breaking. The market is now paying for people who pick a constituency to fully disappoint &mdash; and crush the one that&rsquo;s left.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>Equal disappointment</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 21 — CROSS THE THRESHOLD
+     ============================================================ -->
+<section class="slide" data-title="Threshold">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Crossing</span></div>
+        <div>21 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The crossing</div>
+        <h2 class="slide-title reveal d-2">There is a <em>threshold</em> &mdash; and you can&rsquo;t plan your way across it. You have to walk.</h2>
+
+        <div class="threshold-viz">
+            <div class="threshold-side fear reveal-left d-3">
+                <div class="threshold-emoji">Fear</div>
+                <p class="threshold-detail">&ldquo;What if I&rsquo;m bad at this&rdquo;<br/>&ldquo;What about my title&rdquo;<br/>&ldquo;I should wait for clarity&rdquo;</p>
+            </div>
+            <div class="threshold-gap reveal d-4">
+                Cross<br/>the<br/>threshold
+            </div>
+            <div class="threshold-side joy reveal d-5">
+                <div class="threshold-emoji">Joy</div>
+                <p class="threshold-detail">&ldquo;I built a thing&rdquo;<br/>&ldquo;I want to build another&rdquo;<br/>&ldquo;Time disappeared&rdquo;</p>
+            </div>
+        </div>
+
+        <p class="body-copy reveal d-6" style="text-align: center; max-width: 60ch; margin: 0 auto;">
+            The threshold is short. The road to the threshold is long. And the only way across is to make something small, badly, this week.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>Crossing the threshold</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 22 — SMILING EXHAUSTION
+     ============================================================ -->
+<section class="slide" data-title="SmilingExhaustion">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Symptom</span></div>
+        <div>22 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="exhaust-grid">
+            <div>
+                <div class="eyebrow reveal d-1">A symptom Nikhyl keeps seeing</div>
+                <h2 class="slide-title reveal d-2"><em>Smiling exhaustion.</em></h2>
+                <p class="lede reveal d-3">A specific affect across the senior PM community: outwardly fine, holding the team together, performing optimism in the all-hands. Privately, depleted in a way they don&rsquo;t have language for.</p>
+                <p class="body-copy reveal d-4">It&rsquo;s the look of someone running &ldquo;equal disappointment&rdquo; on max difficulty while pretending the rules of the job haven&rsquo;t changed underneath them.</p>
+            </div>
+
+            <div class="exhaust-mask reveal-blur d-3" aria-hidden="true">
+                <div class="exhaust-eye-row">
+                    <div class="exhaust-eye"></div>
+                    <div class="exhaust-eye"></div>
+                </div>
+                <div class="exhaust-mouth"></div>
+                <div class="exhaust-tear"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The symptom</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 23 — CHAOS WILL SETTLE
+     ============================================================ -->
+<section class="slide" data-title="ChaosSettles">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Arc</span></div>
+        <div>23 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The shape of the next 36 months</div>
+        <h2 class="slide-title reveal d-2">The chaos has a <em>shape</em> &mdash; and it ends.</h2>
+        <p class="lede reveal d-3">Nikhyl&rsquo;s arc: the next 18&ndash;24 months are the storm. After that, a new equilibrium settles in, with new norms about who does what and how much it pays. The window to position yourself is now &mdash; not after.</p>
+
+        <div class="timeline-bar">
+            <div class="tl-segment peak reveal d-4">
+                <span class="tl-when">2025 — 2026</span>
+                <span class="tl-state">Peak chaos. Layoffs. Skill flip. Roles redefined live.</span>
+            </div>
+            <div class="tl-segment peak reveal d-5">
+                <span class="tl-when">2026 — 2027</span>
+                <span class="tl-state">Sorting. Builders rehired. Info-movers exit or migrate.</span>
+            </div>
+            <div class="tl-segment settle reveal d-6">
+                <span class="tl-when">2027 — 2028</span>
+                <span class="tl-state">New equilibrium. Smaller orgs, sharper roles, new norms.</span>
+            </div>
+            <div class="tl-segment settle reveal d-7">
+                <span class="tl-when">2028+</span>
+                <span class="tl-state">Boring again. (In a good way.)</span>
+            </div>
+        </div>
+
+        <p class="body-copy reveal d-7" style="text-align: center; max-width: 56ch; margin: 0 auto;">
+            The discomfort isn&rsquo;t permanent. The migration window is.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The arc</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 24 — MOMENT OF JOY
+     ============================================================ -->
+<section class="slide" data-title="MomentOfJoy">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Prescription</span></div>
+        <div>24 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow green reveal d-1">The prescription</div>
+        <h2 class="slide-title reveal d-2">Find your <span class="green">moment of joy.</span> Then chase it.</h2>
+        <p class="lede reveal d-3">Nikhyl&rsquo;s single most important career advice for the next two years isn&rsquo;t about strategy. It&rsquo;s about <strong>noticing</strong>. The moment something clicks &mdash; you build a small thing with the model and time disappears &mdash; that&rsquo;s the signal. Most people feel it once and don&rsquo;t recognize it.</p>
+
+        <div class="joy-card reveal d-4">
+            <h3 class="joy-headline">&ldquo;Joy is the biggest antidote to burnout.&rdquo;</h3>
+            <p class="joy-detail">The moment you have joy, the moment it doesn&rsquo;t feel like work. Most product management feels like work if you&rsquo;re not building. We&rsquo;re moving into a world where it can feel like building &mdash; and joy &mdash; not work. You just need to find the path to get there.</p>
+        </div>
+
+        <p class="body-copy reveal d-5">
+            Practical: an app on the side. A weekend prototype for a problem you have. A Claude session in the background while you watch TV. The point isn&rsquo;t the project &mdash; the point is catching the bug.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The prescription</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 25 — OBSOLESCENCE MINDSET
+     ============================================================ -->
+<section class="slide" data-title="Obsolescence">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Mindset</span></div>
+        <div>25 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The obsolescence mindset</div>
+        <h2 class="slide-title reveal d-2">Assume <em>most of what you know expires.</em> Plan around the expiration.</h2>
+        <p class="lede reveal d-3">The people Nikhyl sees thriving share a posture: they treat their own skills as a depreciating asset and plan deliberately to refresh them. Not as anxiety &mdash; as portfolio management.</p>
+
+        <div class="obs-arrow">
+            <div class="obs-state from reveal-left d-4">
+                <span class="obs-tag">From</span>
+                <p class="obs-statement">&ldquo;I am a product manager.&rdquo;<br/>(Identity. Permanent.)</p>
+            </div>
+            <div class="shed-arrow reveal d-5">→</div>
+            <div class="obs-state to reveal d-6">
+                <span class="obs-tag">To</span>
+                <p class="obs-statement">&ldquo;I am someone who learns fast and ships.&rdquo;<br/>(Verb. Refreshable.)</p>
+            </div>
+        </div>
+
+        <p class="body-copy reveal d-7">
+            The obsolescence mindset isn&rsquo;t pessimism &mdash; it&rsquo;s the assumption that <strong>skill cycles are now shorter than career cycles</strong>, so you have to refresh inside the same job, multiple times.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>Obsolescence mindset</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 26 — SPECIFIC ADVICE FOR PMs RIGHT NOW
+     ============================================================ -->
+<section class="slide" data-title="Advice">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Action List</span></div>
+        <div>26 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow green reveal d-1">Specific advice, this week</div>
+        <h2 class="slide-title reveal d-2">If you do <span class="green">six things</span>, you&rsquo;ll be in the rehired 8,000.</h2>
+
+        <ol class="advice-list">
+            <li class="reveal d-3">
+                <div>
+                    <h4>Open Claude Code or Codex tonight.</h4>
+                    <p>Not tomorrow, not next week. Build something terrible. Cross the threshold from spectator to participant.</p>
+                </div>
+            </li>
+            <li class="reveal d-3">
+                <div>
+                    <h4>Pick a personal problem and ship a tool for it.</h4>
+                    <p>Not a portfolio piece &mdash; a thing you actually use. Daily-driver beats demoware on every resume now.</p>
+                </div>
+            </li>
+            <li class="reveal d-4">
+                <div>
+                    <h4>Replace one weekly status doc with an agent.</h4>
+                    <p>If you&rsquo;re still hand-assembling reports, you&rsquo;re training the org to value information-moving over building.</p>
+                </div>
+            </li>
+            <li class="reveal d-4">
+                <div>
+                    <h4>Stop optimizing for equal disappointment.</h4>
+                    <p>Pick one constituency to disappoint deliberately for the next 90 days. Use the recovered hours to build.</p>
+                </div>
+            </li>
+            <li class="reveal d-5">
+                <div>
+                    <h4>Refresh your portfolio with artifacts, not affiliations.</h4>
+                    <p>Two screenshots and a working link beat three logos. The interview is about what you made, not where you sat.</p>
+                </div>
+            </li>
+            <li class="reveal d-5">
+                <div>
+                    <h4>Notice the moment something clicks. Chase it.</h4>
+                    <p>The first time time disappears, that&rsquo;s the signal. Plan the next week around producing more of those moments.</p>
+                </div>
+            </li>
+        </ol>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>This week&rsquo;s action list</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 27 — FOUR JOBS OF THE FUTURE
+     ============================================================ -->
+<section class="slide" data-title="FourJobs">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Future Map</span></div>
+        <div>27 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The future map (riffing on a viral tweet)</div>
+        <h2 class="slide-title reveal d-2">There are only <em>four jobs</em> in the future.</h2>
+        <p class="lede reveal d-3">Nikhyl&rsquo;s read on a now-circulating taxonomy: there are essentially four shapes of work that survive past the next reorganization. Most current titles collapse into one of these.</p>
+
+        <div class="jobs-grid">
+            <div class="job-card reveal d-4">
+                <span class="job-num">// Job 01</span>
+                <h3 class="job-name">Product engineers</h3>
+                <p class="job-detail">Vibe coders. PM-slop-cannons. People who turn ideas into shipped surfaces, end to end.</p>
+            </div>
+            <div class="job-card reveal d-5">
+                <span class="job-num">// Job 02</span>
+                <h3 class="job-name">Security &amp; infra</h3>
+                <p class="job-detail">The people keeping the lights on, the data safe, the systems standing.</p>
+            </div>
+            <div class="job-card reveal d-6">
+                <span class="job-num">// Job 03</span>
+                <h3 class="job-name">&ldquo;Hot people&rdquo;</h3>
+                <p class="job-detail">Front-of-house: sales, customer success, opinionated experts who are the user-facing UX of the company.</p>
+            </div>
+            <div class="job-card reveal d-7">
+                <span class="job-num">// Job 04</span>
+                <h3 class="job-name">Grown-ups</h3>
+                <p class="job-detail">The adults in the room. Calibrated judgment, hard calls, holding the long arc.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The four jobs</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 28 — ALIGNMENT IS CHANGING
+     ============================================================ -->
+<section class="slide" data-title="Alignment">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Re-Shape</span></div>
+        <div>28 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid">
+            <div>
+                <div class="eyebrow reveal d-1">Alignment</div>
+                <h2 class="slide-title reveal d-2">Alignment doesn&rsquo;t go away. It just <em>gets harder &mdash; and more valuable.</em></h2>
+                <p class="lede reveal d-3">A lot of &ldquo;alignment&rdquo; was just information shuffling: getting people the ground truth so they could stop fighting about facts. The CEO can now ask the agent and have the ground truth in seconds.</p>
+                <p class="body-copy reveal d-4">What&rsquo;s left is the harder thing: <strong>opinion under disagreement</strong>. Deciding what to fight for when everyone has the same data. That part of alignment isn&rsquo;t shrinking &mdash; it&rsquo;s the whole job.</p>
+            </div>
+            <div>
+                <div class="quote-block reveal d-5">
+                    A lot of alignment was getting people the ground level truth. That problem is dramatically better. Now someone has to decide and have an opinion and what to fight for.
+                    <span class="attribution">— Nikhyl Singhal</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>Alignment after AI</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 29 — ENGINEERING CHANGES MORE
+     ============================================================ -->
+<section class="slide" data-title="EngChanges">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Bigger Story</span></div>
+        <div>29 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The bigger story most PMs are missing</div>
+        <h2 class="slide-title reveal d-2">Engineering is changing <em>more than PM is.</em></h2>
+        <p class="lede reveal d-3">PMs are loud about their own disruption. The reality is that the engineering profession is being reshaped harder and faster &mdash; junior engineering work is collapsing into agent prompts, and senior engineers are being asked to act more like product builders than ever.</p>
+        <p class="body-copy reveal d-4">Implication for PMs: your engineering counterparts are also in a chaotic skill flip. The window to pair with them on shipped artifacts is open right now &mdash; before either side hardens into the new shape and forgets how to collaborate across the line.</p>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>Engineering, reshaped</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 30 — DESIGN PLATEAU
+     ============================================================ -->
+<section class="slide" data-title="DesignPlateau">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Surprise</span></div>
+        <div>30 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The surprise</div>
+        <h2 class="slide-title reveal d-2">Design has hit a <em>quiet plateau.</em></h2>
+        <p class="lede reveal d-3">Counter-intuitively, AI hasn&rsquo;t supercharged the design profession the way it has engineering. The output of generative tools is improving fast, but the bar for &ldquo;cohesive, on-brand, shippable&rdquo; isn&rsquo;t closing as quickly as people predicted.</p>
+        <p class="body-copy reveal d-4">For PMs: don&rsquo;t assume your designer is automatable. The opposite, in fact &mdash; the designers who&rsquo;ve crossed into <strong>shipping code with taste</strong> are some of the most expensive humans in tech this year.</p>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The design plateau</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 31 — PACE / FIRE IN THE BELLY
+     ============================================================ -->
+<section class="slide" data-title="Pace">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Tempo</span></div>
+        <div>31 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">The tempo of the next two years</div>
+        <h2 class="slide-title reveal d-2">You have to find the <em>fire in the belly</em> &mdash; or borrow it.</h2>
+        <p class="lede reveal d-3">Nikhyl&rsquo;s most blunt advice: pace is no longer optional. The reserve you held back during steady-state years is the reserve you spend now. The professionals who get rehired in the 8,000 are people who showed up with a different gear.</p>
+
+        <div class="quote-block reveal d-4" style="margin: clamp(1rem, 2vh, 1.5rem) 0;">
+            You have to find the ability to increase pace. You&rsquo;ve got to find that reserve. The next two years require a lot of fire in the belly.
+            <span class="attribution">— Nikhyl Singhal</span>
+        </div>
+
+        <p class="body-copy reveal d-5">
+            That doesn&rsquo;t mean grinding harder at the wrong things. It means matching the metabolism of the moment &mdash; shipping faster, learning faster, deciding faster &mdash; which the people on the joy side of the threshold do almost without trying.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The tempo</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 32 — Operators vs Identity (depth)
+     ============================================================ -->
+<section class="slide" data-title="OperatorsIdentity">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Reframe</span></div>
+        <div>32 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="body-grid flip">
+            <div>
+                <div class="quote-block reveal-left d-2">
+                    People have more energy than they realize. They&rsquo;re just so exhausted by the monotony of what was defined as product management.
+                    <span class="attribution">— Nikhyl Singhal</span>
+                </div>
+            </div>
+
+            <div>
+                <div class="eyebrow green reveal d-1">A reframe</div>
+                <h2 class="slide-title reveal d-2">The exhaustion is from the <em>old shape,</em> not from the work itself.</h2>
+                <p class="lede reveal d-3">A surprising read from Nikhyl&rsquo;s coaching practice: senior PMs are not, mostly, burnt out from too much work. They&rsquo;re burnt out from the wrong work &mdash; the same status meeting, the same alignment loop, the same political defense of the same roadmap.</p>
+                <p class="body-copy reveal d-4">When the same people get a chance to build, the energy is suddenly there. The reservoir was never empty. The activity it was being spent on was the problem.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The reframe</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 33 — OPTIMISM IN THE CHAOS
+     ============================================================ -->
+<section class="slide" data-title="Optimism">
+    <header class="masthead">
+        <div class="pulse-mark"><span>The Closing Note</span></div>
+        <div>33 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow green reveal d-1">Why Nikhyl is, ultimately, optimistic</div>
+        <h2 class="slide-title reveal d-2">For people who like making things, this is <span class="green">the best moment of their careers.</span></h2>
+
+        <div class="closing-card reveal d-3">
+            <span class="eyebrow">A complete renaissance</span>
+            <h3 class="closing-headline">It&rsquo;s a complete renaissance for the product industry &mdash; with a lot of strings attached.</h3>
+        </div>
+
+        <p class="body-copy reveal d-5" style="max-width: 64ch;">
+            The strings: layoffs, painful migrations, an unkind 24 months. The renaissance: more open roles than in three years, comp climbing, the bidding war on builders, and tools that make it possible &mdash; for the first time &mdash; for one person to ship the thing they imagined this morning.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>The closing note</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 34 — Final question to the listener
+     ============================================================ -->
+<section class="slide" data-title="ListenerQuestion">
+    <header class="masthead">
+        <div class="pulse-mark"><span>For the listener</span></div>
+        <div>34 / 35</div>
+    </header>
+
+    <div class="slide-content">
+        <div class="eyebrow reveal d-1">A question to sit with</div>
+        <h2 class="slide-title reveal-blur d-2" style="max-width: 26ch; font-size: clamp(2rem, 5vw, 4.2rem);">
+            When was the last time you <em>made something</em> at work and lost track of time?
+        </h2>
+        <p class="lede reveal d-4" style="max-width: 56ch; margin-top: clamp(1rem, 2vh, 1.5rem);">
+            If the answer is &ldquo;recently&rdquo; &mdash; you&rsquo;re probably already on the right side of the threshold. If it&rsquo;s &ldquo;a long time ago&rdquo; &mdash; that&rsquo;s the most important data point in your career strategy this year.
+        </p>
+        <p class="body-copy reveal d-5" style="max-width: 56ch; font-style: italic; color: var(--therapy);">
+            The next month is the cheapest time it will ever be to fix that.
+        </p>
+    </div>
+
+    <footer class="footer">
+        <span>The Skip</span>
+        <span>A diagnostic question</span>
+    </footer>
+</section>
+
+<!-- ============================================================
+     SLIDE 35 — TAKEAWAYS / COVER OUTRO
+     ============================================================ -->
+<section class="slide bare" data-title="Takeaways" style="background: var(--paper); justify-content: space-between; padding-top: clamp(2rem, 5vh, 4rem); padding-bottom: clamp(2rem, 5vh, 4rem);">
+    <div class="cover-top reveal d-1">
+        <span>Field Diagnosis &middot; Closing</span>
+        <span class="cover-issue">35 / 35</span>
+        <span>2026</span>
+    </div>
+
+    <div>
+        <div class="eyebrow reveal d-2">If you remember nothing else</div>
+        <h2 class="cover-title reveal-blur d-3" style="font-size: clamp(2.4rem, 6vw, 4.8rem); max-width: 18ch;">
+            Half the profession is in trouble. <em>The other half has never had it so good.</em>
+        </h2>
+
+        <div class="takeaway-grid">
+            <div class="takeaway reveal d-4">
+                <div class="takeaway-num">// 01</div>
+                <p class="takeaway-text">The split is real. Information movers are out; builders are in. Pick a side honestly.</p>
+            </div>
+            <div class="takeaway reveal d-5">
+                <div class="takeaway-num">// 02</div>
+                <p class="takeaway-text">Cross the threshold by making something small this week. Joy is the antidote to burnout.</p>
+            </div>
+            <div class="takeaway reveal d-6">
+                <div class="takeaway-num">// 03</div>
+                <p class="takeaway-text">The chaos has a shape. The migration window is short. Move now, settle later.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="cover-bottom reveal d-7">
+        <div class="cover-byline">
+            <span style="opacity: 0.55;">Source</span>
+            <strong>Lenny&rsquo;s Podcast &middot; Nikhyl Singhal</strong>
+        </div>
+        <div class="cover-byline" style="text-align: right;">
+            <span style="opacity: 0.55;">End</span>
+            <strong>Find your moment of joy.</strong>
+        </div>
+    </div>
+</section>
+
+<div class="keyboard-hint">← → or SPACE to navigate</div>
+
+<script>
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   - IntersectionObserver for entrance animations
+   - Keyboard / touch / wheel navigation
+   - Progress bar + nav dots
+   =========================================== */
+class SlidePresentation {
+    constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.currentSlide = 0;
+        this.isScrolling = false;
+
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupTouchNav();
+        this.setupWheelNav();
+        this.setupProgressBar();
+        this.setupNavDots();
+
+        this.slides[0].classList.add('visible');
+    }
+
+    setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+                    entry.target.classList.add('visible');
+                    this.currentSlide = this.slides.indexOf(entry.target);
+                    this.updateNavDots();
+                    this.updateProgressBar();
+                }
+            });
+        }, { threshold: [0.5] });
+        this.slides.forEach(s => observer.observe(s));
+    }
+
+    setupKeyboardNav() {
+        document.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                case 'ArrowDown':
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    this.goTo(this.currentSlide + 1);
+                    break;
+                case 'ArrowUp':
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    this.goTo(this.currentSlide - 1);
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    this.goTo(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    this.goTo(this.slides.length - 1);
+                    break;
+            }
+        });
+    }
+
+    setupTouchNav() {
+        let touchStartY = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            const touchEndY = e.changedTouches[0].screenY;
+            const dy = touchStartY - touchEndY;
+            if (Math.abs(dy) > 60) {
+                this.goTo(this.currentSlide + (dy > 0 ? 1 : -1));
+            }
+        }, { passive: true });
+    }
+
+    setupWheelNav() {
+        let wheelTimer = null;
+        document.addEventListener('wheel', (e) => {
+            if (this.isScrolling) return;
+            if (Math.abs(e.deltaY) < 30) return;
+            this.isScrolling = true;
+            this.goTo(this.currentSlide + (e.deltaY > 0 ? 1 : -1));
+            clearTimeout(wheelTimer);
+            wheelTimer = setTimeout(() => { this.isScrolling = false; }, 800);
+        }, { passive: true });
+    }
+
+    setupProgressBar() {
+        this.progressBar = document.getElementById('progressBar');
+        this.updateProgressBar();
+    }
+
+    updateProgressBar() {
+        const pct = (this.currentSlide / (this.slides.length - 1)) * 100;
+        if (this.progressBar) this.progressBar.style.width = pct + '%';
+    }
+
+    setupNavDots() {
+        this.dotsContainer = document.getElementById('navDots');
+        this.slides.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+            dot.addEventListener('click', () => this.goTo(i));
+            this.dotsContainer.appendChild(dot);
+        });
+    }
+
+    updateNavDots() {
+        if (!this.dotsContainer) return;
+        Array.from(this.dotsContainer.children).forEach((d, i) => {
+            d.classList.toggle('active', i === this.currentSlide);
+        });
+    }
+
+    goTo(index) {
+        const target = Math.max(0, Math.min(this.slides.length - 1, index));
+        this.slides[target].scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new SlidePresentation());
+} else {
+    new SlidePresentation();
+}
+</script>
+</body>
+</html>
