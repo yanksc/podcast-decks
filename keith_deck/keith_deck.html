@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hard Truths About Building in the AI Era — Keith Rabois</title>
+
+<!-- Marginalia: PT Serif (display) + Lora (body) + JetBrains Mono (annotations) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   THEME — Marginalia
+   Legal-pad canvas, red-pen contrarian
+   annotations, navy accent, ruled lines
+   =========================================== */
+:root {
+    --pad:          #f8f6f0;        /* warm legal pad */
+    --pad-deep:     #f0ede4;        /* ruled section tint */
+    --ink:          #1c1a14;        /* near-black ink */
+    --ink-soft:     #3c3830;        /* secondary text */
+    --ink-faint:    #9a9282;        /* tertiary / faint */
+    --rule:         #c8bfaa;        /* ruled line color */
+    --rule-light:   rgba(200,191,170,0.5);
+    --red-pen:      #c0212a;        /* red pen annotation */
+    --red-pen-soft: rgba(192,33,42,0.12);
+    --navy:         #1e3a5f;        /* navy accent */
+    --navy-soft:    rgba(30,58,95,0.10);
+    --gold:         #9a7a3a;        /* aged-ink gold */
+
+    --font-display: 'PT Serif', 'Georgia', serif;
+    --font-body:    'Lora', 'Georgia', serif;
+    --font-mono:    'JetBrains Mono', monospace;
+
+    /* Type scale */
+    --title-size:   clamp(2.6rem, 7.5vw, 6.5rem);
+    --huge-size:    clamp(3.5rem, 10vw, 8.5rem);
+    --h2-size:      clamp(1.5rem, 3.8vw, 3.2rem);
+    --h3-size:      clamp(1.05rem, 2vw, 1.55rem);
+    --body-size:    clamp(0.88rem, 1.2vw, 1.08rem);
+    --small-size:   clamp(0.72rem, 0.9vw, 0.85rem);
+    --label-size:   clamp(0.62rem, 0.8vw, 0.75rem);
+    --mono-size:    clamp(0.68rem, 0.88vw, 0.82rem);
+
+    --slide-pad:    clamp(1.5rem, 5vw, 5rem);
+    --gap:          clamp(0.75rem, 1.5vw, 1.5rem);
+
+    --ease:         cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-sharp:   cubic-bezier(0.4, 0, 0.2, 1);
+    --dur:          0.85s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* === VIEWPORT BASE === */
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+
+body {
+    background: var(--pad);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: var(--body-size);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+.slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: var(--slide-pad);
+    background: var(--pad);
+}
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+}
+
+/* ===== RULED LINES BACKGROUND ===== */
+.ruled-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+.ruled-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent calc(var(--rule-h, 2.4rem) - 1px),
+        var(--rule-light) calc(var(--rule-h, 2.4rem) - 1px),
+        var(--rule-light) var(--rule-h, 2.4rem)
+    );
+}
+/* Red margin line */
+.ruled-bg::after {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0;
+    left: clamp(2.5rem, 8vw, 6rem);
+    width: 2px;
+    background: rgba(192,33,42,0.25);
+}
+
+/* ===== FOLIO / MASTHEAD ===== */
+.folio {
+    position: absolute;
+    top: clamp(0.6rem, 2vh, 1.2rem);
+    left: 0; right: 0;
+    padding: 0 var(--slide-pad);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    z-index: 10;
+}
+.folio .series { color: var(--red-pen); font-weight: 700; }
+.folio .slide-num { color: var(--navy); font-weight: 700; }
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--red-pen);
+    z-index: 999;
+    transition: width 0.4s var(--ease);
+    transform-origin: left;
+}
+
+/* ===== NAV DOTS ===== */
+.nav-dots {
+    position: fixed;
+    right: clamp(0.8rem, 2vw, 1.8rem);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4px, 0.6vh, 8px);
+    z-index: 900;
+}
+.nav-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink-faint);
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.3s var(--ease), border-color 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.nav-dot.active {
+    background: var(--red-pen);
+    border-color: var(--red-pen);
+    transform: scale(1.35);
+}
+
+/* ===== ANIMATION PRIMITIVES ===== */
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-28px);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.reveal-right {
+    opacity: 0;
+    transform: translateX(28px);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.reveal-scale {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.reveal-stamp {
+    opacity: 0;
+    transform: scale(1.4) rotate(-8deg);
+    transition: opacity 0.4s var(--ease-sharp), transform 0.4s var(--ease-sharp);
+}
+
+.slide.visible .reveal,
+.slide.visible .reveal-left,
+.slide.visible .reveal-right,
+.slide.visible .reveal-scale,
+.slide.visible .reveal-stamp { opacity: 1; transform: none; }
+
+/* Stagger delays */
+.d-1 { transition-delay: 0.08s; }
+.d-2 { transition-delay: 0.18s; }
+.d-3 { transition-delay: 0.28s; }
+.d-4 { transition-delay: 0.38s; }
+.d-5 { transition-delay: 0.48s; }
+.d-6 { transition-delay: 0.58s; }
+.d-7 { transition-delay: 0.68s; }
+.d-8 { transition-delay: 0.78s; }
+
+/* ===== ANNOTATION COMPONENTS ===== */
+
+/* Red pen underline */
+.underline-red {
+    text-decoration: underline;
+    text-decoration-color: var(--red-pen);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+}
+
+/* Red-pen callout margin note */
+.margin-note {
+    position: absolute;
+    left: clamp(0.4rem, 3.5vw, 2.5rem);
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--red-pen);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+/* VERDICT stamp */
+.verdict {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1rem, 2.5vw, 1.8rem);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--red-pen);
+    border: 3px solid var(--red-pen);
+    padding: 0.2em 0.55em;
+    border-radius: 3px;
+    transform: rotate(-3deg);
+    opacity: 0.9;
+    line-height: 1.1;
+}
+
+/* Annotation bracket */
+.bracket-note {
+    display: flex;
+    gap: clamp(0.5rem, 1.2vw, 1rem);
+    align-items: flex-start;
+}
+.bracket-note::before {
+    content: "";
+    flex-shrink: 0;
+    width: 3px;
+    align-self: stretch;
+    background: var(--red-pen);
+    border-radius: 2px;
+    margin-top: 3px;
+}
+
+/* Page header rule */
+.page-rule {
+    width: 100%;
+    height: 2px;
+    background: var(--ink);
+    margin-bottom: clamp(0.8rem, 1.5vh, 1.5rem);
+}
+
+/* Thin rule */
+.thin-rule {
+    width: 100%;
+    height: 1px;
+    background: var(--rule);
+    margin: clamp(0.5rem, 1vh, 1rem) 0;
+}
+
+/* ===== SLIDE-SPECIFIC COMPONENTS ===== */
+
+/* Cover */
+.cover-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--title-size);
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    max-width: 18ch;
+}
+.cover-title em {
+    font-style: italic;
+    color: var(--red-pen);
+}
+.cover-eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--navy);
+    margin-bottom: clamp(0.8rem, 2vh, 1.5rem);
+}
+.cover-sub {
+    font-family: var(--font-body);
+    font-size: var(--body-size);
+    color: var(--ink-soft);
+    max-width: 52ch;
+    margin-top: clamp(0.8rem, 2vh, 1.5rem);
+    font-style: italic;
+    line-height: 1.55;
+}
+.cover-meta {
+    margin-top: clamp(1rem, 2.5vh, 2rem);
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    display: flex;
+    gap: clamp(1rem, 3vw, 2.5rem);
+    flex-wrap: wrap;
+}
+.cover-meta span { color: var(--navy); }
+
+/* Large quote slide */
+.pull-quote {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--h2-size);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+}
+.pull-quote em { font-style: italic; color: var(--red-pen); }
+.pull-quote strong { font-weight: 700; }
+.quote-attr {
+    font-family: var(--font-mono);
+    font-size: var(--mono-size);
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    margin-top: clamp(0.8rem, 2vh, 1.5rem);
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+}
+.quote-attr::before {
+    content: "";
+    width: 28px; height: 1.5px;
+    background: var(--ink-faint);
+}
+
+/* Section header */
+.section-tag {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--red-pen);
+    margin-bottom: clamp(0.4rem, 1vh, 0.8rem);
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+}
+.section-tag::before {
+    content: "§";
+    font-size: 1.1em;
+}
+
+.slide-h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--h2-size);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+}
+.slide-h2 em { font-style: italic; color: var(--red-pen); }
+
+.slide-h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--h3-size);
+    line-height: 1.2;
+    color: var(--ink);
+}
+
+/* Stat slab */
+.stat-slab {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1em;
+}
+.stat-slab .stat-figure {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--huge-size);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--navy);
+}
+.stat-slab .stat-label {
+    font-family: var(--font-mono);
+    font-size: var(--mono-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+}
+
+/* Two column layout */
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    align-items: start;
+}
+.two-col.unequal {
+    grid-template-columns: 3fr 2fr;
+}
+
+/* List items */
+.anno-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 1.2vh, 1rem);
+}
+.anno-list li {
+    display: flex;
+    gap: 0.8em;
+    align-items: flex-start;
+    font-size: var(--body-size);
+    color: var(--ink-soft);
+    line-height: 1.5;
+}
+.anno-list li::before {
+    content: "→";
+    color: var(--red-pen);
+    font-family: var(--font-mono);
+    font-size: var(--mono-size);
+    flex-shrink: 0;
+    margin-top: 0.2em;
+}
+.anno-list li strong { color: var(--ink); font-weight: 600; }
+
+/* Numbered list */
+.num-list {
+    list-style: none;
+    counter-reset: num-list;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 1.2vh, 1rem);
+}
+.num-list li {
+    counter-increment: num-list;
+    display: flex;
+    gap: 0.9em;
+    align-items: flex-start;
+    font-size: var(--body-size);
+    color: var(--ink-soft);
+    line-height: 1.5;
+}
+.num-list li::before {
+    content: counter(num-list, decimal-leading-zero) ".";
+    color: var(--navy);
+    font-family: var(--font-mono);
+    font-size: var(--mono-size);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 0.2em;
+    min-width: 2.5ch;
+}
+.num-list li strong { color: var(--ink); font-weight: 600; }
+
+/* Comparison rows */
+.compare-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: clamp(0.4rem, 1vw, 0.8rem) clamp(1rem, 3vw, 2.5rem);
+    align-items: center;
+}
+.compare-grid .col-head {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    padding-bottom: 0.5em;
+    border-bottom: 1.5px solid var(--rule);
+}
+.compare-grid .col-head.left { color: var(--navy); }
+.compare-grid .col-head.right { color: var(--red-pen); text-align: right; }
+.compare-grid .divider-head {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--ink-faint);
+    text-align: center;
+    padding-bottom: 0.5em;
+    border-bottom: 1.5px solid var(--rule);
+}
+.compare-grid .left-item {
+    font-size: var(--body-size);
+    color: var(--ink-soft);
+    line-height: 1.4;
+}
+.compare-grid .right-item {
+    font-size: var(--body-size);
+    color: var(--ink-soft);
+    line-height: 1.4;
+    text-align: right;
+}
+.compare-grid .divider {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--rule);
+}
+
+/* Definition card */
+.def-card {
+    background: var(--pad-deep);
+    border-left: 4px solid var(--navy);
+    padding: clamp(0.8rem, 2vw, 1.5rem) clamp(1rem, 2.5vw, 2rem);
+}
+.def-card .def-term {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--h3-size);
+    color: var(--navy);
+    margin-bottom: 0.4em;
+}
+.def-card .def-body {
+    font-size: var(--body-size);
+    color: var(--ink-soft);
+    line-height: 1.55;
+}
+
+/* Red-pen highlight box */
+.red-box {
+    background: var(--red-pen-soft);
+    border: 1.5px solid rgba(192,33,42,0.3);
+    padding: clamp(0.7rem, 1.8vw, 1.4rem) clamp(0.9rem, 2.2vw, 1.8rem);
+}
+.red-box p {
+    font-family: var(--font-display);
+    font-size: var(--h3-size);
+    font-style: italic;
+    color: var(--red-pen);
+    line-height: 1.35;
+}
+
+/* Navy box */
+.navy-box {
+    background: var(--navy-soft);
+    border-left: 4px solid var(--navy);
+    padding: clamp(0.7rem, 1.8vw, 1.4rem) clamp(0.9rem, 2.2vw, 1.8rem);
+}
+.navy-box p {
+    font-size: var(--body-size);
+    color: var(--ink-soft);
+    line-height: 1.55;
+}
+.navy-box p strong { color: var(--ink); font-weight: 600; }
+
+/* Barrel diagram */
+.barrel-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.3rem, 0.8vh, 0.6rem);
+}
+.barrel-row {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 1.5vw, 1.2rem);
+}
+.barrel-label {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-faint);
+    min-width: 8ch;
+    text-align: right;
+    flex-shrink: 0;
+}
+.barrel-track {
+    flex: 1;
+    height: clamp(12px, 2.2vh, 20px);
+    background: var(--pad-deep);
+    border: 1px solid var(--rule);
+    position: relative;
+    overflow: hidden;
+}
+.barrel-fill {
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    background: var(--navy);
+    transition: width 1s var(--ease) 0.5s;
+}
+.barrel-fill.red { background: var(--red-pen); }
+.slide:not(.visible) .barrel-fill { width: 0 !important; }
+.barrel-count {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--navy);
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* Timeline */
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.timeline-item {
+    display: grid;
+    grid-template-columns: auto 1px 1fr;
+    gap: 0 clamp(0.8rem, 2vw, 1.5rem);
+    min-height: clamp(2.5rem, 6vh, 4rem);
+}
+.timeline-item:last-child .timeline-line { display: none; }
+.timeline-date {
+    font-family: var(--font-mono);
+    font-size: var(--mono-size);
+    color: var(--red-pen);
+    font-weight: 700;
+    text-align: right;
+    padding-top: 0.2em;
+    min-width: 6ch;
+}
+.timeline-line {
+    background: var(--rule);
+    width: 1px;
+    height: 100%;
+    position: relative;
+}
+.timeline-line::before {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--navy);
+    border: 2px solid var(--pad);
+}
+.timeline-body {
+    padding: 0.1em 0 clamp(0.5rem, 1.5vh, 1rem);
+}
+.timeline-body .t-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--body-size);
+    color: var(--ink);
+    line-height: 1.3;
+}
+.timeline-body .t-desc {
+    font-size: var(--small-size);
+    color: var(--ink-soft);
+    line-height: 1.45;
+    margin-top: 0.15em;
+}
+
+/* Keyword grid */
+.kw-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
+    gap: clamp(0.5rem, 1.2vw, 1rem);
+}
+.kw-item {
+    background: var(--pad-deep);
+    border: 1px solid var(--rule);
+    padding: clamp(0.5rem, 1.2vw, 1rem) clamp(0.7rem, 1.5vw, 1.2rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+}
+.kw-item .kw-label {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--navy);
+    font-weight: 700;
+}
+.kw-item .kw-body {
+    font-size: var(--small-size);
+    color: var(--ink-soft);
+    line-height: 1.45;
+}
+
+/* Three-card row */
+.card-trio {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(0.7rem, 1.5vw, 1.2rem);
+}
+.trio-card {
+    background: var(--pad-deep);
+    border-top: 3px solid var(--rule);
+    padding: clamp(0.7rem, 1.8vw, 1.4rem) clamp(0.8rem, 2vw, 1.6rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+.trio-card.navy-top { border-top-color: var(--navy); }
+.trio-card.red-top { border-top-color: var(--red-pen); }
+.trio-card.gold-top { border-top-color: var(--gold); }
+.trio-card .trio-label {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--ink-faint);
+}
+.trio-card .trio-head {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--h3-size);
+    color: var(--ink);
+    line-height: 1.15;
+}
+.trio-card .trio-body {
+    font-size: var(--small-size);
+    color: var(--ink-soft);
+    line-height: 1.5;
+}
+
+/* Full red-card accent slide */
+.red-cover {
+    background: var(--red-pen) !important;
+}
+.red-cover .folio { color: rgba(255,255,255,0.6); }
+.red-cover .folio .slide-num { color: #fff; }
+.red-cover .ruled-bg::before {
+    background-image: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent calc(var(--rule-h, 2.4rem) - 1px),
+        rgba(255,255,255,0.08) calc(var(--rule-h, 2.4rem) - 1px),
+        rgba(255,255,255,0.08) var(--rule-h, 2.4rem)
+    );
+}
+.red-cover .ruled-bg::after { background: rgba(255,255,255,0.2); }
+.red-cover .pull-quote { color: #fff; }
+.red-cover .pull-quote em { color: #ffd400; font-style: italic; }
+.red-cover .quote-attr { color: rgba(255,255,255,0.6); }
+.red-cover .quote-attr::before { background: rgba(255,255,255,0.4); }
+
+/* Navy cover */
+.navy-cover {
+    background: var(--navy) !important;
+}
+.navy-cover .folio { color: rgba(255,255,255,0.5); }
+.navy-cover .folio .series { color: #ffd400; }
+.navy-cover .folio .slide-num { color: #fff; }
+.navy-cover .ruled-bg::before {
+    background-image: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent calc(var(--rule-h, 2.4rem) - 1px),
+        rgba(255,255,255,0.07) calc(var(--rule-h, 2.4rem) - 1px),
+        rgba(255,255,255,0.07) var(--rule-h, 2.4rem)
+    );
+}
+.navy-cover .ruled-bg::after { background: rgba(255,220,0,0.3); }
+.navy-cover .cover-title { color: #fff; }
+.navy-cover .cover-eyebrow { color: #ffd400; }
+.navy-cover .cover-sub { color: rgba(255,255,255,0.7); }
+.navy-cover .cover-meta { color: rgba(255,255,255,0.5); }
+.navy-cover .cover-meta span { color: #ffd400; }
+.navy-cover .page-rule { background: rgba(255,255,255,0.25); }
+
+/* Closing takeaway cards */
+.takeaway-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(0.7rem, 1.5vw, 1.2rem);
+    margin-top: clamp(0.8rem, 2vh, 1.5rem);
+}
+.takeaway-card {
+    background: var(--pad-deep);
+    border: 1px solid var(--rule);
+    padding: clamp(0.8rem, 2vw, 1.5rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    position: relative;
+}
+.takeaway-card .t-num {
+    font-family: var(--font-mono);
+    font-size: var(--label-size);
+    color: var(--red-pen);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+}
+.takeaway-card .t-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--h3-size);
+    color: var(--ink);
+    line-height: 1.2;
+}
+.takeaway-card .t-body {
+    font-size: var(--small-size);
+    color: var(--ink-soft);
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-height: 700px) {
+    :root {
+        --slide-pad: clamp(1rem, 3vw, 2.5rem);
+        --gap: clamp(0.4rem, 1vh, 0.8rem);
+    }
+    .two-col, .compare-grid, .card-trio, .takeaway-grid {
+        gap: clamp(0.5rem, 1.2vw, 1rem);
+    }
+}
+@media (max-height: 600px) {
+    .cover-title { font-size: clamp(1.8rem, 5vw, 3.5rem); }
+    .pull-quote { font-size: clamp(1.2rem, 3vw, 2rem); }
+    .slide-h2 { font-size: clamp(1.2rem, 3vw, 2rem); }
+    .stat-slab .stat-figure { font-size: clamp(2.5rem, 7vw, 5rem); }
+    .barrel-track { height: clamp(10px, 1.5vh, 14px); }
+}
+@media (max-height: 500px) {
+    .folio { display: none; }
+    .two-col { grid-template-columns: 1fr; gap: 0.5rem; }
+    .card-trio, .takeaway-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+    .two-col, .two-col.unequal { grid-template-columns: 1fr; }
+    .compare-grid { grid-template-columns: 1fr 1fr; }
+    .compare-grid .divider-head, .compare-grid .divider { display: none; }
+    .card-trio, .takeaway-grid { grid-template-columns: 1fr; }
+    .kw-grid { grid-template-columns: 1fr 1fr; }
+    .nav-dots { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-stamp {
+        opacity: 1; transform: none; transition: none;
+    }
+    .barrel-fill { transition: none; }
+    .progress-bar { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Nav dots -->
+<div class="nav-dots" id="navDots"></div>
+
+<!-- ========================================================
+     SLIDE 01 — COVER
+     ======================================================== -->
+<section class="slide navy-cover" id="slide-1">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">01 / 30</span>
+    </div>
+    <div class="slide-content" style="justify-content: flex-start; padding-top: clamp(2.5rem, 8vh, 5rem);">
+        <div class="cover-eyebrow reveal d-1">Lenny's Podcast · Operator's Archive</div>
+        <div class="page-rule reveal d-2" style="max-width: 120px; margin-bottom: clamp(1rem, 2.5vh, 2rem);"></div>
+        <h1 class="cover-title reveal d-3">Hard <em>truths</em> about building in the AI era.</h1>
+        <p class="cover-sub reveal d-4">Keith Rabois — PayPal mafia, COO Square, early investor in Stripe, Airbnb, DoorDash, Ramp — on talent density, barrels vs. ammunition, and the counterintuitive operating principles most founders never say out loud.</p>
+        <div class="cover-meta reveal d-5">
+            <span>30 slides</span>
+            <span>Team &amp; Talent</span>
+            <span>Lenny's Podcast <span>2025</span></span>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 02 — OPENING FACT: iPad ONLY since 2010
+     ======================================================== -->
+<section class="slide" id="slide-2">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">02 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Prologue</div>
+        <div class="two-col unequal" style="align-items: center; gap: clamp(1.5rem, 5vw, 4rem);">
+            <div>
+                <div class="stat-slab reveal d-2">
+                    <span class="stat-figure">2010</span>
+                    <span class="stat-label">The year Keith stopped using a computer</span>
+                </div>
+                <div class="thin-rule reveal d-3"></div>
+                <p class="reveal d-4" style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; font-style: italic;">
+                    "When I started working at Square, Jack Dorsey was running the company off an iPad. I immediately converted in September 2010 and haven't looked back."
+                </p>
+                <div class="quote-attr reveal d-5">Keith Rabois</div>
+            </div>
+            <div class="reveal-right d-3" style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="def-card">
+                    <div class="def-term">Everything on iPad</div>
+                    <div class="def-body">Phone, watch, and iPad only. No laptop. No exceptions since September 2010 — over 14 years.</div>
+                </div>
+                <div class="bracket-note reveal d-5">
+                    <p style="font-size: var(--small-size); color: var(--ink-soft); font-style: italic;">Keith's point: engineers are now coding from their phones with AI. He's been preparing for this for a decade and a half.</p>
+                </div>
+                <div class="reveal d-6" style="display: flex; align-items: center; gap: 1rem;">
+                    <div class="verdict" style="font-size: var(--label-size);">Ahead of the curve</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 03 — THE AXIOM: "Team you build IS the company"
+     ======================================================== -->
+<section class="slide" id="slide-3">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">03 / 30</span>
+    </div>
+    <div class="slide-content" style="justify-content: center;">
+        <div class="section-tag reveal d-1">First Principles</div>
+        <div class="pull-quote reveal d-2" style="max-width: 22ch;">
+            The team you build <em>is</em> the company you build.
+        </div>
+        <div class="quote-attr reveal d-3">Vinod Khosla → Keith Rabois → every founder who listened</div>
+        <div class="thin-rule reveal d-4"></div>
+        <div class="two-col reveal d-5" style="gap: clamp(1rem, 3vw, 2.5rem); align-items: start;">
+            <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55;">People get distracted by market, customers, product, technology. Ultimately it's a team. Right people → everything else becomes easy. Wrong people → everything else becomes hard.</p>
+            <div class="red-box">
+                <p>If a founder shows the ability early in her career to assess talent ruthlessly and accurately, she can go very far with <strong>no other abilities whatsoever.</strong></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 04 — THE PAYPAL ORIGIN: Why density matters
+     ======================================================== -->
+<section class="slide" id="slide-4">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">04 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Origin Story</div>
+        <h2 class="slide-h2 reveal d-2">Why was PayPal the<br><em>generator of generations?</em></h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.2rem, 3vw, 2.5rem);">
+            <div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; margin-bottom: var(--gap);">Peter Thiel and Max Levchin marshalled an incredible density of talent at PayPal — ~254 people in Mountain View when acquired. Within that, 12–17 people who would go on to build Palantir, Tesla, YouTube, LinkedIn, Yelp, and dozens more.</p>
+                <div class="navy-box">
+                    <p>Their recruiting model: <strong>first- or second-degree connections only.</strong> Not scalable for everyone — but if your network has unique talent, there's no substitute for referral density.</p>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="kw-item reveal d-5">
+                    <div class="kw-label">Lesson 1</div>
+                    <div class="kw-body">Keith was mediocre at hiring strangers early on. He succeeded by <em>recruiting internally</em> — finding undertapped people already in the building.</div>
+                </div>
+                <div class="kw-item reveal d-6">
+                    <div class="kw-label">Lesson 2</div>
+                    <div class="kw-body">He could identify talent in people he'd worked alongside — but not in 30-minute interviews with strangers. That took years of training.</div>
+                </div>
+                <div class="kw-item reveal d-7">
+                    <div class="kw-label">1 + 1 = 3</div>
+                    <div class="kw-body">David Sacks's rule: for every incremental hire you must show <em>disproportionate, nonlinear returns.</em> Otherwise you have no leadership leverage.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 05 — HIRING IS A MUSCLE
+     ======================================================== -->
+<section class="slide" id="slide-5">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">05 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">How to Get Better</div>
+        <h2 class="slide-h2 reveal d-2">Hiring is a <em>muscle.</em><br>You need to exercise it.</h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.2rem, 3vw, 2.5rem);">
+            <ul class="anno-list">
+                <li><strong>Relentless referencing.</strong> Tony at DoorDash does 20 references on every senior hire. 20. It's tedious and it works.</li>
+                <li><strong>Ask the right question.</strong> Not "Was Max a good employee?" — that gets a mixed answer. Ask: "Is Max capable of being a world-class entrepreneur?" Completely different signal.</li>
+                <li><strong>30-day loop.</strong> Ask yourself 30 days after every hire: "Would I make this decision again?" Research shows this is as predictive as waiting a full year.</li>
+                <li><strong>Reference arc.</strong> Ask referees: "What would lead to this person's greatest success? And if something went wrong, what would be the primary root cause?" Two arcs. Enormous insight.</li>
+            </ul>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="def-card reveal d-5">
+                    <div class="def-term">The Senior Interview Question</div>
+                    <div class="def-body">"If you were CEO of [their company], what would you have done differently?"<br><br>Follow-up gold: "Why weren't you able to persuade [CEO] to do it?"<br><br>Tests strategic mindset and internal influence simultaneously.</div>
+                </div>
+                <div class="reveal d-6">
+                    <div class="verdict" style="font-size: var(--small-size); transform: rotate(-2deg);">Top-10 basis points can't be taught — only exercised</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 06 — BARRELS & AMMUNITION (intro)
+     ======================================================== -->
+<section class="slide" id="slide-6">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">06 / 30</span>
+    </div>
+    <div class="slide-content" style="justify-content: center;">
+        <div class="section-tag reveal d-1">The Framework</div>
+        <div class="pull-quote reveal d-2" style="max-width: 26ch;">
+            Hiring more people without adding <em>barrels</em> just stacks people behind the same initiatives.
+        </div>
+        <div class="quote-attr reveal d-3">Keith Rabois — the diagnosis behind every CEO's "we hired a lot but get less done" complaint</div>
+        <div class="thin-rule reveal d-4"></div>
+        <div class="two-col reveal d-5" style="align-items: start; gap: clamp(1.2rem, 3vw, 2.5rem);">
+            <div class="def-card">
+                <div class="def-term">Barrels</div>
+                <div class="def-body">People who can independently drive an initiative from inception to success. They accumulate resources, motivate people, measure impact, and deliver. Fire and forget.</div>
+            </div>
+            <div class="def-card">
+                <div class="def-term">Ammunition</div>
+                <div class="def-body">Everyone else — skilled contributors who execute inside an initiative someone else is driving. Valuable. Not the bottleneck. Adding more doesn't create new tracks.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 07 — BARRELS: THE NUMBERS
+     ======================================================== -->
+<section class="slide" id="slide-7">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">07 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Barrels / The Numbers</div>
+        <h2 class="slide-h2 reveal d-2">Your parallel initiative capacity = <em>your barrel count.</em></h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="barrel-diagram reveal d-4" style="margin-bottom: var(--gap);">
+            <div class="barrel-row">
+                <span class="barrel-label">PayPal</span>
+                <div class="barrel-track">
+                    <div class="barrel-fill" style="width: 85%;"></div>
+                </div>
+                <span class="barrel-count">12–17 barrels / 254 people</span>
+            </div>
+            <div class="barrel-row">
+                <span class="barrel-label">OpenAI</span>
+                <div class="barrel-track">
+                    <div class="barrel-fill" style="width: 15%;"></div>
+                </div>
+                <span class="barrel-count">~2 barrels (Sam Altman's estimate)</span>
+            </div>
+            <div class="barrel-row">
+                <span class="barrel-label">Typical</span>
+                <div class="barrel-track">
+                    <div class="barrel-fill red" style="width: 10%;"></div>
+                </div>
+                <span class="barrel-count" style="color: var(--red-pen);">1–3 at most companies</span>
+            </div>
+        </div>
+        <div class="navy-box reveal d-5" style="margin-bottom: var(--gap);">
+            <p><strong>The math:</strong> 15 barrels = 15 things you can do simultaneously. Hiring 50 more people without finding new barrels? You still have 15 parallel tracks. You just added coordination tax and drag coefficient.</p>
+        </div>
+        <div class="bracket-note reveal d-6">
+            <p style="font-size: var(--small-size); color: var(--ink-soft);">The ratio of barrels to ammunition is what dictates the number of important initiatives that can be pursued simultaneously. If you need to do more, you need <em>more barrels</em> — not more headcount.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 08 — WHAT MAKES SOMEONE A BARREL?
+     ======================================================== -->
+<section class="slide" id="slide-8">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">08 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Identifying Barrels</div>
+        <h2 class="slide-h2 reveal d-2">Can they take <em>that hill?</em></h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; margin-bottom: var(--gap);">"There's a hill over there. We're going up that hill. One way or another, they will motivate people, accumulate resources, measure what they need, and get your company across that hill. That's a barrel. Anything less is not a barrel."</p>
+                <ul class="anno-list">
+                    <li><strong>Agency</strong> over their domain — they own the outcome, not the process</li>
+                    <li><strong>Proactive communication</strong> — returns with issues identified, root causes diagnosed, attempts already made, and sufficient time for you to help</li>
+                    <li><strong>Scope expansion</strong> — can handle progressively harder problems as trust accumulates</li>
+                    <li><strong>The smoothie test</strong> — Taylor Francis, intern, day 2: Keith couldn't get cold smoothies delivered at 9pm for months. Taylor solved it in a day. "I found a barrel."</li>
+                </ul>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="red-box reveal d-5">
+                    <p>Most people hearing this assume they are barrels. Most people are wrong.</p>
+                </div>
+                <div class="def-card reveal d-6">
+                    <div class="def-term">Fire &amp; Forget</div>
+                    <div class="def-body">A true barrel takes something off your plate completely. The outcome can be narrow at first — the scope expands as trust compounds. What never varies: they will deliver.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 09 — UNDISCOVERED TALENT
+     ======================================================== -->
+<section class="slide" id="slide-9">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">09 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">The Strategy</div>
+        <h2 class="slide-h2 reveal d-2">Build your company on <em>undiscovered</em> talent.</h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; margin-bottom: var(--gap);">Peter Thiel taught Keith this on day one: the way to build a company against large incumbents with infinite money is to find people the black-box machine mis-processes. That's been Keith's crusade for 25 years.</p>
+                <div class="navy-box" style="margin-bottom: var(--gap);">
+                    <p><strong>The salary cap analogy:</strong> As a startup, you have one-tenth the salary cap of your competitors. Competing for the same proven talent is a losing game. Find the alpha elsewhere.</p>
+                </div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55;">The secret: understand <em>why</em> a large company's evaluation process will fail this person. If you can isolate the mis-processing reason, you've found your edge.</p>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="kw-item reveal d-5">
+                    <div class="kw-label">Why younger skews work</div>
+                    <div class="kw-body">Not because you need young people — but because they have less data. By 30+, you're a known quantity. Less data = harder for homogeneous evaluation machines to process = more alpha.</div>
+                </div>
+                <div class="kw-item reveal d-6">
+                    <div class="kw-label">The credit score analogy</div>
+                    <div class="kw-body">Employment evaluation works like FICO. By 35, there are so many data points that the system processes you like everyone else. No data points = system fails = opportunity.</div>
+                </div>
+                <div class="kw-item reveal d-7">
+                    <div class="kw-label">The key question</div>
+                    <div class="kw-body">"What would Meta/Google miss about this person, and why?" That gap is your hiring edge.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 10 — ATTRACTING TALENT: The pitch that works
+     ======================================================== -->
+<section class="slide" id="slide-10">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">10 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Attraction</div>
+        <h2 class="slide-h2 reveal d-2">The pitch that <em>actually</em> works for proven talent.</h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; margin-bottom: var(--gap);">Mission and vision are table stakes. What actually moves great talent is more specific: convincing them that their particular skill is the critical blocker to the company's current success. They're not joining a company — they're betting on themselves.</p>
+                <div class="red-box" style="margin-bottom: var(--gap);">
+                    <p>This is how Keith ended up at Square in 2010 — "There are only two or three people in the world who know both financial services and the startup world. You're one of them." He left Google after two weeks.</p>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="def-card reveal d-5">
+                    <div class="def-term">The Frame</div>
+                    <div class="def-body">"Not only is this a great company building something cool — your specific ability is uniquely differentiated, and <em>you</em> can solve this blocker." Impact + ego + betting on yourself.</div>
+                </div>
+                <div class="bracket-note reveal d-6">
+                    <p style="font-size: var(--small-size); color: var(--ink-soft);">This also explains why companies developing talent internally beat those hiring "senior experienced" people. Internal builders are betting on themselves; external senior hires are value-preserving.</p>
+                </div>
+                <div class="reveal d-7" style="font-family: var(--font-mono); font-size: var(--label-size); color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.14em;">Value Creation vs. Value Preservation → hire for the former, always.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 11 — PRESSURE: The relentless application of force
+     ======================================================== -->
+<section class="slide" id="slide-11">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">11 / 30</span>
+    </div>
+    <div class="slide-content" style="justify-content: center;">
+        <div class="section-tag reveal d-1">Operating Principle</div>
+        <div class="pull-quote reveal d-2" style="max-width: 28ch;">
+            The single role of the CEO is offsetting complacency. The better you're doing, <em>the more you should push.</em>
+        </div>
+        <div class="quote-attr reveal d-3">Keith Rabois — channeling Mike Mortiz's "relentless application of force"</div>
+        <div class="thin-rule reveal d-4"></div>
+        <div class="two-col reveal d-5" style="align-items: start; gap: clamp(1.2rem, 3vw, 2.5rem);">
+            <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55;">The more success you have, the more complacent the organization tends to get. And unless you've built a true network effect, you cannot afford to coast. When a company is struggling, be supportive. When a company is thriving, be critical — isolate the problems that will become critical while everyone is borderline complacent.</p>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="red-box">
+                    <p>Really talented people are like superb athletes. When things are going well and people are coasting, <strong>they're not happy.</strong> Morale actually goes down for the best people when things are skating.</p>
+                </div>
+                <div class="bracket-note">
+                    <p style="font-size: var(--small-size); color: var(--ink-soft);">Lenny confirmed this with Brian Chesky: "When we had little breaks, morale went down. People didn't know what they were working on." Pressure is a feature, not a bug, for elite talent.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 12 — NO DAYS OFF
+     ======================================================== -->
+<section class="slide" id="slide-12">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">12 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Life Mantra</div>
+        <div class="two-col reveal d-2" style="align-items: center; gap: clamp(1.5rem, 5vw, 4rem);">
+            <div>
+                <div class="stat-slab">
+                    <span class="stat-figure" style="color: var(--red-pen);">7</span>
+                    <span class="stat-label">Missed workouts in 7 years (still annoyed about half of them)</span>
+                </div>
+                <div class="thin-rule" style="margin: var(--gap) 0;"></div>
+                <div class="pull-quote" style="font-size: var(--h3-size); max-width: 28ch; color: var(--ink);">
+                    "No days off" is a proxy for: <em>I don't believe in excuses.</em>
+                </div>
+                <div class="quote-attr" style="margin-top: var(--gap);">Bill Belichick's Super Bowl chant → Keith's mantra</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="kw-item reveal d-4">
+                    <div class="kw-label">The logic</div>
+                    <div class="kw-body">Winning the Super Bowl resets to 0-0 the next day. Same with venture investing: "I'm only as good as my last investment. I've had 13 years of pretty good returns. I still have to wake up every day and find the next undiscovered founder."</div>
+                </div>
+                <div class="kw-item reveal d-5">
+                    <div class="kw-label">Why elite talent needs it</div>
+                    <div class="kw-body">The Upside of Stress (Kelly McGonigal, Stanford): if you want to be happy, healthy, or wealthy, you need <em>more</em> stress in your life, not less. The evidence, Keith says, is "effectively uncriticable."</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 13 — CONTRARIAN TAKE #1: Customers
+     ======================================================== -->
+<section class="slide red-cover" id="slide-13">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">13 / 30</span>
+    </div>
+    <div class="slide-content" style="justify-content: center;">
+        <div class="pull-quote reveal d-1" style="max-width: 24ch;">
+            I hate talking to customers.<br>I <em>refuse to allow</em> colleagues of mine to talk to customers.
+        </div>
+        <div class="quote-attr reveal d-2">Keith Rabois — for consumer and SMB products</div>
+        <div class="thin-rule reveal d-3" style="border-top: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.2);"></div>
+        <p class="reveal d-4" style="font-size: var(--body-size); color: rgba(255,255,255,0.8); line-height: 1.55; max-width: 62ch; font-style: italic;">Consumer behavior is subconscious. When you force a conscious answer to a subconscious decision, you get misleading information — even when the customer is trying to be honest. Ask someone why they bought a Porsche. They'll tell you every reason except the real one.</p>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 14 — CUSTOMERS: Why it's actively harmful
+     ======================================================== -->
+<section class="slide" id="slide-14">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">14 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Contrarian Take #1 / Unpacked</div>
+        <h2 class="slide-h2 reveal d-2">Customer feedback: <em>not just unhelpful —<br>actively harmful.</em></h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; margin-bottom: var(--gap);">The moment you hear "I talked to eight customers and…" in a meeting, even if they acknowledge it's not statistically representative, the data gets anchored in everyone's brain. Every subsequent decision is contaminated. It's extraordinarily difficult to dislodge.</p>
+                <ul class="anno-list">
+                    <li>In the real world, your product must cut through the clutter of daily life. An isolated customer interview is not a proxy for that.</li>
+                    <li>DoorDash wasn't discovered by asking people if they wanted a food delivery button. Tony and Evan walked in with one stat: 93% of US restaurants don't deliver.</li>
+                    <li>The right metric is selling tickets — optimize for CAC/LTV loops, not survey sentiment.</li>
+                </ul>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="def-card reveal d-5">
+                    <div class="def-term">When it DOES work</div>
+                    <div class="def-body">Enterprise with a defined set of must-win accounts. 30 accounts, 30 decision-makers, utilitarian decisions, real economic stakes. You can actually talk to all 30 and influence the CEO. That's valuable. <br><br>If you're targeting a billion people, you are not getting representative feedback.</div>
+                </div>
+                <div class="bracket-note reveal d-6">
+                    <p style="font-size: var(--small-size); color: var(--ink-soft);">"Everything important you need to learn about humans was written by Shakespeare. Just read Shakespeare. That's better than all the customer research."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 15 — CONTRARIAN #2: Criticism in public
+     ======================================================== -->
+<section class="slide" id="slide-15">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">15 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Contrarian Take #2</div>
+        <h2 class="slide-h2 reveal d-2">Criticize people <em>in public,</em><br>not in private.</h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; margin-bottom: var(--gap);">When you give negative feedback privately, you're optimizing for the atomic unit — not the system. The rest of the team sees the problem persisting and doesn't know it's being addressed. Their suspicions compound.</p>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; margin-bottom: var(--gap);">Public criticism lets colleagues: (a) see the issue is on the radar, (b) raise their hand to help, (c) learn what the bar actually is. It becomes a team-building exercise rather than individual shame.</p>
+                <div class="bracket-note">
+                    <p style="font-size: var(--small-size); color: var(--ink-soft);">The best sports coaches do a mix — but what they say in front of the team tends to matter more than the private sessions.</p>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="red-box reveal d-5">
+                    <p>High performance machines don't have psychological safety. They're about <strong>winning.</strong></p>
+                </div>
+                <div class="navy-box reveal d-6">
+                    <p>Recommended reading: <strong>The Jordan Rules.</strong> If you want to build like Michael Jordan, you have to act like Michael Jordan managed his teammates.</p>
+                </div>
+                <div class="reveal d-7" style="display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap;">
+                    <div class="verdict" style="font-size: var(--small-size); transform: rotate(-2deg);">Psych. safety negatively correlated with performance</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 16 — CMO AS #1 AI TOKEN CONSUMER
+     ======================================================== -->
+<section class="slide" id="slide-16">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">16 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">The AI Shift</div>
+        <h2 class="slide-h2 reveal d-2">The #1 AI token consumer in the best companies<br>isn't the CTO. <em>It's the CMO.</em></h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; margin-bottom: var(--gap);">At the most AI-forward companies Keith sits on the boards of, it isn't engineers leading AI adoption. It's the CMOs. They're intellectually curious, suddenly have tools to do things they always wanted, and don't need to rely on chains of deputies to produce real work product.</p>
+                <div class="navy-box">
+                    <p><strong>What they're building:</strong> analytics, campaigns, CEO-ready insights — shipping things or shipping drafts of things. They've become individual contributors again, at executive scale.</p>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="def-card reveal d-5">
+                    <div class="def-term">The future-proofing recipe</div>
+                    <div class="def-body">1. Be intellectually curious.<br>2. Learn new tools with your hands — don't delegate the learning.<br>3. Use AI to collapse the dependency chains between you and actual output.<br><br>You can work harder AND work smarter. But curiosity is the prerequisite.</div>
+                </div>
+                <div class="bracket-note reveal d-6">
+                    <p style="font-size: var(--small-size); color: var(--ink-soft);">Director of Engineering at Ramp ships as much code personally while managing a team of 20 as he did as an individual contributor — using AI as a second team of specialized contributors.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 17 — FUTURE OF THE PRODUCT TRIAD
+     ======================================================== -->
+<section class="slide" id="slide-17">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">17 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">The Triad in the AI Era</div>
+        <h2 class="slide-h2 reveal d-2">PM · Designer · Engineer — <em>all becoming the same role.</em></h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="card-trio reveal d-4">
+            <div class="trio-card navy-top">
+                <div class="trio-label">PM</div>
+                <div class="trio-head">The role is dying — or evolving into CEO</div>
+                <div class="trio-body">Sequential year-long roadmaps are incoherent. Things that were impossible in November are easy in March. What makes sense: a PM who can exploit new capabilities this week and ship next week. The skill is now: <em>what are we building and why?</em></div>
+            </div>
+            <div class="trio-card red-top">
+                <div class="trio-label">Engineer</div>
+                <div class="trio-head">Commercial instincts become the premium</div>
+                <div class="trio-body">The best engineers Keith has worked with always had commercial instincts — Max Levchin, Jeremy Stoppelman. At the age of AI, engineers who understand business won't need large teams. They'll marshal AI as a second team.</div>
+            </div>
+            <div class="trio-card gold-top">
+                <div class="trio-label">Designer</div>
+                <div class="trio-head">Design + code are merging — alpha in storytelling</div>
+                <div class="trio-body">The number of open design roles has plateaued for 3 years. But the <em>alpha</em> is in design: cutting through the clutter with the right frame is the NP-hard problem. Shopify already requires all product presentations as working demos, not slides.</div>
+            </div>
+        </div>
+        <div class="bracket-note reveal d-5" style="margin-top: var(--gap);">
+            <p style="font-size: var(--small-size); color: var(--ink-soft);">All three roles are converging on the same core skill: <em>business acumen</em> — understanding the company's equation, where it's going, and being able to create things that move the needle individually.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 18 — THE PM OBITUARY
+     ======================================================== -->
+<section class="slide" id="slide-18">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">18 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">PM Role / Deep Dive</div>
+        <h2 class="slide-h2 reveal d-2">The idea of a PM <em>makes no sense</em> in the future.</h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; margin-bottom: var(--gap);">Decompose what a PM does: take inputs from customers, create a sequential organized roadmap for the next year. That world is — in Keith's word — "ridiculous." Foundation models improve so fast that a year-long roadmap is incoherent from day one.</p>
+                <ul class="anno-list">
+                    <li>Things impossible in November are easy in March. Plan accordingly.</li>
+                    <li>High-growth companies will notice something is now possible <em>this week</em> and ship new value for customers <em>next week.</em></li>
+                    <li>Intermediary PMs as translators/schedulers don't fit this tempo.</li>
+                </ul>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="red-box reveal d-5">
+                    <p>The surviving PM skill isn't roadmap management. It's <strong>being a mini-CEO: knowing what to build, why, and being able to ship it yourself.</strong></p>
+                </div>
+                <div class="def-card reveal d-6">
+                    <div class="def-term">Shopify's Rule (2 years running)</div>
+                    <div class="def-body">No PM presentations in PowerPoint or Keynote. Every product discussion must be a workable demo. Execs refuse to look at static "we're going to have this feature" slides. Everything must be working.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 19 — SPEED AS THE SIGNAL
+     ======================================================== -->
+<section class="slide" id="slide-19">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">19 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Operating Signal</div>
+        <h2 class="slide-h2 reveal d-2">The one thing world-class companies all share early: <em>tempo.</em></h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; margin-bottom: var(--gap);">Roloff Botha joined Square's board and six months in told Keith: "I haven't seen this kind of tempo since our PayPal days" — after 9 years as a VC. The signal: "At board meeting X, you identify an opportunity or problem. By the next board meeting, you've shipped solutions, addressed it, featured it. Constantly. Consistently."</p>
+                <div class="navy-box">
+                    <p><strong>Ramp on card shipping:</strong> Normally takes 9–12 months best case. Ramp was on the precipice in 3 months. Keith pre-empted the Series A after seeing that — before they'd shipped a single card.</p>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="kw-item reveal d-5">
+                    <div class="kw-label">The Ramp clock</div>
+                    <div class="kw-body">Days.ramp.com: the number of days since launch. Every board meeting opens with the counter. Not a metric they track — a value they embody.</div>
+                </div>
+                <div class="kw-item reveal d-6">
+                    <div class="kw-label">Fair's signal</div>
+                    <div class="kw-body">Keith's chief of staff: "If there's one company that would cause me to leave VC, it's Fair. By the next morning's meeting — not next board meeting — they've identified root causes, shipped solutions, and measured impact."</div>
+                </div>
+                <div class="kw-item reveal d-7">
+                    <div class="kw-label">The compounding effect</div>
+                    <div class="kw-body">Speed at this level compounds. The critical density of talent gets better. The DM improves. It becomes an accumulating advantage that's very hard to replicate.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 20 — THE INTERNALIST HIRING PHILOSOPHY
+     ======================================================== -->
+<section class="slide" id="slide-20">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">20 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Hiring Philosophy</div>
+        <h2 class="slide-h2 reveal d-2">The best companies skipped <em>senior external hires</em> and promoted from within.</h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; margin-bottom: var(--gap);">Ramp, Trade Republic, and most of Keith's highest-performing portfolio companies have a common thread: they essentially don't hire senior experienced people for most functions. They absorb ambitious younger talent and develop them rapidly through osmosis.</p>
+                <div class="red-box" style="margin-bottom: var(--gap);">
+                    <p>The chief of staff-to-senior-leader pipeline: CMO was last chief of staff. Head of product is current chief of staff. A factory that trains leaders through proximity to decision-making.</p>
+                </div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55;">Exception: roles that require value <em>preservation</em> (legal, compliance) may warrant experienced external hires. Value creation roles? Almost never.</p>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="def-card reveal d-5">
+                    <div class="def-term">Value Creation vs. Preservation</div>
+                    <div class="def-body">Hire experienced externals for value preservation. Grow internal talent for value creation. Most founders get this backwards — they hire senior VPs for the high-growth functions and develop internally only in operations and legal.</div>
+                </div>
+                <div class="bracket-note reveal d-6">
+                    <p style="font-size: var(--small-size); color: var(--ink-soft);">Why it works: internal talent bets on themselves, absorbs the company's specific context, and moves at the company's tempo — not a prior employer's. External senior hires often slow tempo while they calibrate.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 21 — AI CONTENT / HUMAN CONTENT
+     ======================================================== -->
+<section class="slide" id="slide-21">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">21 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">The Content Question</div>
+        <h2 class="slide-h2 reveal d-2">AI content surpassing human content<br>is <em>inevitable.</em></h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; margin-bottom: var(--gap);">In Chinese TikTok, it's all AI video now — and people actively enjoy it. Keith's prediction: content will sort into two poles. An algorithm pole (best content wins, AI or human irrelevant) and a curation pole (provenance premium, like owning a real Warhol vs. a high-fidelity replica).</p>
+                <div class="navy-box">
+                    <p><strong>The writing paradox:</strong> AI is called a "large language model" — trained entirely on text — yet AI-generated writing is the <em>least impressive</em> AI output. Keith's theory: token rationing forces compression that degrades long-form quality. Short, specific prompts produce dramatically better outputs.</p>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="def-card reveal d-5">
+                    <div class="def-term">The Brief-Writing Lesson</div>
+                    <div class="def-body">As a litigator, Keith would spend the first week of a 3-week brief just walking around thinking about the first paragraph. Once those three sentences clicked, he'd write 30 pages in 2 days.<br><br>AI writing works the same way: the frame still requires a human. Power-through works once you have it.</div>
+                </div>
+                <div class="bracket-note reveal d-6">
+                    <p style="font-size: var(--small-size); color: var(--ink-soft);">The alpha in marketing and design isn't the tools or the channels — it's the storytelling. "The proverbial thousand songs in your market" — only the person who finds the right frame is worth anything.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 22 — EVALUATING AI STARTUPS
+     ======================================================== -->
+<section class="slide" id="slide-22">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">22 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Investor Framework</div>
+        <h2 class="slide-h2 reveal d-2">The existential question for every AI startup <em>right now.</em></h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; margin-bottom: var(--gap);">To build a successful startup, you need to build for 8–20 years into the future. The rate of progress at multiple foundation labs simultaneously raises real questions about whether even thriving companies can sustain their position.</p>
+                <ul class="anno-list">
+                    <li><strong>Question 1:</strong> Are the foundation labs going to be so proficient there's no oxygen left? Can you survive the next decade of foundation model progress?</li>
+                    <li><strong>Question 2:</strong> What are the accumulating advantages? Over time, what makes this business better and better, easier and easier?</li>
+                    <li><strong>Doesn't need to be proven:</strong> Just articulated. Can the founder map when accumulating advantages would appear and how they'd leverage them?</li>
+                </ul>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="red-box reveal d-5">
+                    <p>Keith is a founder-driven investor. The only thing he cares about: <strong>"Does this founder have a non-zero chance of changing an industry or the world?"</strong> If yes — seed or Series A — he's in. No other questions needed.</p>
+                </div>
+                <div class="def-card reveal d-6">
+                    <div class="def-term">The Ugly Baby Signal</div>
+                    <div class="def-body">He wants half his VC friends to laugh at his investments. If they laugh, it means real alpha. Ugly babies with no obvious pedigree — Airbnb, Palantir, early OpenAI — are exactly where the extraordinary returns live.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 23 — RETROS ON FAILURE: The counterintuitive take
+     ======================================================== -->
+<section class="slide" id="slide-23">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">23 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Contrarian Take #3</div>
+        <h2 class="slide-h2 reveal d-2">Don't do post-mortems on failure<br>when the company is <em>doing great.</em></h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; margin-bottom: var(--gap);">In a recent board meeting, well-meaning board members proposed failure retrospectives. Keith pushed back: "If you overemphasize failures, people think they're going to get criticized. You deter people from taking ambitious shots on goal."</p>
+                <div class="navy-box" style="margin-bottom: var(--gap);">
+                    <p>You want people to be <strong>excited about raising their hands for very difficult problems.</strong> That's how you create value. Cataloguing failures systematically works against that instinct.</p>
+                </div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; font-style: italic;">This is where psychological safety has its one legitimate use: be bold, be ambitious, take the risk — don't worry about the failing unless there's a factual miss you demonstrably could have avoided.</p>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="bracket-note reveal d-5">
+                    <p style="font-size: var(--small-size); color: var(--ink-soft);">Keith's investing hit rate: 30–40% for early stage is "golden by definition." 60–70% failure rate is the baseline. Investors who can't absorb that stop taking the shots that produce the outliers.</p>
+                </div>
+                <div class="red-box reveal d-6">
+                    <p>"Let's just focus on winning."</p>
+                </div>
+                <div class="bracket-note reveal d-7">
+                    <p style="font-size: var(--small-size); color: var(--ink-soft);">The Jordan/Federer frame: Jordan missed 109 game-winning shots. Federer wins 60% of his points — loses 40%. The best accept failure as a tax on taking the shots, not as a curriculum to dissect.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 24 — THE LAWYER ORIGIN
+     ======================================================== -->
+<section class="slide" id="slide-24">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">24 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Biographical</div>
+        <h2 class="slide-h2 reveal d-2">What 4.5 years of law taught Keith<br>— and <em>what it didn't.</em></h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <div>
+                <div class="compare-grid">
+                    <span class="col-head left">Useful from law</span>
+                    <span class="divider-head">vs.</span>
+                    <span class="col-head right">Harmful for entrepreneurship</span>
+                    <span class="left-item">Legal risk assessment built into business decisions</span>
+                    <span class="divider">—</span>
+                    <span class="right-item">Issue spotting: identify everything that could go wrong</span>
+                    <span class="left-item">Edge in regulated industries (YouTube, fintech)</span>
+                    <span class="divider">—</span>
+                    <span class="right-item">Productivity measured by billable hours</span>
+                    <span class="left-item">Framing the first paragraph before writing the rest</span>
+                    <span class="divider">—</span>
+                    <span class="right-item">Lawyers learn to enumerate failure modes, not solve them</span>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="def-card reveal d-5">
+                    <div class="def-term">Peter Thiel's move</div>
+                    <div class="def-body">Peter quit law after 5 months and 4 days. David Sacks never even practiced. Keith says: "Maybe they were smarter than both of us." It took Keith a year and a half to stop tracking his time after joining tech.</div>
+                </div>
+                <div class="bracket-note reveal d-6">
+                    <p style="font-size: var(--small-size); color: var(--ink-soft);">The brief writing habit, though — spending a week on three sentences, then writing 30 pages in two days — that transfers directly. The frame is everything.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 25 — CONTRARIAN TAKES: PROVEN RIGHT
+     ======================================================== -->
+<section class="slide" id="slide-25">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">25 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Meta-Observation</div>
+        <div class="pull-quote reveal d-2" style="max-width: 28ch; margin-bottom: var(--gap);">
+            "I don't have as many contrarian takes these days — they've all been <em>proven right.</em>"
+        </div>
+        <div class="quote-attr reveal d-3">Keith Rabois — on the shelf-life of good ideas</div>
+        <div class="thin-rule reveal d-4"></div>
+        <div class="two-col reveal d-5" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55;">The natural arc of a great contrarian idea: start with a contrarian take → stick to it → the world comes around → it becomes consensus. Like Airbnb: started as a laughable idea, became how half the world books accommodation. You want the inflection where your contrarian idea becomes consensus. But you have to survive the laughing phase.</p>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="red-box">
+                    <p>Good contrarian ideas don't stay contrarian forever. That's the entire point. <strong>You're early, not wrong.</strong></p>
+                </div>
+                <div class="bracket-note">
+                    <p style="font-size: var(--small-size); color: var(--ink-soft);">This creates a refresh-rate problem: Keith now has to generate new contrarian takes to stay ahead. The current one he's watching: AI companies that look healthy in the short term but won't survive 8 years of foundation model progress.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 26 — THE TAYLOR SWIFT INSIGHT
+     ======================================================== -->
+<section class="slide" id="slide-26">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">26 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Counterintuitive / Creation</div>
+        <h2 class="slide-h2 reveal d-2">Why the most original work happens <em>without feedback.</em></h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <div>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55; margin-bottom: var(--gap);">Taylor Swift, in an acceptance speech Keith watched: she built her early craft in a room, alone, iterating without posting or sharing — thousands of hours. Her advice: find ways to not expose yourself to feedback for a long time. Today, that discipline is nearly impossible with social media.</p>
+                <p style="font-size: var(--body-size); color: var(--ink-soft); line-height: 1.55;">Artists who had early un-feedback-driven success often struggle to recreate it. Once they have an audience, they get trapped by the data. The first success wasn't data-driven — it resonated on its own terms. Subsequent work becomes derivative because it optimizes for the audience rather than the creator's instinct.</p>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="def-card reveal d-5">
+                    <div class="def-term">The Ugly Baby Parallel</div>
+                    <div class="def-body">Every great idea at Pixar starts as an "ugly baby" — nobody wants to engage with it, nurture it, pay attention to it. Same with startups. The Craigslist listing data that convinced Keith on Airbnb: 30 people in the Bay Area had already typed "I want to rent someone's bedroom." Tiny. But the conviction it created was enormous.</div>
+                </div>
+                <div class="bracket-note reveal d-6">
+                    <p style="font-size: var(--small-size); color: var(--ink-soft);">His investment heuristic: "If I want half my VC friends to laugh at me — I'm in a good place. That's where the real alpha lives."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 27 — KEITH'S CARRIER
+     ======================================================== -->
+<section class="slide" id="slide-27">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">27 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Track Record</div>
+        <h2 class="slide-h2 reveal d-2">The resume behind<br>the <em>hard truths.</em></h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="two-col reveal d-4" style="align-items: start; gap: clamp(1.5rem, 4vw, 3rem);">
+            <div class="timeline">
+                <div class="timeline-item reveal d-4">
+                    <span class="timeline-date">PayPal</span>
+                    <div class="timeline-line"></div>
+                    <div class="timeline-body">
+                        <div class="t-title">EVP Business Development &amp; Policy</div>
+                        <div class="t-desc">Early 2000s. PayPal Mafia founding member. Learned talent density from Peter Thiel and Max Levchin firsthand.</div>
+                    </div>
+                </div>
+                <div class="timeline-item reveal d-5">
+                    <span class="timeline-date">LinkedIn</span>
+                    <div class="timeline-line"></div>
+                    <div class="timeline-body">
+                        <div class="t-title">VP Corporate Development</div>
+                        <div class="t-desc">Learned referencing craft from David Sze (Greylock board member, notable for LinkedIn + Facebook investments).</div>
+                    </div>
+                </div>
+                <div class="timeline-item reveal d-6">
+                    <span class="timeline-date">Square</span>
+                    <div class="timeline-line"></div>
+                    <div class="timeline-body">
+                        <div class="t-title">Chief Operating Officer</div>
+                        <div class="t-desc">Built the operating tempo and talent model. Learned "1+1=3" leverage from David Sacks. Vinod Khosla instilled "team you build = company you build."</div>
+                    </div>
+                </div>
+                <div class="timeline-item reveal d-7">
+                    <span class="timeline-date">Khosla</span>
+                    <div class="timeline-line"></div>
+                    <div class="timeline-body">
+                        <div class="t-title">Managing Director, Khosla Ventures</div>
+                        <div class="t-desc">Early investor: Stripe, Palantir, Airbnb, YouTube, DoorDash, Ramp, and dozens more. Founder-driven investment thesis.</div>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--gap);">
+                <div class="stat-slab reveal d-5" style="align-items: flex-start;">
+                    <span class="stat-figure" style="font-size: clamp(2.5rem, 6vw, 5rem);">25yr</span>
+                    <span class="stat-label">On the same crusade: find and marshal undiscovered talent</span>
+                </div>
+                <div class="bracket-note reveal d-6">
+                    <p style="font-size: var(--small-size); color: var(--ink-soft);">"My parents used to laugh at almost all my jobs in tech. They did appreciate Stripe though — my mom always lobbied me to invest. I finally listened."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 28 — THE CONTRARIAN IN FULL
+     ======================================================== -->
+<section class="slide red-cover" id="slide-28">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">28 / 30</span>
+    </div>
+    <div class="slide-content" style="justify-content: center;">
+        <div class="pull-quote reveal d-1" style="max-width: 26ch;">
+            The team you build is the company you build.<br><em>Everything else is noise.</em>
+        </div>
+        <div class="thin-rule reveal d-2" style="background: rgba(255,255,255,0.2); margin: clamp(1rem, 3vh, 2rem) 0;"></div>
+        <div class="reveal d-3" style="display: flex; flex-wrap: wrap; gap: clamp(0.5rem, 1.5vw, 1rem);">
+            <div style="font-family: var(--font-mono); font-size: var(--label-size); color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.14em; background: rgba(255,255,255,0.1); padding: 0.35em 0.7em;">No days off</div>
+            <div style="font-family: var(--font-mono); font-size: var(--label-size); color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.14em; background: rgba(255,255,255,0.1); padding: 0.35em 0.7em;">Find the barrels first</div>
+            <div style="font-family: var(--font-mono); font-size: var(--label-size); color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.14em; background: rgba(255,255,255,0.1); padding: 0.35em 0.7em;">Undiscovered talent wins</div>
+            <div style="font-family: var(--font-mono); font-size: var(--label-size); color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.14em; background: rgba(255,255,255,0.1); padding: 0.35em 0.7em;">Push harder when winning</div>
+            <div style="font-family: var(--font-mono); font-size: var(--label-size); color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.14em; background: rgba(255,255,255,0.1); padding: 0.35em 0.7em;">Don't talk to consumers</div>
+            <div style="font-family: var(--font-mono); font-size: var(--label-size); color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.14em; background: rgba(255,255,255,0.1); padding: 0.35em 0.7em;">Criticize in public</div>
+            <div style="font-family: var(--font-mono); font-size: var(--label-size); color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.14em; background: rgba(255,255,255,0.1); padding: 0.35em 0.7em;">CMO leads AI adoption</div>
+            <div style="font-family: var(--font-mono); font-size: var(--label-size); color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.14em; background: rgba(255,255,255,0.1); padding: 0.35em 0.7em;">PM role is dying</div>
+        </div>
+        <div class="quote-attr reveal d-4" style="margin-top: clamp(1rem, 2.5vh, 2rem);">Keith Rabois / Lenny's Podcast / 2025</div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 29 — LIGHTNING ROUND GEMS
+     ======================================================== -->
+<section class="slide" id="slide-29">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">29 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Quick Reads</div>
+        <h2 class="slide-h2 reveal d-2">From the lightning round.</h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="kw-grid reveal d-4">
+            <div class="kw-item">
+                <div class="kw-label">Book #1</div>
+                <div class="kw-body"><em>The Upside of Stress</em> — Kelly McGonigal (Stanford). Want to be happy, healthy, or wealthy? You need more stress, not less. Evidence "effectively uncriticable."</div>
+            </div>
+            <div class="kw-item">
+                <div class="kw-label">Watch</div>
+                <div class="kw-body"><em>Nuremberg</em> (Netflix/iTunes). Five to ten things Keith didn't know about one of history's most consequential trials. Directly applicable to the modern world.</div>
+            </div>
+            <div class="kw-item">
+                <div class="kw-label">Product</div>
+                <div class="kw-body"><em>Eight Sleep.</em> You must prioritize 8 hours of sleep even when very busy. Keith is an investor but says it transforms people's lives — and he's still addicted to it.</div>
+            </div>
+            <div class="kw-item">
+                <div class="kw-label">Mantra</div>
+                <div class="kw-body"><strong>#nodays off</strong> — borrowed from Bill Belichick's Super Bowl championship parade chant. Missed 7 workouts in 7 years. Still annoyed about 4 of them.</div>
+            </div>
+            <div class="kw-item">
+                <div class="kw-label">Management Book</div>
+                <div class="kw-body"><em>The Jordan Rules</em> — if you want to build a high-performance machine, read how Michael Jordan actually managed his teammates. Not how it's usually told.</div>
+            </div>
+            <div class="kw-item">
+                <div class="kw-label">Shakespeare</div>
+                <div class="kw-body">"Everything important you need to know about humans was written by Shakespeare. Just read Shakespeare. That's better than all the customer research in the world."</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================
+     SLIDE 30 — TAKEAWAYS
+     ======================================================== -->
+<section class="slide" id="slide-30">
+    <div class="ruled-bg"></div>
+    <div class="folio">
+        <span class="series">Hard Truths // Keith Rabois</span>
+        <span class="slide-num">30 / 30</span>
+    </div>
+    <div class="slide-content">
+        <div class="section-tag reveal d-1">Closing / Field Notes</div>
+        <h2 class="slide-h2 reveal d-2">What to carry out of this room.</h2>
+        <div class="thin-rule reveal d-3"></div>
+        <div class="takeaway-grid reveal d-4">
+            <div class="takeaway-card">
+                <div class="t-num">01 · Team</div>
+                <div class="t-title">The team you build is the company you build</div>
+                <div class="t-body">Everything else — market, product, technology — is downstream of who you hire and how you evaluate them. One barrel unlocks a new parallel initiative. One mis-hire adds drag coefficient to everything.</div>
+            </div>
+            <div class="takeaway-card">
+                <div class="t-num">02 · Barrels</div>
+                <div class="t-title">Count your barrels; that's your capacity</div>
+                <div class="t-body">Hiring headcount without adding barrels just stacks people behind the same initiatives. If you need to do more, find people who can fire-and-forget — not people to manage those who can.</div>
+            </div>
+            <div class="takeaway-card">
+                <div class="t-num">03 · Discovery</div>
+                <div class="t-title">Build on undiscovered talent, always</div>
+                <div class="t-body">The salary cap is real. Find the people the black-box machine mis-processes. Understand why they're being missed. That gap is your hiring moat — and it compounds.</div>
+            </div>
+            <div class="takeaway-card">
+                <div class="t-num">04 · Pressure</div>
+                <div class="t-title">Push harder when winning</div>
+                <div class="t-body">Complacency is the enemy. Elite talent is unhappy when they're coasting — morale drops. The CEO's job is to offset complacency, which means being more critical precisely when things are going best.</div>
+            </div>
+            <div class="takeaway-card">
+                <div class="t-num">05 · AI Era</div>
+                <div class="t-title">The CMO, not the CTO, is winning at AI</div>
+                <div class="t-body">Intellectual curiosity + willingness to use tools with your own hands = future-proof. The PM role is dying. Design and code are merging. Business acumen is the durable skill in the product triad.</div>
+            </div>
+            <div class="takeaway-card">
+                <div class="t-num">06 · Contrarian</div>
+                <div class="t-title">Be early, not wrong — then be right loudly</div>
+                <div class="t-body">Good contrarian takes become consensus. The goal isn't to stay contrarian forever — it's to survive the laughing phase and be there when the world catches up. Ugly babies become empires.</div>
+            </div>
+        </div>
+        <div class="reveal d-7" style="margin-top: var(--gap); font-family: var(--font-mono); font-size: var(--label-size); color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.18em;">
+            Lenny's Podcast · @lennyrachitsky · Keith Rabois at @khoslaventures on X
+        </div>
+    </div>
+</section>
+
+<script>
+class SlidePresentation {
+    constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.total = this.slides.length;
+        this.current = 0;
+        this.isScrolling = false;
+        this.scrollTimeout = null;
+        this.lastWheelTime = 0;
+
+        this.progressBar = document.getElementById('progressBar');
+        this.navDotsContainer = document.getElementById('navDots');
+
+        this.init();
+    }
+
+    init() {
+        this.buildNavDots();
+        this.setupObserver();
+        this.setupKeyboard();
+        this.setupWheel();
+        this.setupTouch();
+        this.updateProgress(0);
+    }
+
+    buildNavDots() {
+        this.slides.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', `Slide ${i + 1}`);
+            dot.addEventListener('click', () => this.goTo(i));
+            this.navDotsContainer.appendChild(dot);
+        });
+    }
+
+    setupObserver() {
+        const opts = { threshold: 0.55 };
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('visible');
+                    const idx = this.slides.indexOf(e.target);
+                    if (idx !== -1) {
+                        this.current = idx;
+                        this.updateDots(idx);
+                        this.updateProgress(idx);
+                    }
+                }
+            });
+        }, opts);
+        this.slides.forEach(s => obs.observe(s));
+    }
+
+    updateDots(idx) {
+        this.navDotsContainer.querySelectorAll('.nav-dot').forEach((d, i) => {
+            d.classList.toggle('active', i === idx);
+        });
+    }
+
+    updateProgress(idx) {
+        const pct = this.total > 1 ? (idx / (this.total - 1)) * 100 : 100;
+        this.progressBar.style.width = pct + '%';
+    }
+
+    goTo(idx) {
+        idx = Math.max(0, Math.min(this.total - 1, idx));
+        this.slides[idx].scrollIntoView({ behavior: 'smooth' });
+    }
+
+    setupKeyboard() {
+        document.addEventListener('keydown', (e) => {
+            const map = {
+                ArrowDown: 1, ArrowRight: 1, Space: 1, PageDown: 1,
+                ArrowUp: -1, ArrowLeft: -1, PageUp: -1,
+            };
+            const key = e.code === 'Space' ? 'Space' : e.key.replace('Arrow', 'Arrow');
+            const dir = map[e.code] ?? map[e.key];
+            if (dir !== undefined) {
+                e.preventDefault();
+                this.goTo(this.current + dir);
+            }
+            if (e.key === 'Home') { e.preventDefault(); this.goTo(0); }
+            if (e.key === 'End') { e.preventDefault(); this.goTo(this.total - 1); }
+        });
+    }
+
+    setupWheel() {
+        document.addEventListener('wheel', (e) => {
+            const now = Date.now();
+            if (now - this.lastWheelTime < 700) return;
+            this.lastWheelTime = now;
+            if (Math.abs(e.deltaY) < 20) return;
+            this.goTo(this.current + (e.deltaY > 0 ? 1 : -1));
+        }, { passive: true });
+    }
+
+    setupTouch() {
+        let startY = 0;
+        document.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+        document.addEventListener('touchend', e => {
+            const dy = startY - e.changedTouches[0].clientY;
+            if (Math.abs(dy) > 45) this.goTo(this.current + (dy > 0 ? 1 : -1));
+        }, { passive: true });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+</script>
+</body>
+</html>
